@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>৩D ফ্যামিলি ট্রি / জেনোগ্রাম</title>
+    <style>
+        body { margin: 0; overflow: hidden; font-family: sans-serif; }
+        #info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.7);
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            pointer-events: none;
+            user-select: none;
+            font-size: 14px;
+            z-index: 10;
+        }
+        #tooltip {
+            position: absolute;
+            display: none;
+            background: rgba(0,0,0,0.8);
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 14px;
+            pointer-events: none;
+            z-index: 20;
+            border: 1px solid #555;
+        }
+        .controls-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.5);
+            background: rgba(0,0,0,0.5);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            pointer-events: none;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="info">👨‍👩‍👧‍👦 ৩D ফ্যামিলি ট্রি — মাউস দিয়ে ঘোরান / জুম করুন</div>
+    <div id="tooltip"></div>
+    <div class="controls-hint">🖱 ঘোরান · স্ক্রল জুম</div>
+
+    <!-- Three.js CDN -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        // ----- ১. লাইব্রেরি ইম্পোর্ট -----
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+
+        // ----- ২. ডেটা (আপনার ফ্যামিলি ট্রি) -----
+        // প্রতিটি নোড: id, name, gender, parents (প্যারেন্টের id-এর array)
+        const familyData = [
+            { id: 1, name: 'দাদা', gender: 'M', parents: [] },
+            { id: 2, name: 'দাদী', gender: 'F', parents: [] },
+            { id: 3, name: 'বাবা', gender: 'M', parents: [1, 2] },
+            { id: 4, name: 'মা', gender: 'F', parents: [] },
+            { id: 5, name: 'আমি', gender: 'M', parents: [3, 4] },
+            { id: 6, name: 'বোন', gender: 'F', parents: [3, 4] },
+            { id: 7, name: 'চাচা', gender: 'M', parents: [1, 2] },
+            { id: 8, name: 'চাচী', gender: 'F', parents: [] },
+            { id: 9, name: ' cousin', gender: 'M', parents: [7, 8] },
+        ];
+
+        // ----- ৩. ট্রি-তে লেভেল ও পজিশন ক্যালকুলেশন -----
+        // লেভেল বের করি (জেনারেশন) — root-দের লেভেল ০
+        const levels = new Map();
+        function computeLevel(id, visited = new Set()) {
+            if (levels.has(id)) return levels.get(id);
+            if (visited.has(id)) return 0; // cycle নিরাপত্তা
+            visited.add(id);
+            const person = familyData.find(p => p.id === id);
+            if (!person || person.parents.length === 0) {
+                levels.set(id, 0);
+                return 0;
+            }
+            const parentLevels = person.parents.map(pid => computeLevel(pid, visited));
+            const level = Math.max(...parentLevels) + 1;
+            levels.set(id, level);
+            return level;
+        }
+        familyData.forEach(p => computeLevel(p.id));
+
+        // লেভেল অনুযায়ী সাজাই
+        const maxLevel = Math.max(...[...levels.values()]);
+        const nodesByLevel = {};
+        for (let i = 0; i <= maxLevel; i++) nodesByLevel[i] = [];
+        familyData.forEach(p => {
+            const lv = levels.get(p.id);
+            if (nodesByLevel[lv]) nodesByLevel[lv].push(p);
+        });
+
+        // X পজিশন: প্রতি লেভেলে সেন্টার করি
+        const spacingX = 2.2;
+        const spacingY = 2.0;
+        const posMap = new Map();
+        for (let lv = 0; lv <= maxLevel; lv++) {
+            const nodes = nodesByLevel[lv] || [];
+            const count = nodes.length;
+            const startX = -((count - 1) * spacingX) / 2;
+            nodes.forEach((p, idx) => {
+                posMap.set(p.id, {
+                    x: startX + idx * spacingX,
+                    y: -lv * spacingY,  // উপরে root, নিচে বাচ্চা
+                    z: 0
+                });
+            });
+        }
+
+        // ----- ৪. Three.js সেটআপ -----
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x1a1a2e);
+
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(6, 4, 10);
+        camera.lookAt(0, -2, 0);
+
+        // WebGL রেন্ডারার
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        document.body.appendChild(renderer.domElement);
+
+        // CSS2D রেন্ডারার (লেবেলের জন্য)
+        const labelRenderer = new CSS2DRenderer();
+        labelRenderer.setSize(window.innerWidth, window.innerHeight);
+        labelRenderer.domElement.style.position = 'absolute';
+        labelRenderer.domElement.style.top = '0px';
+        labelRenderer.domElement.style.left = '0px';
+        labelRenderer.domElement.style.pointerEvents = 'none'; // লেবেল ক্লিক যেন ব্লক না করে
+        document.body.appendChild(labelRenderer.domElement);
+
+        // অরবিট কন্ট্রোল
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 0.8;
+        controls.target.set(0, -2, 0);
+        controls.maxPolarAngle = Math.PI / 2;
+
+        // ----- ৫. আলো -----
+        const ambientLight = new THREE.AmbientLight(0x404060);
+        scene.add(ambientLight);
+
+        const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+        dirLight.position.set(5, 10, 7);
+        dirLight.castShadow = true;
+        scene.add(dirLight);
+
+        const fillLight = new THREE.DirectionalLight(0x8888ff, 0.5);
+        fillLight.position.set(-5, 0, 5);
+        scene.add(fillLight);
+
+        // ব্যাকগ্রাউন্ডে কিছু তারা
+        const starsGeometry = new THREE.BufferGeometry();
+        const starsCount = 2000;
+        const starPositions = new Float32Array(starsCount * 3);
+        for (let i = 0; i < starsCount * 3; i++) {
+            starPositions[i] = (Math.random() - 0.5) * 200;
+        }
+        starsGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+        const starsMaterial = new THREE.PointsMaterial({ color: 0x888888, size: 0.15 });
+        const stars = new THREE.Points(starsGeometry, starsMaterial);
+        scene.add(stars);
+
+        // ----- ৬. নোড ও কানেকশন তৈরি -----
+        const nodeGroup = new THREE.Group();
+        scene.add(nodeGroup);
+
+        // কালার ম্যাপ: gender অনুযায়ী
+        const colorMap = {
+            'M': 0x4a90d9,
+            'F': 0xe74c8b,
+            'default': 0x6c5ce7
+        };
+
+        // প্রতিটি person-এর জন্য sphere + label
+        const nodeObjects = new Map(); // id -> THREE.Mesh
+
+        familyData.forEach(person => {
+            const pos = posMap.get(person.id);
+            if (!pos) return;
+
+            // স্ফিয়ার (নোড)
+            const radius = 0.5;
+            const color = colorMap[person.gender] || colorMap.default;
+            const geometry = new THREE.SphereGeometry(radius, 32, 32);
+            const material = new THREE.MeshStandardMaterial({
+                color: color,
+                roughness: 0.3,
+                metalness: 0.1,
+                emissive: new THREE.Color(color).multiplyScalar(0.15)
+            });
+            const sphere = new THREE.Mesh(geometry, material);
+            sphere.position.set(pos.x, pos.y, pos.z);
+            sphere.castShadow = true;
+            sphere.userData = { personId: person.id };
+            nodeGroup.add(sphere);
+            nodeObjects.set(person.id, sphere);
+
+            // CSS2D লেবেল (নাম)
+            const labelDiv = document.createElement('div');
+            labelDiv.textContent = person.name;
+            labelDiv.style.color = '#fff';
+            labelDiv.style.fontSize = '14px';
+            labelDiv.style.fontWeight = 'bold';
+            labelDiv.style.textShadow = '0 0 10px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,0.8)';
+            labelDiv.style.background = 'rgba(0,0,0,0.5)';
+            labelDiv.style.padding = '4px 12px';
+            labelDiv.style.borderRadius = '12px';
+            labelDiv.style.border = '1px solid rgba(255,255,255,0.2)';
+            labelDiv.style.backdropFilter = 'blur(4px)';
+            labelDiv.style.pointerEvents = 'none';
+
+            const label = new CSS2DObject(labelDiv);
+            label.position.set(pos.x, pos.y - radius - 0.5, pos.z);
+            nodeGroup.add(label);
+        });
+
+        // ----- ৭. কানেকশন (লাইন) -----
+        // প্যারেন্ট-চাইল্ড সংযোগ
+        const lineMaterial = new THREE.LineBasicMaterial({ color: 0x88aaff, transparent: true, opacity: 0.5 });
+
+        familyData.forEach(person => {
+            if (person.parents.length === 0) return;
+            const childPos = posMap.get(person.id);
+            if (!childPos) return;
+
+            person.parents.forEach(parentId => {
+                const parentPos = posMap.get(parentId);
+                if (!parentPos) return;
+
+                const points = [
+                    new THREE.Vector3(parentPos.x, parentPos.y, parentPos.z),
+                    new THREE.Vector3(childPos.x, childPos.y, childPos.z)
+                ];
+                const geometry = new THREE.BufferGeometry().setFromPoints(points);
+                const line = new THREE.Line(geometry, lineMaterial);
+                nodeGroup.add(line);
+            });
+        });
+
+        // স্পাউস সংযোগ (বিয়ে) — এখানে আমরা ধরে নিচ্ছি যে একই লেভেলের দুজন যাদের বাচ্চা আছে তারা স্পাউস
+        // সহজ উপায়: প্রতিটি চাইল্ডের জন্য দুজন প্যারেন্ট থাকলে তাদের মধ্যে লাইন
+        const spouseMaterial = new THREE.LineBasicMaterial({ color: 0xffaa88, transparent: true, opacity: 0.4, dashed: true });
+        familyData.forEach(person => {
+            if (person.parents.length === 2) {
+                const p1 = posMap.get(person.parents[0]);
+                const p2 = posMap.get(person.parents[1]);
+                if (p1 && p2) {
+                    // শুধুমাত্র একবার আঁকতে চেক করি (ছোট id-কে source ধরে)
+                    if (person.parents[0] < person.parents[1]) {
+                        const points = [
+                            new THREE.Vector3(p1.x, p1.y, p1.z),
+                            new THREE.Vector3(p2.x, p2.y, p2.z)
+                        ];
+                        const geometry = new THREE.BufferGeometry().setFromPoints(points);
+                        const line = new THREE.Line(geometry, spouseMaterial);
+                        line.computeLineDistances();
+                        nodeGroup.add(line);
+                    }
+                }
+            }
+        });
+
+        // ----- ৮. টুলটিপ (হোভার) -----
+        const tooltip = document.getElementById('tooltip');
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        renderer.domElement.addEventListener('mousemove', (event) => {
+            // মাউস পজিশন normalised
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+
+            // সব স্ফিয়ার খুঁজি
+            const spheres = [];
+            nodeObjects.forEach((mesh) => spheres.push(mesh));
+            const intersects = raycaster.intersectObjects(spheres);
+
+            if (intersects.length > 0) {
+                const hit = intersects[0].object;
+                const id = hit.userData.personId;
+                const person = familyData.find(p => p.id === id);
+                if (person) {
+                    tooltip.style.display = 'block';
+                    tooltip.style.left = (event.clientX + 14) + 'px';
+                    tooltip.style.top = (event.clientY - 10) + 'px';
+                    const genderSymbol = person.gender === 'M' ? '♂' : '♀';
+                    tooltip.innerHTML = `<strong>${person.name}</strong> ${genderSymbol}<br>ID: ${person.id}`;
+                }
+            } else {
+                tooltip.style.display = 'none';
+            }
+        });
+
+        // ----- ৯. রেসপন্সিভ -----
+        window.addEventListener('resize', onWindowResize, false);
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            labelRenderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        // ----- ১০. অ্যানিমেশন লুপ -----
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update(); // autoRotate চালু থাকলে ঘুরবে
+            // WebGL রেন্ডার
+            renderer.render(scene, camera);
+            // CSS2D রেন্ডার (লেবেল)
+            labelRenderer.render(scene, camera);
+        }
+        animate();
+
+        // ১১. autoRotate টগল (ক্লিক করলে থামে/চলে)
+        renderer.domElement.addEventListener('click', () => {
+            controls.autoRotate = !controls.autoRotate;
+        });
+
+        console.log('✅ ৩D ফ্যামিলি ট্রি লোড হয়েছে!');
+    </script>
+</body>
+</html>
