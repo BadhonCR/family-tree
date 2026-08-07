@@ -4,68 +4,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Family Tree</title>
 
-    <title>Family Tree</title>
-
-    <!-- Bootstrap 5 -->
+    <!-- Bootstrap 5 + Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 
     <style>
         body {
-            font-family: Arial, Helvetica, sans-serif;
             background: #f8f9fa;
+            font-family: 'Segoe UI', Arial, sans-serif;
         }
 
         .hero {
-            min-height: 80vh;
-            display: flex;
-            align-items: center;
-            text-align: center;
             background: linear-gradient(135deg, #198754, #20c997);
             color: white;
+            padding: 60px 0;
+            text-align: center;
         }
 
         .hero h1 {
             font-size: 3rem;
-            font-weight: bold;
+            font-weight: 700;
         }
 
         .hero p {
             font-size: 1.2rem;
             max-width: 700px;
-            margin: 20px auto;
+            margin: 16px auto 24px;
+        }
+
+        .member-section {
+            padding: 40px 0 60px;
+        }
+
+        .member-section h2 {
+            font-weight: 600;
+            color: #0f172a;
+            border-bottom: 4px solid #20c997;
+            display: inline-block;
+            padding-bottom: 6px;
+            margin-bottom: 30px;
+        }
+
+        .letter-heading {
+            background: #e9ecef;
+            padding: 6px 18px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: #1e293b;
+            display: inline-block;
+            margin: 20px 0 12px;
+        }
+
+        .member-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px 16px;
+            padding-left: 0;
+            list-style: none;
+        }
+
+        .member-grid li {
+            background: white;
+            border-radius: 10px;
+            padding: 8px 16px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            transition: 0.2s;
+            border: 1px solid #e9ecef;
+        }
+
+        .member-grid li:hover {
+            background: #f1f9f5;
+            border-color: #20c997;
+            transform: translateY(-2px);
+        }
+
+        .member-grid a {
+            text-decoration: none;
+            color: #0f172a;
+            font-weight: 500;
+            display: block;
+        }
+
+        .member-grid a:hover {
+            color: #198754;
         }
 
         footer {
             background: #212529;
-            color: white;
-            padding: 20px 0;
+            color: rgba(255,255,255,0.8);
+            padding: 24px 0;
+            text-align: center;
         }
+
+        footer a {
+            color: #20c997;
+            text-decoration: none;
+        }
+        footer a:hover { color: #fff; }
     </style>
 </head>
 
 <body>
 
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
             <a class="navbar-brand fw-bold" href="#">
                 <i class="bi bi-diagram-3-fill"></i> Family Tree
             </a>
-
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarNav">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
-
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Family Tree</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Members</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Gallery</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
@@ -74,52 +129,135 @@
         </div>
     </nav>
 
-    <!-- Hero Section -->
+    <!-- Hero -->
     <section class="hero">
         <div class="container">
-            <h1>Welcome to Our Family Tree</h1>
-
-            <p>
-                Preserving our family's history, relationships,
-                traditions, and memories for future generations.
-            </p>
-
-            <a href="#" class="btn btn-light btn-lg">
-                Explore Family Tree
+            <h1>🌳 Our Family Tree</h1>
+            <p>Preserving our history, relationships, traditions, and memories for generations to come.</p>
+            <a href="#members" class="btn btn-light btn-lg">
+                <i class="bi bi-people-fill"></i> Browse Members
             </a>
         </div>
     </section>
 
-    <!-- About -->
-    <section class="py-5">
-        <div class="container text-center">
+    <!-- Member Directory -->
+    <section class="member-section" id="members">
+        <div class="container">
+            <h2><i class="bi bi-list-ul"></i> All Family Members</h2>
 
-            <h2>About This Project</h2>
+            <!-- Grouped by first letter -->
+            <div class="letter-heading">A</div>
+            <ul class="member-grid">
+                <li><a href="ABINASH.html">Abinash Chandra Roy</a></li>
+                <li><a href="Apurbo.html">Apurbo Roy</a></li>
+            </ul>
 
-            <p class="text-muted mt-3">
-                This website is dedicated to documenting our family lineage,
-                preserving historical records, photographs, and the stories
-                of every generation.
+            <div class="letter-heading">B</div>
+            <ul class="member-grid">
+                <li><a href="BADHON.html">Badhon Chandra Roy</a></li>
+                <li><a href="Bashonti.html">Bashonti Rani Roy</a></li>
+                <li><a href="Beauty.html">Beauty Rani Roy</a></li>
+            </ul>
+
+            <div class="letter-heading">D</div>
+            <ul class="member-grid">
+                <li><a href="DEV.html">Dev Chandra Roy</a></li>
+                <li><a href="Dino Nath.html">Dino Nath Chandra Roy</a></li>
+                <li><a href="Dhonash.html">Dhonash Chandra Roy</a></li>
+                <li><a href="Dinash.html">Dinash Chandra Roy</a></li>
+                <li><a href="Dipika.html">Dipika Rani Roy</a></li>
+                <li><a href="Diti.html">Diti Rani Roy</a></li>
+            </ul>
+
+            <div class="letter-heading">F</div>
+            <ul class="member-grid">
+                <li><a href="FENCY.html">Fency Rani Roy (Konika)</a></li>
+            </ul>
+
+            <div class="letter-heading">G</div>
+            <ul class="member-grid">
+                <li><a href="GOLAP.html">Golap Chandra Roy</a></li>
+            </ul>
+
+            <div class="letter-heading">J</div>
+            <ul class="member-grid">
+                <li><a href="Jarman.html">Jarman Roy</a></li>
+                <li><a href="Japan.html">Japan Roy</a></li>
+                <li><a href="JOYA.html">Joya Rani Roy</a></li>
+                <li><a href="JUEL.html">Juel Chandra Roy</a></li>
+            </ul>
+
+            <div class="letter-heading">K</div>
+            <ul class="member-grid">
+                <li><a href="KANCHON.html">Kanchon Chandra Roy</a></li>
+                <li><a href="KEYA.html">Keya Rani Roy</a></li>
+                <li><a href="Karttik.html">Karttik Chandra Roy</a></li>
+            </ul>
+
+            <div class="letter-heading">L</div>
+            <ul class="member-grid">
+                <li><a href="LABORNO.html">Laborno Chandra Roy</a></li>
+                <li><a href="Lokshmi.html">Lokshmi Rani Roy</a></li>
+            </ul>
+
+            <div class="letter-heading">M</div>
+            <ul class="member-grid">
+                <li><a href="Misti.html">Misti Rani</a></li>
+                <li><a href="MONIKA.html">Monika Rani Roy</a></li>
+                <li><a href="Monai.html">Monai Roy</a></li>
+            </ul>
+
+            <div class="letter-heading">N</div>
+            <ul class="member-grid">
+                <li><a href="Neoti.html">Neoti Rani Roy</a></li>
+            </ul>
+
+            <div class="letter-heading">O</div>
+            <ul class="member-grid">
+                <li><a href="OM.html">Om Roy</a></li>
+                <li><a href="OPU.html">Opu Roy</a></li>
+            </ul>
+
+            <div class="letter-heading">R</div>
+            <ul class="member-grid">
+                <li><a href="Ratna.html">Ratna Rani Roy</a></li>
+                <li><a href="ROYEL.html">Royel Chandra Roy</a></li>
+            </ul>
+
+            <div class="letter-heading">S</div>
+            <ul class="member-grid">
+                <li><a href="Simul.html">Simul Singho Debbroto</a></li>
+                <li><a href="Sita.html">Sita Rani Roy</a></li>
+                <li><a href="SOBITA.html">Sobita Rani Roy</a></li>
+                <li><a href="Sotherdi.html">Sotherdi Rani Roy</a></li>
+                <li><a href="SUVO.html">Suvo Roy</a></li>
+            </ul>
+
+            <div class="letter-heading">T</div>
+            <ul class="member-grid">
+                <li><a href="TITHO.html">Titho Roy (Goytho)</a></li>
+            </ul>
+
+            <div class="letter-heading">V</div>
+            <ul class="member-grid">
+                <li><a href="Vodra.html">Vodra Rani Roy</a></li>
+            </ul>
+
+            <p class="text-muted mt-4 text-center">
+                <i class="bi bi-info-circle"></i> Click any name to view their full profile.
             </p>
-
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="text-center">
+    <footer>
         <div class="container">
-            <p class="mb-1">
-                © 2026 Family Tree. All Rights Reserved.
-            </p>
-
-            <small>
-                Developed with ❤️ for future generations.
-            </small>
+            <p class="mb-1">© 2026 Family Tree. All Rights Reserved.</p>
+            <small>Developed with ❤️ by <a href="BADHON.html">Badhon Chandra Roy</a> for future generations.</small>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
 
 </html>
