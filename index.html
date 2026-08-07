@@ -1,125 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Protected Website</title>
 
-    <title>Family Tree</title>
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
 
-    <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+body{
+    background:#0f172a;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
 
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+.box{
+    background:#fff;
+    padding:35px;
+    border-radius:12px;
+    width:350px;
+    text-align:center;
+    box-shadow:0 10px 30px rgba(0,0,0,.3);
+}
 
-    <style>
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f8f9fa;
-        }
+h2{
+    margin-bottom:20px;
+}
 
-        .hero {
-            min-height: 80vh;
-            display: flex;
-            align-items: center;
-            text-align: center;
-            background: linear-gradient(135deg, #198754, #20c997);
-            color: white;
-        }
+input{
+    width:100%;
+    padding:12px;
+    margin-bottom:15px;
+    border:1px solid #ccc;
+    border-radius:6px;
+    font-size:16px;
+}
 
-        .hero h1 {
-            font-size: 3rem;
-            font-weight: bold;
-        }
+button{
+    width:100%;
+    padding:12px;
+    border:none;
+    background:#2563eb;
+    color:#fff;
+    font-size:16px;
+    border-radius:6px;
+    cursor:pointer;
+}
 
-        .hero p {
-            font-size: 1.2rem;
-            max-width: 700px;
-            margin: 20px auto;
-        }
+button:hover{
+    background:#1d4ed8;
+}
 
-        footer {
-            background: #212529;
-            color: white;
-            padding: 20px 0;
-        }
-    </style>
+#error{
+    color:red;
+    margin-top:15px;
+}
+</style>
+
 </head>
-
 <body>
 
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="#">
-                <i class="bi bi-diagram-3-fill"></i> Family Tree
-            </a>
+<div class="box">
+    <h2>🔒 Protected Website</h2>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+    <input type="password" id="password" placeholder="Enter Password">
 
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Family Tree</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Members</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Gallery</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+    <button onclick="checkPassword()">Login</button>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="container">
-            <h1>Welcome to Our Family Tree</h1>
+    <p id="error"></p>
+</div>
 
-            <p>
-                Preserving our family's history, relationships,
-                traditions, and memories for future generations.
-            </p>
+<script>
 
-            <a href="#" class="btn btn-light btn-lg">
-                Explore Family Tree
-            </a>
-        </div>
-    </section>
+const correctPassword = "Badhon123"; // এখানে নিজের পাসওয়ার্ড দিন
 
-    <!-- About -->
-    <section class="py-5">
-        <div class="container text-center">
+function checkPassword(){
 
-            <h2>About This Project</h2>
+    const input = document.getElementById("password").value;
 
-            <p class="text-muted mt-3">
-                This website is dedicated to documenting our family lineage,
-                preserving historical records, photographs, and the stories
-                of every generation.
-            </p>
+    if(input === correctPassword){
 
-        </div>
-    </section>
+        window.location.href = "home.html";
 
-    <!-- Footer -->
-    <footer class="text-center">
-        <div class="container">
-            <p class="mb-1">
-                © 2026 Family Tree. All Rights Reserved.
-            </p>
+    }else{
 
-            <small>
-                Developed with ❤️ for future generations.
-            </small>
-        </div>
-    </footer>
+        document.getElementById("error").innerHTML = "❌ Incorrect Password";
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+    }
+
+}
+
+</script>
 
 </body>
-
 </html>
