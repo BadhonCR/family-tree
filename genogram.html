@@ -63,6 +63,21 @@
     <script src="https://cdn.jsdelivr.net/npm/3d-force-graph@1.70.4/dist/3d-force-graph.min.js"></script>
 
     <script>
+        // CDN/library লোড না হলে স্পষ্ট বার্তা দেখানো হবে।
+        window.addEventListener('load', function () {
+            if (typeof THREE === 'undefined') {
+                const el = document.getElementById('loading');
+                el.style.display = 'block';
+                el.style.color = '#ff6b6b';
+                el.innerHTML = '❌ Three.js লোড হয়নি। ইন্টারনেট সংযোগ/CDN অ্যাক্সেস পরীক্ষা করুন।';
+            } else if (typeof ForceGraph3D === 'undefined') {
+                const el = document.getElementById('loading');
+                el.style.display = 'block';
+                el.style.color = '#ff6b6b';
+                el.innerHTML = '❌ 3D Force Graph লাইব্রেরি লোড হয়নি। ইন্টারনেট সংযোগ/CDN অ্যাক্সেস পরীক্ষা করুন।';
+            }
+        });
+
         // যেকোনো জাভাস্ক্রিপ্ট এরর সরাসরি স্ক্রিনে দেখানোর ব্যবস্থা (সাদা স্ক্রিন/অসীম লোডিং এড়াতে)
         window.addEventListener('error', function (e) {
             const loadingEl = document.getElementById('loading');
@@ -318,7 +333,7 @@
                 .nodeRelSize(4)
                 .linkDistance(link => link.type === 'spouse' ? 30 : 45)
                 .numDimensions(3)
-                .damping(0.9)
+                .d3VelocityDecay(0.9)
                 .warmupTicks(100)
                 .cooldownTicks(100)
                 .onNodeClick(node => {
