@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>৩D জেনোগ্রাম – রায় পরিবার</title>
+    <title>3D Genogram - Roy Family</title>
     <style>
         body { margin: 0; overflow: hidden; font-family: 'Segoe UI', sans-serif; background: #0a0a1a; color: white; }
         #info {
@@ -47,7 +47,7 @@
     </style>
 </head>
 <body>
-    <div id="info">👨‍👩‍👧‍👦 ৩D জেনোগ্রাম – রায় পরিবার</div>
+    <div id="info">👨‍👩‍👧‍👦 3D Genogram - Roy Family</div>
     <div id="legend">
         <span class="legend-item"><span class="color-dot" style="background:#4a90d9;"></span> পুরুষ</span>
         <span class="legend-item"><span class="color-dot" style="background:#e74c8b;"></span> নারী</span>
@@ -78,7 +78,7 @@
         (function() {
           try {
             // --------------------------------------------------------------
-            // ১. কাঁচা ডেটা (সংশোধিত: FT-051 ও FT-030-এর লিঙ্গ M)
+            // ১. Row Data
             // --------------------------------------------------------------
             const rawPeople = [
                 { id: "FT-001", name: "Abinash Chandra Roy", nick: "", nameBn: "অবিনাশ চন্দ্র রায়", gender: "M", spouse: "FT-002", father: "FT-108", mother: "", alive: "Yes" },
@@ -104,7 +104,7 @@
                 { id: "FT-025", name: "Kanchon Chandra Roy", nick: "", nameBn: "কাঞ্চন চন্দ্র রায়", gender: "M", spouse: "FT-066", father: "FT-016", mother: "FT-017", alive: "" },
                 { id: "FT-028", name: "Romesh Chandra Roy", nick: "", nameBn: "রমেশ চন্দ্র রায়", gender: "M", spouse: "FT-018", father: "", mother: "", alive: "" },
                 { id: "FT-029", name: "Anju Rani Roy", nick: "", nameBn: "অনজু রাণী রায়", gender: "F", spouse: "", father: "FT-028", mother: "FT-018", alive: "" },
-                { id: "FT-030", name: "Dilip Chandra Roy", nick: "", nameBn: "দিলীপ চন্দ্র রায়", gender: "M", spouse: "", father: "FT-028", mother: "FT-018", alive: "" }, // লিঙ্গ M করা হলো
+                { id: "FT-030", name: "Dilip Chandra Roy", nick: "", nameBn: "দিলীপ চন্দ্র রায়", gender: "M", spouse: "", father: "FT-028", mother: "FT-018", alive: "" },
                 { id: "FT-031", name: "Nitta Rani Roy", nick: "", nameBn: "নিত্যা রানী রায়", gender: "F", spouse: "", father: "FT-028", mother: "FT-018", alive: "" },
                 { id: "FT-032", name: "Tuki", nick: "", nameBn: "টুকি", gender: "F", spouse: "", father: "FT-028", mother: "FT-018", alive: "" },
                 { id: "FT-033", name: "Manik", nick: "", nameBn: "মানিক", gender: "M", spouse: "", father: "FT-028", mother: "FT-018", alive: "" },
@@ -120,7 +120,7 @@
                 { id: "FT-048", name: "Depika Rani Roy", nick: "Dippriya Gouri Debi Dasi", nameBn: "দিপিকা রানী রায়", gender: "F", spouse: "FT-051", father: "FT-020", mother: "FT-047", alive: "Yes" },
                 { id: "FT-049", name: "Diti Rani Roy", nick: "", nameBn: "দিতী রানী রায়", gender: "F", spouse: "", father: "FT-020", mother: "FT-047", alive: "Yes" },
                 { id: "FT-050", name: "Anik Roy Pranto", nick: "", nameBn: "অনিক রায় প্রান্ত", gender: "M", spouse: "", father: "FT-020", mother: "FT-047", alive: "Yes" },
-                { id: "FT-051", name: "Sudhangsu Roy", nick: "", nameBn: "সুধাংশু রায়", gender: "M", spouse: "FT-048", father: "", mother: "", alive: "Yes" }, // লিঙ্গ M করা হলো
+                { id: "FT-051", name: "Sudhangsu Roy", nick: "", nameBn: "সুধাংশু রায়", gender: "M", spouse: "FT-048", father: "", mother: "", alive: "Yes" },
                 { id: "FT-055", name: "Lakkhi Rani Roy", nick: "", nameBn: "লক্ষী রাণী রায়", gender: "F", spouse: "FT-023", father: "", mother: "", alive: "Yes" },
                 { id: "FT-056", name: "Keya Roy Ghosh", nick: "", nameBn: "কেয়া রায় ঘোষ", gender: "F", spouse: "FT-057", father: "FT-023", mother: "FT-055", alive: "Yes" },
                 { id: "FT-057", name: "Tonmoy Ghosh", nick: "", nameBn: "তন্ময় ঘোষ", gender: "M", spouse: "FT-056", father: "", mother: "", alive: "Yes" },
