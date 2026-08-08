@@ -5,76 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>৩D জেনোগ্রাম – রায় পরিবার</title>
     <style>
-        body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0a0a1a; color: white; }
+        body { margin: 0; overflow: hidden; font-family: 'Segoe UI', sans-serif; background: #0a0a1a; color: white; }
         #info {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: rgba(0,0,0,0.7);
-            padding: 12px 20px;
-            border-radius: 8px;
-            backdrop-filter: blur(6px);
-            border: 1px solid #444;
-            pointer-events: none;
-            z-index: 10;
-            font-size: 14px;
+            position: absolute; top: 20px; left: 20px;
+            background: rgba(0,0,0,0.7); padding: 12px 20px; border-radius: 8px;
+            backdrop-filter: blur(6px); border: 1px solid #444; z-index: 10;
+            font-size: 14px; pointer-events: none;
         }
         #legend {
-            position: absolute;
-            bottom: 30px;
-            left: 30px;
-            background: rgba(0,0,0,0.6);
-            padding: 10px 16px;
-            border-radius: 8px;
-            backdrop-filter: blur(4px);
-            border: 1px solid #333;
-            font-size: 13px;
-            display: flex;
-            gap: 20px;
-            z-index: 10;
-            pointer-events: none;
+            position: absolute; bottom: 30px; left: 30px;
+            background: rgba(0,0,0,0.6); padding: 10px 16px; border-radius: 8px;
+            backdrop-filter: blur(4px); border: 1px solid #333; font-size: 13px;
+            display: flex; gap: 20px; z-index: 10; pointer-events: none;
         }
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .color-dot {
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            display: inline-block;
-        }
+        .legend-item { display: flex; align-items: center; gap: 6px; }
+        .color-dot { width: 14px; height: 14px; border-radius: 50%; display: inline-block; }
         #tooltip {
-            position: absolute;
-            display: none;
-            background: rgba(10,10,30,0.9);
-            color: #eee;
-            padding: 10px 16px;
-            border-radius: 8px;
-            border: 1px solid #555;
-            font-size: 13px;
-            max-width: 250px;
-            pointer-events: none;
-            z-index: 20;
-            backdrop-filter: blur(8px);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            position: absolute; display: none;
+            background: rgba(10,10,30,0.9); color: #eee; padding: 10px 16px;
+            border-radius: 8px; border: 1px solid #555; font-size: 13px;
+            max-width: 250px; pointer-events: none; z-index: 20;
+            backdrop-filter: blur(8px); box-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
         .controls-hint {
-            position: absolute;
-            bottom: 30px;
-            right: 30px;
-            color: rgba(255,255,255,0.4);
-            background: rgba(0,0,0,0.4);
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 12px;
-            backdrop-filter: blur(4px);
-            border: 1px solid #333;
-            z-index: 10;
+            position: absolute; bottom: 30px; right: 30px;
+            color: rgba(255,255,255,0.4); background: rgba(0,0,0,0.4);
+            padding: 6px 14px; border-radius: 20px; font-size: 12px;
+            backdrop-filter: blur(4px); border: 1px solid #333; z-index: 10;
             pointer-events: none;
         }
-        a { color: #88ccff; }
+        #loading {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            color: #aaa; font-size: 18px; z-index: 5;
+        }
         @media (max-width: 600px) {
             #info { font-size: 12px; padding: 8px 14px; }
             #legend { flex-wrap: wrap; gap: 10px; font-size: 11px; }
@@ -82,8 +45,7 @@
     </style>
 </head>
 <body>
-
-    <div id="info">👨‍👩‍👧‍👦 ৩D জেনোগ্রাম – রায় পরিবার (মাউস দিয়ে ঘোরান, স্ক্রল জুম)</div>
+    <div id="info">👨‍👩‍👧‍👦 ৩D জেনোগ্রাম – রায় পরিবার</div>
     <div id="legend">
         <span class="legend-item"><span class="color-dot" style="background:#4a90d9;"></span> পুরুষ</span>
         <span class="legend-item"><span class="color-dot" style="background:#e74c8b;"></span> নারী</span>
@@ -91,281 +53,297 @@
         <span class="legend-item"><span style="display:inline-block; width:20px; height:2px; background:#ffaa66; border-top:2px dashed #ffaa66;"></span> দাম্পত্য</span>
     </div>
     <div id="tooltip"></div>
-    <div class="controls-hint">🔄 ড্র্যাগ · ⚡ স্ক্রল</div>
+    <div class="controls-hint">🔄 ড্র্যাগ · ⚡ স্ক্রল · ডাবল-ক্লিক অটোরোটেট</div>
+    <div id="loading">⏳ লোড হচ্ছে...</div>
 
     <!-- Three.js + 3d-force-graph CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/3d-force-graph@1.70.4/dist/3d-force-graph.min.js"></script>
 
     <script>
-        // --------------------------------------------------------------
-        // ১. কাঁচা ডেটা (আপনার Excel ফাইল থেকে নেওয়া)
-        // শুধুমাত্র বৈধ এন্ট্রি রাখা হয়েছে (ID আছে এবং নাম অথবা সম্পর্ক আছে)
-        // --------------------------------------------------------------
-        const rawPeople = [
-            { id: "FT-001", name: "Abinash Chandra Roy", nick: "", nameBn: "অবিনাশ চন্দ্র রায়", gender: "M", spouse: "FT-002", father: "FT-108", mother: "", alive: "Yes" },
-            { id: "FT-002", name: "Fency Rani Roy", nick: "Konika", nameBn: "ফেন্সি রানি রায়", gender: "F", spouse: "FT-001", father: "FT-021", mother: "FT-079", alive: "Yes" },
-            { id: "FT-003", name: "Badhon Chandra Roy", nick: "", nameBn: "বাঁধন চন্দ্র রায়", gender: "M", spouse: "", father: "FT-001", mother: "FT-002", alive: "Yes" },
-            { id: "FT-004", name: "Labonno Chandra Roy", nick: "", nameBn: "লাবণ্য চন্দ্র রায়", gender: "M", spouse: "", father: "FT-001", mother: "FT-002", alive: "Yes" },
-            { id: "FT-006", name: "Golap Chandra Roy", nick: "", nameBn: "গোলাপ চন্দ্র রায়", gender: "M", spouse: "FT-007", father: "", mother: "", alive: "Yes" },
-            { id: "FT-007", name: "Monika Rani Roy", nick: "Mani", nameBn: "মনিকা রানী রায়", gender: "F", spouse: "FT-006", father: "FT-021", mother: "FT-079", alive: "Yes" },
-            { id: "FT-008", name: "Om Chandra Roy", nick: "", nameBn: "ওম চন্দ্র রায়", gender: "M", spouse: "", father: "FT-006", mother: "FT-007", alive: "Yes" },
-            { id: "FT-009", name: "Veda Chandra Roy", nick: "", nameBn: "বেদ চন্দ্র রায়", gender: "M", spouse: "", father: "FT-006", mother: "FT-007", alive: "Yes" },
-            { id: "FT-011", name: "Juel Chandra Roy", nick: "", nameBn: "জুয়েল চন্দ্র রায়", gender: "M", spouse: "FT-012", father: "FT-021", mother: "FT-079", alive: "Yes" },
-            { id: "FT-012", name: "Joya Rani Roy", nick: "", nameBn: "জয়া রানী রায়", gender: "F", spouse: "FT-011", father: "", mother: "", alive: "Yes" },
-            { id: "FT-013", name: "Tirtho Chandra Roy", nick: "", nameBn: "তীর্থ চন্দ্র রায়", gender: "M", spouse: "", father: "FT-011", mother: "FT-012", alive: "Yes" },
-            { id: "FT-016", name: "Dinonath Roy", nick: "Khokha Sarker", nameBn: "দিনোনাথ রায়", gender: "M", spouse: "FT-017", father: "", mother: "", alive: "No" },
-            { id: "FT-017", name: "Dulali Rani Roy", nick: "Nolini", nameBn: "দুলালী রাণী রায়", gender: "F", spouse: "FT-016", father: "", mother: "", alive: "No" },
-            { id: "FT-018", name: "Joyonti Rani Roy", nick: "", nameBn: "জয়ন্তী রাণী রায়", gender: "F", spouse: "FT-028", father: "FT-016", mother: "FT-017", alive: "" },
-            { id: "FT-019", name: "Basonti Rani Roy", nick: "", nameBn: "বাসন্তী রাণী রায়", gender: "F", spouse: "FT-036", father: "FT-016", mother: "FT-017", alive: "" },
-            { id: "FT-020", name: "Dinash Chandra Roy", nick: "", nameBn: "দিনেশ চন্দ্র রায়", gender: "M", spouse: "FT-047", father: "FT-016", mother: "FT-017", alive: "" },
-            { id: "FT-021", name: "Dhonesh Chandra Roy", nick: "", nameBn: "ধনেশ চন্দ্র রায়", gender: "M", spouse: "FT-079", father: "FT-016", mother: "FT-017", alive: "" },
-            { id: "FT-022", name: "Gonesh Chandra Roy", nick: "", nameBn: "গণেশ চন্দ্র রায়", gender: "M", spouse: "", father: "FT-016", mother: "FT-017", alive: "" },
-            { id: "FT-023", name: "Karttik Chandra Roy", nick: "", nameBn: "কর্তিক চন্দ্র রায়", gender: "M", spouse: "FT-055", father: "FT-016", mother: "FT-017", alive: "" },
-            { id: "FT-024", name: "Nioti Rani Roy", nick: "", nameBn: "নিয়তী রানি রায়", gender: "F", spouse: "FT-062", father: "FT-016", mother: "FT-017", alive: "" },
-            { id: "FT-025", name: "Kanchon Chandra Roy", nick: "", nameBn: "কাঞ্চন চন্দ্র রায়", gender: "M", spouse: "FT-066", father: "FT-016", mother: "FT-017", alive: "" },
-            { id: "FT-028", name: "Romesh Chandra Roy", nick: "", nameBn: "রমেশ চন্দ্র রায়", gender: "M", spouse: "FT-018", father: "", mother: "", alive: "" },
-            { id: "FT-029", name: "Anju Rani Roy", nick: "", nameBn: "অনজু রাণী রায়", gender: "F", spouse: "", father: "FT-028", mother: "FT-018", alive: "" },
-            { id: "FT-030", name: "Dilip Chandra Roy", nick: "", nameBn: "দিলীপ চন্দ্র রায়", gender: "F", spouse: "", father: "FT-028", mother: "FT-018", alive: "" }, // gender可能是笔误，但保留
-            { id: "FT-031", name: "Nitta Rani Roy", nick: "", nameBn: "নিত্যা রানী রায়", gender: "F", spouse: "", father: "FT-028", mother: "FT-018", alive: "" },
-            { id: "FT-032", name: "Tuki", nick: "", nameBn: "টুকি", gender: "F", spouse: "", father: "FT-028", mother: "FT-018", alive: "" },
-            { id: "FT-033", name: "Manik", nick: "", nameBn: "মানিক", gender: "M", spouse: "", father: "FT-028", mother: "FT-018", alive: "" },
-            { id: "FT-036", name: "Vola Kagozi", nick: "", nameBn: "ভোলা কাজ্জি", gender: "M", spouse: "FT-019", father: "", mother: "", alive: "No" },
-            { id: "FT-037", name: "Bepul Roy", nick: "", nameBn: "বিপুল কার্জ্জি", gender: "M", spouse: "FT-038", father: "FT-036", mother: "FT-019", alive: "Yes" },
-            { id: "FT-038", name: "Kalpona (Nayoni)", nick: "", nameBn: "কল্পনা (নয়নি)", gender: "F", spouse: "FT-037", father: "", mother: "", alive: "Yes" },
-            { id: "FT-039", name: "Tota Roy", nick: "", nameBn: "তোতা কার্জ্জি", gender: "M", spouse: "", father: "FT-037", mother: "FT-038", alive: "Yes" },
-            { id: "FT-040", name: "Beauty Rani", nick: "", nameBn: "বিউটি রানী", gender: "F", spouse: "FT-041", father: "FT-036", mother: "FT-019", alive: "Yes" },
-            { id: "FT-041", name: "Amullo Chandra Roy", nick: "", nameBn: "অমূল্য চন্দ্র রায়", gender: "M", spouse: "FT-040", father: "", mother: "", alive: "Yes" },
-            { id: "FT-042", name: "Depa Rani", nick: "", nameBn: "দিপা রানী", gender: "F", spouse: "FT-043", father: "FT-041", mother: "FT-040", alive: "Yes" },
-            { id: "FT-043", name: "Mohon Roy", nick: "", nameBn: "", gender: "M", spouse: "FT-042", father: "", mother: "", alive: "Yes" },
-            { id: "FT-047", name: "Bhadra Rani Roy", nick: "", nameBn: "ভদ্রা রাণী রায়", gender: "F", spouse: "FT-020", father: "", mother: "", alive: "Yes" },
-            { id: "FT-048", name: "Depika Rani Roy", nick: "Dippriya Gouri Debi Dasi", nameBn: "দিপিকা রানী রায়", gender: "F", spouse: "FT-051", father: "FT-020", mother: "FT-047", alive: "Yes" },
-            { id: "FT-049", name: "Diti Rani Roy", nick: "", nameBn: "দিতী রানী রায়", gender: "F", spouse: "", father: "FT-020", mother: "FT-047", alive: "Yes" },
-            { id: "FT-050", name: "Anik Roy Pranto", nick: "", nameBn: "অনিক রায় প্রান্ত", gender: "M", spouse: "", father: "FT-020", mother: "FT-047", alive: "Yes" },
-            { id: "FT-051", name: "Sudhangsu Roy", nick: "", nameBn: "সুধাংশু রায়", gender: "", spouse: "FT-048", father: "", mother: "", alive: "Yes" }, // gender missing
-            { id: "FT-055", name: "Lakkhi Rani Roy", nick: "", nameBn: "লক্ষী রাণী রায়", gender: "F", spouse: "FT-023", father: "", mother: "", alive: "Yes" },
-            { id: "FT-056", name: "Keya Roy Ghosh", nick: "", nameBn: "কেয়া রায় ঘোষ", gender: "F", spouse: "FT-057", father: "FT-023", mother: "FT-055", alive: "Yes" },
-            { id: "FT-057", name: "Tonmoy Ghosh", nick: "", nameBn: "তন্ময় ঘোষ", gender: "M", spouse: "FT-056", father: "", mother: "", alive: "Yes" },
-            { id: "FT-058", name: "Krittika Ghosh Tanoya", nick: "", nameBn: "কৃত্তিকা ঘোষ তনয়া", gender: "F", spouse: "", father: "FT-057", mother: "FT-056", alive: "Yes" },
-            { id: "FT-059", name: "Apu Roy", nick: "", nameBn: "অপু রায়", gender: "M", spouse: "FT-060", father: "FT-023", mother: "FT-055", alive: "Yes" },
-            { id: "FT-060", name: "Srabonti Ray", nick: "", nameBn: "শ্রাবন্তী রায়", gender: "F", spouse: "FT-059", father: "", mother: "", alive: "Yes" },
-            { id: "FT-062", name: "Sudir Roy", nick: "", nameBn: "সুধীর চন্দ্র রায়", gender: "M", spouse: "FT-024", father: "", mother: "", alive: "No" },
-            { id: "FT-063", name: "Narash Roy", nick: "", nameBn: "নরেশ", gender: "M", spouse: "", father: "FT-062", mother: "FT-024", alive: "Yes" },
-            { id: "FT-066", name: "Ratna Rani Roy", nick: "", nameBn: "", gender: "F", spouse: "FT-025", father: "", mother: "", alive: "Yes" },
-            { id: "FT-067", name: "Royel Chandra Roy", nick: "", nameBn: "", gender: "M", spouse: "", father: "FT-025", mother: "FT-066", alive: "Yes" },
-            { id: "FT-068", name: "Dev Chandra Roy", nick: "", nameBn: "", gender: "M", spouse: "", father: "FT-025", mother: "FT-066", alive: "Yes" },
-            { id: "FT-070", name: "Suresh Deu Dev Singh", nick: "", nameBn: "সুরেশ দেউ দেব সিংহ", gender: "M", spouse: "FT-071", father: "", mother: "", alive: "No" },
-            { id: "FT-071", name: "Sitomoyi Roy Dev Singh", nick: "", nameBn: "সিতোময়ী রায় দেব সিংহ", gender: "F", spouse: "FT-070", father: "", mother: "", alive: "Yes" },
-            { id: "FT-073", name: "Rabindranath Dev Singh", nick: "", nameBn: "রবীন্দ্রনাথ দেব সিংহ", gender: "M", spouse: "FT-074", father: "FT-070", mother: "FT-071", alive: "Yes" },
-            { id: "FT-074", name: "Sunoti", nick: "", nameBn: "সুনতি", gender: "F", spouse: "FT-073", father: "", mother: "", alive: "Yes" },
-            { id: "FT-075", name: "Shimul Singh Debabrata", nick: "", nameBn: "শিমুল সিংহ দেবব্রত", gender: "M", spouse: "FT-076", father: "FT-073", mother: "FT-074", alive: "Yes" },
-            { id: "FT-076", name: "Chaya Rani Roy", nick: "", nameBn: "ছায়া রানী রায়", gender: "F", spouse: "FT-075", father: "", mother: "", alive: "Yes" },
-            { id: "FT-077", name: "Ditipriya Roy", nick: "", nameBn: "দিতিপ্রিয়া রায় (শুদ্ধি)", gender: "F", spouse: "", father: "FT-075", mother: "FT-076", alive: "Yes" },
-            { id: "FT-079", name: "Sabita Rani Roy", nick: "", nameBn: "ছবিতা রানী রায়", gender: "F", spouse: "FT-021", father: "FT-070", mother: "FT-071", alive: "Yes" },
-            { id: "FT-081", name: "Kavichandra Dev Singha", nick: "", nameBn: "কবিচন্দ্র দেব সিংহ", gender: "M", spouse: "FT-082", father: "FT-070", mother: "FT-071", alive: "" },
-            { id: "FT-082", name: "Pushpadev Singh", nick: "", nameBn: "পুষ্পদেব সিংহ", gender: "F", spouse: "FT-081", father: "", mother: "", alive: "" },
-            { id: "FT-083", name: "Nabakumar Roy Debsingh", nick: "", nameBn: "নবকুমার রায় দেবসিংহ", gender: "M", spouse: "", father: "FT-081", mother: "FT-082", alive: "" },
-            { id: "FT-085", name: "Namita Rani Debsingh", nick: "", nameBn: "নমিতা রানী দেবসিংহ", gender: "F", spouse: "FT-086", father: "FT-070", mother: "FT-071", alive: "No" },
-            { id: "FT-086", name: "Mohon Kajji", nick: "", nameBn: "মোহন কাজ্জি", gender: "M", spouse: "FT-085", father: "", mother: "", alive: "Yes" },
-            { id: "FT-087", name: "Madhu Kajji", nick: "", nameBn: "মধু কাজ্জি", gender: "M", spouse: "", father: "FT-086", mother: "FT-085", alive: "No" },
-            { id: "FT-088", name: "Mohona Roy Misty", nick: "Misty", nameBn: "মোহনা রায় মিষ্টি", gender: "F", spouse: "FT-089", father: "FT-086", mother: "FT-085", alive: "Yes" },
-            { id: "FT-089", name: "Chaitanya Dev Bichittro", nick: "", nameBn: "চৈতন্য দেব বিচিত্র", gender: "M", spouse: "FT-088", father: "", mother: "", alive: "Yes" },
-            { id: "FT-090", name: "Abhimanyu Roy Avi", nick: "", nameBn: "অভিমুন্য রায় অভি", gender: "M", spouse: "", father: "FT-089", mother: "FT-088", alive: "Yes" },
-            { id: "FT-094", name: "Rajmohon", nick: "", nameBn: "রাজমেহন", gender: "M", spouse: "", father: "", mother: "", alive: "No" },
-            { id: "FT-095", name: "Dakshinamohan", nick: "", nameBn: "দক্ষিণামোহন", gender: "M", spouse: "", father: "FT-094", mother: "", alive: "No" },
-            { id: "FT-096", name: "Nabo Gopal", nick: "", nameBn: "নবগোপাল", gender: "M", spouse: "", father: "FT-094", mother: "", alive: "No" },
-            { id: "FT-097", name: "Annadamohan", nick: "", nameBn: "অন্নদামোহন", gender: "M", spouse: "", father: "FT-094", mother: "", alive: "No" },
-            { id: "FT-098", name: "Ambika", nick: "", nameBn: "অম্বিকা", gender: "M", spouse: "", father: "FT-094", mother: "", alive: "No" },
-            { id: "FT-099", name: "UnKnown Girl 1", nick: "", nameBn: "মেয়ে ১", gender: "", spouse: "", father: "FT-094", mother: "", alive: "" },
-            { id: "FT-100", name: "UnKnown Girl 2", nick: "", nameBn: "মেয়ে ২", gender: "", spouse: "", father: "FT-094", mother: "", alive: "" },
-            { id: "FT-102", name: "Kalipada", nick: "", nameBn: "কালিপদ", gender: "M", spouse: "", father: "FT-095", mother: "", alive: "No" },
-            { id: "FT-103", name: "Khuki", nick: "", nameBn: "খুকি", gender: "F", spouse: "", father: "FT-095", mother: "", alive: "No" },
-            { id: "FT-105", name: "Bijoy", nick: "", nameBn: "বিজয়", gender: "M", spouse: "", father: "FT-096", mother: "", alive: "No" },
-            { id: "FT-106", name: "Akanto", nick: "", nameBn: "একান্ত", gender: "M", spouse: "", father: "FT-105", mother: "", alive: "Yes" },
-            { id: "FT-108", name: "Noni Gopal", nick: "", nameBn: "ননীগোপাল", gender: "M", spouse: "", father: "FT-096", mother: "", alive: "No" },
-            { id: "FT-109", name: "Manik Chandra Roy", nick: "", nameBn: "মানিক চন্দ্র রায়", gender: "M", spouse: "", father: "FT-108", mother: "", alive: "Yes" },
-            { id: "FT-110", name: "Ratna Rani Roy", nick: "", nameBn: "রত্না রাণী রায়", gender: "F", spouse: "FT-113", father: "FT-109", mother: "", alive: "Yes" },
-            { id: "FT-111", name: "Sopna Rani Roy", nick: "", nameBn: "স্বপ্না রাণী রায়", gender: "F", spouse: "", father: "FT-109", mother: "", alive: "Yes" },
-            { id: "FT-112", name: "Maitri Rani Roy", nick: "", nameBn: "মৈত্রী রাণী রায়", gender: "F", spouse: "", father: "FT-109", mother: "", alive: "Yes" },
-            { id: "FT-113", name: "Raton Chandra Roy", nick: "", nameBn: "", gender: "", spouse: "FT-110", father: "", mother: "", alive: "" },
-            { id: "FT-114", name: "Prithibi Roy", nick: "", nameBn: "পৃথিবী রায়", gender: "M", spouse: "", father: "FT-113", mother: "FT-110", alive: "Yes" },
-            { id: "FT-115", name: "Ruddra Roy", nick: "", nameBn: "রৌদ্র রায়", gender: "M", spouse: "", father: "FT-113", mother: "FT-110", alive: "Yes" },
-            { id: "FT-117", name: "Suranjana Rani Roy", nick: "", nameBn: "শুরঞ্জনা রানী রায়", gender: "F", spouse: "", father: "", mother: "FT-111", alive: "Yes" },
-            { id: "FT-118", name: "Son of Sapna", nick: "", nameBn: "স্বপ্নার ছেলে", gender: "M", spouse: "", father: "", mother: "FT-111", alive: "Yes" },
-            { id: "FT-120", name: "Son of Maitri", nick: "", nameBn: "মৈত্রীর ছেলে", gender: "M", spouse: "", father: "", mother: "FT-112", alive: "Yes" },
-            { id: "FT-122", name: "Heman", nick: "", nameBn: "হেমেন চন্দ্র রায়", gender: "M", spouse: "", father: "FT-098", mother: "", alive: "Yes" },
-            { id: "FT-123", name: "Uttom", nick: "", nameBn: "উত্তম চন্দ্র রায়", gender: "M", spouse: "", father: "FT-122", mother: "", alive: "Yes" },
-            { id: "FT-124", name: "Soityan", nick: "", nameBn: "সৈত্যান চন্দ্র রায়", gender: "M", spouse: "", father: "FT-122", mother: "", alive: "Yes" },
-            { id: "FT-125", name: "Suchittra Rani Roy", nick: "", nameBn: "সুচিত্রা রানী রায়", gender: "F", spouse: "", father: "FT-122", mother: "", alive: "Yes" },
-            { id: "FT-126", name: "Suphala Rani Roy", nick: "", nameBn: "সুফলা রানী রায়", gender: "F", spouse: "", father: "FT-122", mother: "", alive: "Yes" },
-            { id: "FT-128", name: "Tumpa Rani Roy", nick: "", nameBn: "টুম্পা রানী রায়", gender: "F", spouse: "", father: "FT-123", mother: "", alive: "Yes" },
-            { id: "FT-129", name: "Mou Rani Roy", nick: "", nameBn: "মৌ", gender: "F", spouse: "", father: "", mother: "FT-125", alive: "Yes" }
-        ];
+        (function() {
+            // --------------------------------------------------------------
+            // ১. কাঁচা ডেটা (সংশোধিত: FT-051 ও FT-030-এর লিঙ্গ M)
+            // --------------------------------------------------------------
+            const rawPeople = [
+                { id: "FT-001", name: "Abinash Chandra Roy", nick: "", nameBn: "অবিনাশ চন্দ্র রায়", gender: "M", spouse: "FT-002", father: "FT-108", mother: "", alive: "Yes" },
+                { id: "FT-002", name: "Fency Rani Roy", nick: "Konika", nameBn: "ফেন্সি রানি রায়", gender: "F", spouse: "FT-001", father: "FT-021", mother: "FT-079", alive: "Yes" },
+                { id: "FT-003", name: "Badhon Chandra Roy", nick: "", nameBn: "বাঁধন চন্দ্র রায়", gender: "M", spouse: "", father: "FT-001", mother: "FT-002", alive: "Yes" },
+                { id: "FT-004", name: "Labonno Chandra Roy", nick: "", nameBn: "লাবণ্য চন্দ্র রায়", gender: "M", spouse: "", father: "FT-001", mother: "FT-002", alive: "Yes" },
+                { id: "FT-006", name: "Golap Chandra Roy", nick: "", nameBn: "গোলাপ চন্দ্র রায়", gender: "M", spouse: "FT-007", father: "", mother: "", alive: "Yes" },
+                { id: "FT-007", name: "Monika Rani Roy", nick: "Mani", nameBn: "মনিকা রানী রায়", gender: "F", spouse: "FT-006", father: "FT-021", mother: "FT-079", alive: "Yes" },
+                { id: "FT-008", name: "Om Chandra Roy", nick: "", nameBn: "ওম চন্দ্র রায়", gender: "M", spouse: "", father: "FT-006", mother: "FT-007", alive: "Yes" },
+                { id: "FT-009", name: "Veda Chandra Roy", nick: "", nameBn: "বেদ চন্দ্র রায়", gender: "M", spouse: "", father: "FT-006", mother: "FT-007", alive: "Yes" },
+                { id: "FT-011", name: "Juel Chandra Roy", nick: "", nameBn: "জুয়েল চন্দ্র রায়", gender: "M", spouse: "FT-012", father: "FT-021", mother: "FT-079", alive: "Yes" },
+                { id: "FT-012", name: "Joya Rani Roy", nick: "", nameBn: "জয়া রানী রায়", gender: "F", spouse: "FT-011", father: "", mother: "", alive: "Yes" },
+                { id: "FT-013", name: "Tirtho Chandra Roy", nick: "", nameBn: "তীর্থ চন্দ্র রায়", gender: "M", spouse: "", father: "FT-011", mother: "FT-012", alive: "Yes" },
+                { id: "FT-016", name: "Dinonath Roy", nick: "Khokha Sarker", nameBn: "দিনোনাথ রায়", gender: "M", spouse: "FT-017", father: "", mother: "", alive: "No" },
+                { id: "FT-017", name: "Dulali Rani Roy", nick: "Nolini", nameBn: "দুলালী রাণী রায়", gender: "F", spouse: "FT-016", father: "", mother: "", alive: "No" },
+                { id: "FT-018", name: "Joyonti Rani Roy", nick: "", nameBn: "জয়ন্তী রাণী রায়", gender: "F", spouse: "FT-028", father: "FT-016", mother: "FT-017", alive: "" },
+                { id: "FT-019", name: "Basonti Rani Roy", nick: "", nameBn: "বাসন্তী রাণী রায়", gender: "F", spouse: "FT-036", father: "FT-016", mother: "FT-017", alive: "" },
+                { id: "FT-020", name: "Dinash Chandra Roy", nick: "", nameBn: "দিনেশ চন্দ্র রায়", gender: "M", spouse: "FT-047", father: "FT-016", mother: "FT-017", alive: "" },
+                { id: "FT-021", name: "Dhonesh Chandra Roy", nick: "", nameBn: "ধনেশ চন্দ্র রায়", gender: "M", spouse: "FT-079", father: "FT-016", mother: "FT-017", alive: "" },
+                { id: "FT-022", name: "Gonesh Chandra Roy", nick: "", nameBn: "গণেশ চন্দ্র রায়", gender: "M", spouse: "", father: "FT-016", mother: "FT-017", alive: "" },
+                { id: "FT-023", name: "Karttik Chandra Roy", nick: "", nameBn: "কর্তিক চন্দ্র রায়", gender: "M", spouse: "FT-055", father: "FT-016", mother: "FT-017", alive: "" },
+                { id: "FT-024", name: "Nioti Rani Roy", nick: "", nameBn: "নিয়তী রানি রায়", gender: "F", spouse: "FT-062", father: "FT-016", mother: "FT-017", alive: "" },
+                { id: "FT-025", name: "Kanchon Chandra Roy", nick: "", nameBn: "কাঞ্চন চন্দ্র রায়", gender: "M", spouse: "FT-066", father: "FT-016", mother: "FT-017", alive: "" },
+                { id: "FT-028", name: "Romesh Chandra Roy", nick: "", nameBn: "রমেশ চন্দ্র রায়", gender: "M", spouse: "FT-018", father: "", mother: "", alive: "" },
+                { id: "FT-029", name: "Anju Rani Roy", nick: "", nameBn: "অনজু রাণী রায়", gender: "F", spouse: "", father: "FT-028", mother: "FT-018", alive: "" },
+                { id: "FT-030", name: "Dilip Chandra Roy", nick: "", nameBn: "দিলীপ চন্দ্র রায়", gender: "M", spouse: "", father: "FT-028", mother: "FT-018", alive: "" }, // লিঙ্গ M করা হলো
+                { id: "FT-031", name: "Nitta Rani Roy", nick: "", nameBn: "নিত্যা রানী রায়", gender: "F", spouse: "", father: "FT-028", mother: "FT-018", alive: "" },
+                { id: "FT-032", name: "Tuki", nick: "", nameBn: "টুকি", gender: "F", spouse: "", father: "FT-028", mother: "FT-018", alive: "" },
+                { id: "FT-033", name: "Manik", nick: "", nameBn: "মানিক", gender: "M", spouse: "", father: "FT-028", mother: "FT-018", alive: "" },
+                { id: "FT-036", name: "Vola Kagozi", nick: "", nameBn: "ভোলা কাজ্জি", gender: "M", spouse: "FT-019", father: "", mother: "", alive: "No" },
+                { id: "FT-037", name: "Bepul Roy", nick: "", nameBn: "বিপুল কার্জ্জি", gender: "M", spouse: "FT-038", father: "FT-036", mother: "FT-019", alive: "Yes" },
+                { id: "FT-038", name: "Kalpona (Nayoni)", nick: "", nameBn: "কল্পনা (নয়নি)", gender: "F", spouse: "FT-037", father: "", mother: "", alive: "Yes" },
+                { id: "FT-039", name: "Tota Roy", nick: "", nameBn: "তোতা কার্জ্জি", gender: "M", spouse: "", father: "FT-037", mother: "FT-038", alive: "Yes" },
+                { id: "FT-040", name: "Beauty Rani", nick: "", nameBn: "বিউটি রানী", gender: "F", spouse: "FT-041", father: "FT-036", mother: "FT-019", alive: "Yes" },
+                { id: "FT-041", name: "Amullo Chandra Roy", nick: "", nameBn: "অমূল্য চন্দ্র রায়", gender: "M", spouse: "FT-040", father: "", mother: "", alive: "Yes" },
+                { id: "FT-042", name: "Depa Rani", nick: "", nameBn: "দিপা রানী", gender: "F", spouse: "FT-043", father: "FT-041", mother: "FT-040", alive: "Yes" },
+                { id: "FT-043", name: "Mohon Roy", nick: "", nameBn: "", gender: "M", spouse: "FT-042", father: "", mother: "", alive: "Yes" },
+                { id: "FT-047", name: "Bhadra Rani Roy", nick: "", nameBn: "ভদ্রা রাণী রায়", gender: "F", spouse: "FT-020", father: "", mother: "", alive: "Yes" },
+                { id: "FT-048", name: "Depika Rani Roy", nick: "Dippriya Gouri Debi Dasi", nameBn: "দিপিকা রানী রায়", gender: "F", spouse: "FT-051", father: "FT-020", mother: "FT-047", alive: "Yes" },
+                { id: "FT-049", name: "Diti Rani Roy", nick: "", nameBn: "দিতী রানী রায়", gender: "F", spouse: "", father: "FT-020", mother: "FT-047", alive: "Yes" },
+                { id: "FT-050", name: "Anik Roy Pranto", nick: "", nameBn: "অনিক রায় প্রান্ত", gender: "M", spouse: "", father: "FT-020", mother: "FT-047", alive: "Yes" },
+                { id: "FT-051", name: "Sudhangsu Roy", nick: "", nameBn: "সুধাংশু রায়", gender: "M", spouse: "FT-048", father: "", mother: "", alive: "Yes" }, // লিঙ্গ M করা হলো
+                { id: "FT-055", name: "Lakkhi Rani Roy", nick: "", nameBn: "লক্ষী রাণী রায়", gender: "F", spouse: "FT-023", father: "", mother: "", alive: "Yes" },
+                { id: "FT-056", name: "Keya Roy Ghosh", nick: "", nameBn: "কেয়া রায় ঘোষ", gender: "F", spouse: "FT-057", father: "FT-023", mother: "FT-055", alive: "Yes" },
+                { id: "FT-057", name: "Tonmoy Ghosh", nick: "", nameBn: "তন্ময় ঘোষ", gender: "M", spouse: "FT-056", father: "", mother: "", alive: "Yes" },
+                { id: "FT-058", name: "Krittika Ghosh Tanoya", nick: "", nameBn: "কৃত্তিকা ঘোষ তনয়া", gender: "F", spouse: "", father: "FT-057", mother: "FT-056", alive: "Yes" },
+                { id: "FT-059", name: "Apu Roy", nick: "", nameBn: "অপু রায়", gender: "M", spouse: "FT-060", father: "FT-023", mother: "FT-055", alive: "Yes" },
+                { id: "FT-060", name: "Srabonti Ray", nick: "", nameBn: "শ্রাবন্তী রায়", gender: "F", spouse: "FT-059", father: "", mother: "", alive: "Yes" },
+                { id: "FT-062", name: "Sudir Roy", nick: "", nameBn: "সুধীর চন্দ্র রায়", gender: "M", spouse: "FT-024", father: "", mother: "", alive: "No" },
+                { id: "FT-063", name: "Narash Roy", nick: "", nameBn: "নরেশ", gender: "M", spouse: "", father: "FT-062", mother: "FT-024", alive: "Yes" },
+                { id: "FT-066", name: "Ratna Rani Roy", nick: "", nameBn: "", gender: "F", spouse: "FT-025", father: "", mother: "", alive: "Yes" },
+                { id: "FT-067", name: "Royel Chandra Roy", nick: "", nameBn: "", gender: "M", spouse: "", father: "FT-025", mother: "FT-066", alive: "Yes" },
+                { id: "FT-068", name: "Dev Chandra Roy", nick: "", nameBn: "", gender: "M", spouse: "", father: "FT-025", mother: "FT-066", alive: "Yes" },
+                { id: "FT-070", name: "Suresh Deu Dev Singh", nick: "", nameBn: "সুরেশ দেউ দেব সিংহ", gender: "M", spouse: "FT-071", father: "", mother: "", alive: "No" },
+                { id: "FT-071", name: "Sitomoyi Roy Dev Singh", nick: "", nameBn: "সিতোময়ী রায় দেব সিংহ", gender: "F", spouse: "FT-070", father: "", mother: "", alive: "Yes" },
+                { id: "FT-073", name: "Rabindranath Dev Singh", nick: "", nameBn: "রবীন্দ্রনাথ দেব সিংহ", gender: "M", spouse: "FT-074", father: "FT-070", mother: "FT-071", alive: "Yes" },
+                { id: "FT-074", name: "Sunoti", nick: "", nameBn: "সুনতি", gender: "F", spouse: "FT-073", father: "", mother: "", alive: "Yes" },
+                { id: "FT-075", name: "Shimul Singh Debabrata", nick: "", nameBn: "শিমুল সিংহ দেবব্রত", gender: "M", spouse: "FT-076", father: "FT-073", mother: "FT-074", alive: "Yes" },
+                { id: "FT-076", name: "Chaya Rani Roy", nick: "", nameBn: "ছায়া রানী রায়", gender: "F", spouse: "FT-075", father: "", mother: "", alive: "Yes" },
+                { id: "FT-077", name: "Ditipriya Roy", nick: "", nameBn: "দিতিপ্রিয়া রায় (শুদ্ধি)", gender: "F", spouse: "", father: "FT-075", mother: "FT-076", alive: "Yes" },
+                { id: "FT-079", name: "Sabita Rani Roy", nick: "", nameBn: "ছবিতা রানী রায়", gender: "F", spouse: "FT-021", father: "FT-070", mother: "FT-071", alive: "Yes" },
+                { id: "FT-081", name: "Kavichandra Dev Singha", nick: "", nameBn: "কবিচন্দ্র দেব সিংহ", gender: "M", spouse: "FT-082", father: "FT-070", mother: "FT-071", alive: "" },
+                { id: "FT-082", name: "Pushpadev Singh", nick: "", nameBn: "পুষ্পদেব সিংহ", gender: "F", spouse: "FT-081", father: "", mother: "", alive: "" },
+                { id: "FT-083", name: "Nabakumar Roy Debsingh", nick: "", nameBn: "নবকুমার রায় দেবসিংহ", gender: "M", spouse: "", father: "FT-081", mother: "FT-082", alive: "" },
+                { id: "FT-085", name: "Namita Rani Debsingh", nick: "", nameBn: "নমিতা রানী দেবসিংহ", gender: "F", spouse: "FT-086", father: "FT-070", mother: "FT-071", alive: "No" },
+                { id: "FT-086", name: "Mohon Kajji", nick: "", nameBn: "মোহন কাজ্জি", gender: "M", spouse: "FT-085", father: "", mother: "", alive: "Yes" },
+                { id: "FT-087", name: "Madhu Kajji", nick: "", nameBn: "মধু কাজ্জি", gender: "M", spouse: "", father: "FT-086", mother: "FT-085", alive: "No" },
+                { id: "FT-088", name: "Mohona Roy Misty", nick: "Misty", nameBn: "মোহনা রায় মিষ্টি", gender: "F", spouse: "FT-089", father: "FT-086", mother: "FT-085", alive: "Yes" },
+                { id: "FT-089", name: "Chaitanya Dev Bichittro", nick: "", nameBn: "চৈতন্য দেব বিচিত্র", gender: "M", spouse: "FT-088", father: "", mother: "", alive: "Yes" },
+                { id: "FT-090", name: "Abhimanyu Roy Avi", nick: "", nameBn: "অভিমুন্য রায় অভি", gender: "M", spouse: "", father: "FT-089", mother: "FT-088", alive: "Yes" },
+                { id: "FT-094", name: "Rajmohon", nick: "", nameBn: "রাজমেহন", gender: "M", spouse: "", father: "", mother: "", alive: "No" },
+                { id: "FT-095", name: "Dakshinamohan", nick: "", nameBn: "দক্ষিণামোহন", gender: "M", spouse: "", father: "FT-094", mother: "", alive: "No" },
+                { id: "FT-096", name: "Nabo Gopal", nick: "", nameBn: "নবগোপাল", gender: "M", spouse: "", father: "FT-094", mother: "", alive: "No" },
+                { id: "FT-097", name: "Annadamohan", nick: "", nameBn: "অন্নদামোহন", gender: "M", spouse: "", father: "FT-094", mother: "", alive: "No" },
+                { id: "FT-098", name: "Ambika", nick: "", nameBn: "অম্বিকা", gender: "M", spouse: "", father: "FT-094", mother: "", alive: "No" },
+                { id: "FT-099", name: "UnKnown Girl 1", nick: "", nameBn: "মেয়ে ১", gender: "", spouse: "", father: "FT-094", mother: "", alive: "" },
+                { id: "FT-100", name: "UnKnown Girl 2", nick: "", nameBn: "মেয়ে ২", gender: "", spouse: "", father: "FT-094", mother: "", alive: "" },
+                { id: "FT-102", name: "Kalipada", nick: "", nameBn: "কালিপদ", gender: "M", spouse: "", father: "FT-095", mother: "", alive: "No" },
+                { id: "FT-103", name: "Khuki", nick: "", nameBn: "খুকি", gender: "F", spouse: "", father: "FT-095", mother: "", alive: "No" },
+                { id: "FT-105", name: "Bijoy", nick: "", nameBn: "বিজয়", gender: "M", spouse: "", father: "FT-096", mother: "", alive: "No" },
+                { id: "FT-106", name: "Akanto", nick: "", nameBn: "একান্ত", gender: "M", spouse: "", father: "FT-105", mother: "", alive: "Yes" },
+                { id: "FT-108", name: "Noni Gopal", nick: "", nameBn: "ননীগোপাল", gender: "M", spouse: "", father: "FT-096", mother: "", alive: "No" },
+                { id: "FT-109", name: "Manik Chandra Roy", nick: "", nameBn: "মানিক চন্দ্র রায়", gender: "M", spouse: "", father: "FT-108", mother: "", alive: "Yes" },
+                { id: "FT-110", name: "Ratna Rani Roy", nick: "", nameBn: "রত্না রাণী রায়", gender: "F", spouse: "FT-113", father: "FT-109", mother: "", alive: "Yes" },
+                { id: "FT-111", name: "Sopna Rani Roy", nick: "", nameBn: "স্বপ্না রাণী রায়", gender: "F", spouse: "", father: "FT-109", mother: "", alive: "Yes" },
+                { id: "FT-112", name: "Maitri Rani Roy", nick: "", nameBn: "মৈত্রী রাণী রায়", gender: "F", spouse: "", father: "FT-109", mother: "", alive: "Yes" },
+                { id: "FT-113", name: "Raton Chandra Roy", nick: "", nameBn: "", gender: "", spouse: "FT-110", father: "", mother: "", alive: "" },
+                { id: "FT-114", name: "Prithibi Roy", nick: "", nameBn: "পৃথিবী রায়", gender: "M", spouse: "", father: "FT-113", mother: "FT-110", alive: "Yes" },
+                { id: "FT-115", name: "Ruddra Roy", nick: "", nameBn: "রৌদ্র রায়", gender: "M", spouse: "", father: "FT-113", mother: "FT-110", alive: "Yes" },
+                { id: "FT-117", name: "Suranjana Rani Roy", nick: "", nameBn: "শুরঞ্জনা রানী রায়", gender: "F", spouse: "", father: "", mother: "FT-111", alive: "Yes" },
+                { id: "FT-118", name: "Son of Sapna", nick: "", nameBn: "স্বপ্নার ছেলে", gender: "M", spouse: "", father: "", mother: "FT-111", alive: "Yes" },
+                { id: "FT-120", name: "Son of Maitri", nick: "", nameBn: "মৈত্রীর ছেলে", gender: "M", spouse: "", father: "", mother: "FT-112", alive: "Yes" },
+                { id: "FT-122", name: "Heman", nick: "", nameBn: "হেমেন চন্দ্র রায়", gender: "M", spouse: "", father: "FT-098", mother: "", alive: "Yes" },
+                { id: "FT-123", name: "Uttom", nick: "", nameBn: "উত্তম চন্দ্র রায়", gender: "M", spouse: "", father: "FT-122", mother: "", alive: "Yes" },
+                { id: "FT-124", name: "Soityan", nick: "", nameBn: "সৈত্যান চন্দ্র রায়", gender: "M", spouse: "", father: "FT-122", mother: "", alive: "Yes" },
+                { id: "FT-125", name: "Suchittra Rani Roy", nick: "", nameBn: "সুচিত্রা রানী রায়", gender: "F", spouse: "", father: "FT-122", mother: "", alive: "Yes" },
+                { id: "FT-126", name: "Suphala Rani Roy", nick: "", nameBn: "সুফলা রানী রায়", gender: "F", spouse: "", father: "FT-122", mother: "", alive: "Yes" },
+                { id: "FT-128", name: "Tumpa Rani Roy", nick: "", nameBn: "টুম্পা রানী রায়", gender: "F", spouse: "", father: "FT-123", mother: "", alive: "Yes" },
+                { id: "FT-129", name: "Mou Rani Roy", nick: "", nameBn: "মৌ", gender: "F", spouse: "", father: "", mother: "FT-125", alive: "Yes" }
+            ];
 
-        // --------------------------------------------------------------
-        // ২. ডেটা প্রসেসিং – নোড ও এজ তৈরি
-        // --------------------------------------------------------------
-        // সব আইডির সেট
-        const allIds = new Set(rawPeople.map(p => p.id));
+            // --------------------------------------------------------------
+            // ২. ডেটা প্রসেসিং – নোড ও এজ তৈরি (শুধু বৈধ আইডি সহ)
+            // --------------------------------------------------------------
+            const allIds = new Set(rawPeople.map(p => p.id));
 
-        // নোড তৈরি (শুধু যাদের নাম আছে অথবা সম্পর্ক আছে)
-        const nodes = rawPeople.map(p => ({
-            id: p.id,
-            name: p.name || p.nick || p.id,
-            gender: p.gender || 'U',
-            alive: p.alive,
-            // অন্যান্য তথ্য টুলটিপের জন্য রাখা
-            fullName: p.name,
-            nick: p.nick,
-            nameBn: p.nameBn,
-            spouse: p.spouse,
-            father: p.father,
-            mother: p.mother,
-            // গ্রুপ রঙের জন্য
-            group: p.gender === 'M' ? 'male' : (p.gender === 'F' ? 'female' : 'unknown')
-        }));
+            // নোড তৈরি
+            const nodes = rawPeople.map(p => ({
+                id: p.id,
+                name: p.name || p.nick || p.id,
+                gender: p.gender || 'U',
+                alive: p.alive,
+                fullName: p.name,
+                nick: p.nick,
+                nameBn: p.nameBn,
+                spouse: p.spouse,
+                father: p.father,
+                mother: p.mother,
+                group: p.gender === 'M' ? 'male' : (p.gender === 'F' ? 'female' : 'unknown')
+            }));
 
-        // এজ তৈরি (প্যারেন্ট-চাইল্ড ও স্পাউস)
-        const edges = [];
-        rawPeople.forEach(p => {
-            // পিতৃ-সন্তান
-            if (p.father && allIds.has(p.father)) {
-                edges.push({ source: p.father, target: p.id, type: 'parent' });
-            }
-            if (p.mother && allIds.has(p.mother)) {
-                edges.push({ source: p.mother, target: p.id, type: 'parent' });
-            }
-            // দাম্পত্য (spouse)
-            if (p.spouse && allIds.has(p.spouse) && p.id < p.spouse) { // একবার যোগ করলে যথেষ্ট
-                edges.push({ source: p.id, target: p.spouse, type: 'spouse' });
-            }
-        });
+            // এজ তৈরি (শুধুমাত্র যদি উভয় আইডি বিদ্যমান থাকে)
+            const edges = [];
+            const edgeSet = new Set(); // ডুপ্লিকেট এজ বাদ দিতে
 
-        // --------------------------------------------------------------
-        // ৩. 3D ফোর্স গ্রাফ রেন্ডার
-        // --------------------------------------------------------------
-        const Graph = ForceGraph3D()
-            .width(window.innerWidth)
-            .height(window.innerHeight)
-            .backgroundColor(0x0a0a1a)
-            .nodeColor(node => {
-                if (node.gender === 'M') return '#4a90d9';
-                if (node.gender === 'F') return '#e74c8b';
-                return '#888';
-            })
-            .nodeVal(node => 1.2) // আকার
-            .nodeLabel(node => {
-                // টুলটিপ (হোভার) এর জন্য HTML
-                return `
-                    <div style="font-size:14px; font-weight:bold;">${node.name}</div>
-                    <div style="font-size:12px; color:#aaa;">${node.nameBn || ''}</div>
-                    <div style="font-size:11px; margin-top:4px; color:#ccc;">
-                        ${node.gender === 'M' ? '♂ পুরুষ' : (node.gender === 'F' ? '♀ নারী' : '')}
-                        ${node.alive ? ' · জীবিত' : (node.alive === 'No' ? ' · মৃত' : '')}
-                    </div>
-                    <div style="font-size:10px; color:#888; margin-top:2px;">ID: ${node.id}</div>
-                `;
-            })
-            .linkColor(link => link.type === 'spouse' ? '#ffaa66' : '#66aaff')
-            .linkWidth(link => link.type === 'spouse' ? 2 : 1.5)
-            .linkDirectionalParticles(link => link.type === 'spouse' ? 2 : 0)
-            .linkDirectionalParticleWidth(1)
-            .linkOpacity(0.6)
-            .linkLabel(link => link.type === 'spouse' ? 'দাম্পত্য' : 'পিতৃ-সন্তান')
-            .nodeThreeObject(node => {
-                // কাস্টম স্ফিয়ার + রিং ইফেক্ট (ঐচ্ছিক)
-                const sphere = new THREE.Mesh(
-                    new THREE.SphereGeometry(0.6, 16, 16),
-                    new THREE.MeshStandardMaterial({
-                        color: node.gender === 'M' ? 0x4a90d9 : (node.gender === 'F' ? 0xe74c8b : 0x888888),
-                        roughness: 0.4,
-                        metalness: 0.1,
-                        emissive: new THREE.Color(node.gender === 'M' ? 0x4a90d9 : (node.gender === 'F' ? 0xe74c8b : 0x888888)).multiplyScalar(0.15)
-                    })
-                );
-                return sphere;
-            })
-            .linkThreeObject(link => {
-                // স্পাউস লাইন ড্যাশড করতে
-                if (link.type === 'spouse') {
-                    const geom = new THREE.BufferGeometry().setFromPoints([
-                        new THREE.Vector3(0,0,0),
-                        new THREE.Vector3(1,0,0)
-                    ]);
-                    const mat = new THREE.LineDashedMaterial({
-                        color: 0xffaa66,
-                        dashSize: 0.1,
-                        gapSize: 0.05,
-                        linewidth: 2
-                    });
-                    const line = new THREE.Line(geom, mat);
-                    line.computeLineDistances();
-                    return line;
+            rawPeople.forEach(p => {
+                // পিতৃ-সন্তান
+                if (p.father && allIds.has(p.father)) {
+                    const key = `${p.father}-${p.id}-parent`;
+                    if (!edgeSet.has(key)) {
+                        edgeSet.add(key);
+                        edges.push({ source: p.father, target: p.id, type: 'parent' });
+                    }
                 }
-                return null; // ডিফল্ট লাইন ব্যবহার করবে
-            })
-            .linkPositionUpdate((link, { start, end }) => {
-                // ড্যাশড লাইনের জন্য আপডেট (ঐচ্ছিক)
-            })
-            .onLinkHover(link => {
-                document.getElementById('tooltip').style.display = link ? 'block' : 'none';
-                if (link) {
-                    const tooltip = document.getElementById('tooltip');
-                    tooltip.innerHTML = `<strong>${link.type === 'spouse' ? 'দাম্পত্য' : 'পিতৃ-সন্তান'}</strong>`;
-                    tooltip.style.left = (window.event?.clientX || 0) + 14 + 'px';
-                    tooltip.style.top = (window.event?.clientY || 0) - 10 + 'px';
+                if (p.mother && allIds.has(p.mother)) {
+                    const key = `${p.mother}-${p.id}-parent`;
+                    if (!edgeSet.has(key)) {
+                        edgeSet.add(key);
+                        edges.push({ source: p.mother, target: p.id, type: 'parent' });
+                    }
                 }
-            })
-            .nodeRelSize(4)
-            .linkDistance(link => link.type === 'spouse' ? 30 : 45)
-            .numDimensions(3) // 3D লেআউট
-            .damping(0.9)
-            .warmupTicks(100) // প্রাথমিক স্থিতিশীলতা
-            .cooldownTicks(100)
-            .onNodeClick(node => {
-                // ক্লিক করলে ফেসবুক বা বিস্তারিত খোলা যায় (ঐচ্ছিক)
-                const fb = rawPeople.find(p => p.id === node.id)?.fbId;
-                if (fb && fb.startsWith('http')) {
-                    window.open(fb, '_blank');
+                // দাম্পত্য (spouse) – একবার যোগ করলেই যথেষ্ট
+                if (p.spouse && allIds.has(p.spouse) && p.id < p.spouse) {
+                    const key = `${p.id}-${p.spouse}-spouse`;
+                    if (!edgeSet.has(key)) {
+                        edgeSet.add(key);
+                        edges.push({ source: p.id, target: p.spouse, type: 'spouse' });
+                    }
                 }
             });
 
-        // গ্রাফে ডেটা সেট
-        Graph.graphData({ nodes, links: edges });
+            console.log(`📊 মোট নোড: ${nodes.length}, মোট এজ: ${edges.length}`);
 
-        // উইন্ডো রিসাইজ
-        window.addEventListener('resize', () => {
-            Graph.width(window.innerWidth).height(window.innerHeight);
-        });
-
-        // মাউস মুভে টুলটিপ পজিশন আপডেট
-        document.addEventListener('mousemove', (e) => {
-            const tooltip = document.getElementById('tooltip');
-            if (tooltip.style.display === 'block') {
-                tooltip.style.left = e.clientX + 14 + 'px';
-                tooltip.style.top = e.clientY - 10 + 'px';
+            // যদি কোনো নোড না থাকে, তাহলে মেসেজ দেখান
+            if (nodes.length === 0) {
+                document.getElementById('loading').textContent = '❌ কোনো ডেটা পাওয়া যায়নি!';
+                return;
             }
-        });
 
-        // ক্লিক করে অটো-রোটেট টগল (ঐচ্ছিক)
-        let autoRotate = true;
-        Graph.onEngineTick(() => {
-            if (autoRotate) {
-                // অটো-রোটেট সক্রিয় রাখা (force-graph নিজেই autoRotate সমর্থন করে)
-                // আমরা Graph.autoRotate() মেথড ব্যবহার করতে পারি
-            }
-        });
-        // চাইলে autoRotate চালু করা
-        Graph.autoRotate(true);
-        Graph.autoRotateSpeed(0.8);
+            // --------------------------------------------------------------
+            // ৩. 3D ফোর্স গ্রাফ রেন্ডার
+            // --------------------------------------------------------------
+            const Graph = ForceGraph3D()
+                .width(window.innerWidth)
+                .height(window.innerHeight)
+                .backgroundColor(0x0a0a1a)
+                .nodeColor(node => {
+                    if (node.gender === 'M') return '#4a90d9';
+                    if (node.gender === 'F') return '#e74c8b';
+                    return '#888';
+                })
+                .nodeVal(1.2)
+                .nodeLabel(node => {
+                    return `
+                        <div style="font-size:14px; font-weight:bold;">${node.name}</div>
+                        <div style="font-size:12px; color:#aaa;">${node.nameBn || ''}</div>
+                        <div style="font-size:11px; margin-top:4px; color:#ccc;">
+                            ${node.gender === 'M' ? '♂ পুরুষ' : (node.gender === 'F' ? '♀ নারী' : '')}
+                            ${node.alive === 'Yes' ? ' · জীবিত' : (node.alive === 'No' ? ' · মৃত' : '')}
+                        </div>
+                        <div style="font-size:10px; color:#888; margin-top:2px;">ID: ${node.id}</div>
+                    `;
+                })
+                .linkColor(link => link.type === 'spouse' ? '#ffaa66' : '#66aaff')
+                .linkWidth(link => link.type === 'spouse' ? 2 : 1.5)
+                .linkDirectionalParticles(link => link.type === 'spouse' ? 2 : 0)
+                .linkDirectionalParticleWidth(1)
+                .linkOpacity(0.6)
+                .linkLabel(link => link.type === 'spouse' ? 'দাম্পত্য' : 'পিতৃ-সন্তান')
+                .nodeThreeObject(node => {
+                    // কাস্টম স্ফিয়ার
+                    const color = node.gender === 'M' ? 0x4a90d9 : (node.gender === 'F' ? 0xe74c8b : 0x888888);
+                    const sphere = new THREE.Mesh(
+                        new THREE.SphereGeometry(0.6, 16, 16),
+                        new THREE.MeshStandardMaterial({
+                            color: color,
+                            roughness: 0.4,
+                            metalness: 0.1,
+                            emissive: new THREE.Color(color).multiplyScalar(0.15)
+                        })
+                    );
+                    return sphere;
+                })
+                .linkThreeObject(link => {
+                    // স্পাউস লাইন ড্যাশড
+                    if (link.type === 'spouse') {
+                        const geom = new THREE.BufferGeometry().setFromPoints([
+                            new THREE.Vector3(0,0,0),
+                            new THREE.Vector3(1,0,0)
+                        ]);
+                        const mat = new THREE.LineDashedMaterial({
+                            color: 0xffaa66,
+                            dashSize: 0.1,
+                            gapSize: 0.05,
+                            linewidth: 2
+                        });
+                        const line = new THREE.Line(geom, mat);
+                        line.computeLineDistances();
+                        return line;
+                    }
+                    return null;
+                })
+                .onLinkHover(link => {
+                    const tooltip = document.getElementById('tooltip');
+                    if (link) {
+                        tooltip.style.display = 'block';
+                        tooltip.innerHTML = `<strong>${link.type === 'spouse' ? 'দাম্পত্য' : 'পিতৃ-সন্তান'}</strong>`;
+                        tooltip.style.left = (window.event?.clientX || 0) + 14 + 'px';
+                        tooltip.style.top = (window.event?.clientY || 0) - 10 + 'px';
+                    } else {
+                        tooltip.style.display = 'none';
+                    }
+                })
+                .nodeRelSize(4)
+                .linkDistance(link => link.type === 'spouse' ? 30 : 45)
+                .numDimensions(3)
+                .damping(0.9)
+                .warmupTicks(100)
+                .cooldownTicks(100)
+                .onNodeClick(node => {
+                    // ফেসবুক লিংক খুঁজি
+                    const fb = rawPeople.find(p => p.id === node.id)?.fbId;
+                    if (fb && fb.startsWith('http')) {
+                        window.open(fb, '_blank');
+                    }
+                });
 
-        // ডাবল ক্লিক করলে অটোরোটেট বন্ধ/চালু
-        document.addEventListener('dblclick', () => {
-            autoRotate = !autoRotate;
-            Graph.autoRotate(autoRotate);
-        });
+            // গ্রাফে ডেটা সেট
+            Graph.graphData({ nodes, links: edges });
 
-        console.log('✅ ৩D জেনোগ্রাম লোড হয়েছে! মোট নোড:', nodes.length, 'এজ:', edges.length);
+            // লোডিং মেসেজ মুছে ফেলি
+            document.getElementById('loading').style.display = 'none';
+
+            // অটোরোটেট চালু
+            Graph.autoRotate(true);
+            Graph.autoRotateSpeed(0.8);
+
+            // ডাবল ক্লিক টগল
+            let autoRotate = true;
+            document.addEventListener('dblclick', () => {
+                autoRotate = !autoRotate;
+                Graph.autoRotate(autoRotate);
+            });
+
+            // উইন্ডো রিসাইজ
+            window.addEventListener('resize', () => {
+                Graph.width(window.innerWidth).height(window.innerHeight);
+            });
+
+            // মাউস মুভে টুলটিপ আপডেট
+            document.addEventListener('mousemove', (e) => {
+                const tooltip = document.getElementById('tooltip');
+                if (tooltip.style.display === 'block') {
+                    tooltip.style.left = e.clientX + 14 + 'px';
+                    tooltip.style.top = e.clientY - 10 + 'px';
+                }
+            });
+
+            console.log('✅ ৩D জেনোগ্রাম সফলভাবে লোড হয়েছে!');
+        })();
     </script>
 </body>
 </html>
