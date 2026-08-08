@@ -61,7 +61,20 @@
     <script src="https://cdn.jsdelivr.net/npm/3d-force-graph@1.70.4/dist/3d-force-graph.min.js"></script>
 
     <script>
+        // যেকোনো জাভাস্ক্রিপ্ট এরর সরাসরি স্ক্রিনে দেখানোর ব্যবস্থা (সাদা স্ক্রিন/অসীম লোডিং এড়াতে)
+        window.addEventListener('error', function (e) {
+            const loadingEl = document.getElementById('loading');
+            if (loadingEl) {
+                loadingEl.style.display = 'block';
+                loadingEl.style.color = '#ff6b6b';
+                loadingEl.style.maxWidth = '80vw';
+                loadingEl.style.textAlign = 'center';
+                loadingEl.innerHTML = '❌ লোড করতে সমস্যা হয়েছে:<br><span style="font-size:12px;">' + (e.message || e) + '</span>';
+            }
+        });
+
         (function() {
+          try {
             // --------------------------------------------------------------
             // ১. কাঁচা ডেটা (সংশোধিত: FT-051 ও FT-030-এর লিঙ্গ M)
             // --------------------------------------------------------------
@@ -226,7 +239,7 @@
             // --------------------------------------------------------------
             // ৩. 3D ফোর্স গ্রাফ রেন্ডার
             // --------------------------------------------------------------
-            const Graph = ForceGraph3D()
+            const Graph = new ForceGraph3D(document.body)
                 .width(window.innerWidth)
                 .height(window.innerHeight)
                 .backgroundColor(0x0a0a1a)
@@ -343,6 +356,17 @@
             });
 
             console.log('✅ ৩D জেনোগ্রাম সফলভাবে লোড হয়েছে!');
+        } catch (err) {
+              console.error(err);
+              const loadingEl = document.getElementById('loading');
+              if (loadingEl) {
+                  loadingEl.style.display = 'block';
+                  loadingEl.style.color = '#ff6b6b';
+                  loadingEl.style.maxWidth = '80vw';
+                  loadingEl.style.textAlign = 'center';
+                  loadingEl.innerHTML = '❌ লোড করতে সমস্যা হয়েছে:<br><span style="font-size:12px;">' + (err.message || err) + '</span>';
+              }
+          }
         })();
     </script>
 </body>
