@@ -82,14 +82,15 @@
     <!-- মার্বেলগুলোর তথ্য কার্ড -->
     <div id="info-card">
         <h3>পারিবারিক গাছ (Family Tree)</h3>
-        <p><strong>নাস্তিক/প্রবীণ সদস্য:</strong></p>
+        <p><strong>প্রবীণ সদস্য:</strong></p>
         <p>• ধনেশ (FT-021) & ছবিতা (FT-079)</p>
         <hr class="divider">
-        <p><strong>দম্পতি (বাবা-মা):</strong></p>
-        <p>• অবিনাশ (FT-001) & কনিকা (FT-002)</p>
+        <p><strong>ধনেশ & ছবিতার সন্তানগণ:</strong></p>
+        <p>• কনিকা (FT-002), জুয়েল (FT-011), মনিকা (FT-007)</p>
         <hr class="divider">
-        <p><strong>সন্তানদ্বয়:</strong></p>
-        <p>• বাঁধন (FT-003) & লাবণ্য (FT-004)</p>
+        <p><strong>অন্যান্য সদস্য:</strong></p>
+        <p>• অবিনাশ (FT-001) [কনিকার স্বামী]</p>
+        <p>• বাঁধন (FT-003) & লাবণ্য (FT-004) [সন্তান]</p>
         <p style="color: #ffeb3b; font-size: 12px; margin-top: 8px;">* মার্বেলে ক্লিক করলে জুম ও বিস্তারিত দেখাবে</p>
     </div>
 
@@ -118,7 +119,7 @@
 
         // অ্যানিমেশন ও ক্যামেরা কন্ট্রোল ভ্যারিয়েবল
         let isAnimating = true;
-        const defaultCameraPos = new THREE.Vector3(0, 0, 15);
+        const defaultCameraPos = new THREE.Vector3(0, 0, 18);
         let targetCameraPos = defaultCameraPos.clone();
         let targetLookAt = new THREE.Vector3(0, 0, 0);
         let currentLookAt = new THREE.Vector3(0, 0, 0);
@@ -208,6 +209,20 @@
         scene.add(marble6);
         clickableMarbles.push(marble6);
 
+        // ৭. ধনেশ ও ছবিতার ২য় সন্তান (FT-011) - জুয়েল (Blue)
+        const marble7 = new THREE.Mesh(geometry, createMarbleMaterial(0x0055ff));
+        marble7.userData = { id: "FT-011", bnName: "জুয়েল চন্দ্র রায়", enName: "Juel Chandra Roy", gender: "পুরুষ (Male)", father: "ধনেশ চন্দ্র রায়", mother: "ছবিতা রানী রায়" };
+        marble7.add(createTextSprite("জুয়েল"));
+        scene.add(marble7);
+        clickableMarbles.push(marble7);
+
+        // ৮. ধনেশ ও ছবিতার ৩য় সন্তান (FT-007) - মনিকা (Pink)
+        const marble8 = new THREE.Mesh(geometry, createMarbleMaterial(0xff1493));
+        marble8.userData = { id: "FT-007", bnName: "মনিকা রানী রায়", enName: "Monika Rani Roy", gender: "মহিলা (Female)", father: "ধনেশ চন্দ্র রায়", mother: "ছবিতা রানী রায়" };
+        marble8.add(createTextSprite("মনিকা"));
+        scene.add(marble8);
+        clickableMarbles.push(marble8);
+
         // --- সংযোগকারী সুতো (Lines) ---
         const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff, opacity: 0.5, transparent: true });
 
@@ -220,11 +235,13 @@
 
         // সুতোর তালিকা (পারিবারিক সম্পর্ক অনুযায়ী)
         const connections = [
-            [marble1, marble2], // অবিনাশ - কনিকা (স্বামী-স্ত্রী)
+            [marble1, marble2], // অবিনাশ - কনিকা
             [marble3, marble1], [marble3, marble2], // বাঁধন - বাবা, মা
             [marble4, marble1], [marble4, marble2], // লাবণ্য - বাবা, মা
-            [marble5, marble6], // ধনেশ - ছবিতা (কনিকার বাবা-মা / স্বামী-স্ত্রী)
-            [marble2, marble5], [marble2, marble6]  // কনিকা - ধনেশ (বাবা), ছবিতা (মা)
+            [marble5, marble6], // ধনেশ - ছবিতা
+            [marble2, marble5], [marble2, marble6], // কনিকা - ধনেশ, ছবিতা
+            [marble7, marble5], [marble7, marble6], // জুয়েল - ধনেশ, ছবিতা
+            [marble8, marble5], [marble8, marble6]  // মনিকা - ধনেশ, ছবিতা
         ];
 
         const threads = connections.map(pair => createThread(pair[0].position, pair[1].position));
@@ -240,18 +257,21 @@
             if (isAnimating) {
                 angle += 0.005;
 
-                // নতুন অবস্থানসমূহ (পারিবারিক সম্পর্ক সাজিয়ে ঘুরাণো)
-                // কনিকার বাবা-মা (ধনেশ ও ছবিতা) একটু উপরে ঘুরবে
-                marble5.position.set(Math.cos(angle) * 3 + 3, 4, Math.sin(angle) * 3);
-                marble6.position.set(Math.cos(angle + Math.PI) * 3 + 3, 4, Math.sin(angle + Math.PI) * 3);
+                // প্রবীণ দম্পতি (ধনেশ ও ছবিতা)
+                marble5.position.set(Math.cos(angle) * 4 + 4, 5, Math.sin(angle) * 4);
+                marble6.position.set(Math.cos(angle + Math.PI) * 4 + 4, 5, Math.sin(angle + Math.PI) * 4);
 
-                // কেন্দ্রভাগে অবিনাশ ও কনিকা
-                marble1.position.set(Math.cos(angle) * 2.5 - 2, 0, Math.sin(angle) * 2.5);
-                marble2.position.set(Math.cos(angle + Math.PI) * 2.5 - 2, 0, Math.sin(angle + Math.PI) * 2.5);
+                // ধনেশ ও ছবিতার সন্তানসমূহ (কনিকা, জুয়েল, মনিকা)
+                marble2.position.set(Math.cos(angle) * 3 + 2, 0, Math.sin(angle) * 3);
+                marble7.position.set(Math.cos(angle + 2) * 3 + 4, 1, Math.sin(angle + 2) * 3);
+                marble8.position.set(Math.cos(angle + 4) * 3 + 6, 1, Math.sin(angle + 4) * 3);
 
-                // সন্তানরা নিচের দিকে ঘুরবে
-                marble3.position.set(Math.cos(angle * 1.5 + Math.PI/2) * 5, -4, Math.sin(angle * 1.5 + Math.PI/2) * 5);
-                marble4.position.set(Math.cos(angle * 1.5 - Math.PI/2) * 5, -4, Math.sin(angle * 1.5 - Math.PI/2) * 5);
+                // অবিনাশ (কনিকার স্বামী)
+                marble1.position.set(Math.cos(angle) * 3 - 2, 0, Math.sin(angle) * 3);
+
+                // কনিকা ও অবিনাশের সন্তানদ্বয় (বাঁধন ও লাবণ্য)
+                marble3.position.set(Math.cos(angle * 1.5 + Math.PI/2) * 5, -5, Math.sin(angle * 1.5 + Math.PI/2) * 5);
+                marble4.position.set(Math.cos(angle * 1.5 - Math.PI/2) * 5, -5, Math.sin(angle * 1.5 - Math.PI/2) * 5);
 
                 // সুতোর অবস্থান হালনাগাদ করা
                 threads.forEach((thread, index) => {
