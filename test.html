@@ -10,13 +10,14 @@
             overflow: hidden;
             background-color: #0b0b0b;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            touch-action: none; /* মোবাইলে স্মুথ থ্রিডি টাচের জন্য */
         }
 
         /* বাম দিকের টগল বাটন */
         #toggle-info-btn {
             position: absolute;
-            top: 20px;
-            left: 20px;
+            top: 15px;
+            left: 15px;
             z-index: 20;
             background: rgba(0, 255, 255, 0.2);
             color: #00ffff;
@@ -27,49 +28,40 @@
             font-weight: bold;
             backdrop-filter: blur(5px);
         }
-        #toggle-info-btn:hover {
-            background: rgba(0, 255, 255, 0.4);
-        }
 
         /* ইনফো কার্ড (উপরে বামে) */
         #info-card {
             position: absolute;
-            top: 65px;
-            left: 20px;
+            top: 60px;
+            left: 15px;
             color: white;
             background: rgba(0, 0, 0, 0.85);
             padding: 15px;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.5);
             z-index: 10;
-            max-width: 300px;
+            max-width: 280px;
             transition: all 0.3s ease;
         }
-        .hidden {
-            display: none !important;
-        }
+        .hidden { display: none !important; }
         h3 { margin: 0 0 8px 0; font-size: 16px; color: #00ffff; }
         p { margin: 0 0 5px 0; font-size: 13px; line-height: 1.4; }
-        .divider {
-            margin: 8px 0;
-            border: 0;
-            border-top: 1px solid #555;
-        }
+        .divider { margin: 8px 0; border: 0; border-top: 1px solid #555; }
 
-        /* সাইড পপ-আপ মডাল (ডান পাশে) */
+        /* পপ-আপ মডাল (পিসি ও বড় স্ক্রিনের জন্য) */
         #popup-modal {
             display: none;
             position: fixed;
             top: 20px;
             right: 20px;
-            background: rgba(15, 20, 30, 0.92);
+            background: rgba(15, 20, 30, 0.95);
             color: #fff;
             padding: 20px;
             border-radius: 12px;
-            box-shadow: -5px 5px 25px rgba(0,0,0,0.8);
-            z-index: 100;
-            width: 310px;
-            max-height: 85vh;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.8);
+            z-index: 1000;
+            width: 300px;
+            max-height: 80vh;
             overflow-y: auto;
             border: 1px solid #00ffff44;
             backdrop-filter: blur(10px);
@@ -81,64 +73,64 @@
             border-bottom: 2px solid #333;
             padding-bottom: 8px;
         }
-        #popup-modal p {
-            margin: 8px 0;
-            font-size: 13px;
-        }
         
-        /* ডাইনামিক লিংক স্টাইল */
         .relation-link {
             color: #00ffff;
             text-decoration: underline;
             cursor: pointer;
             font-weight: bold;
         }
-        .relation-link:hover {
-            color: #ffeb3b;
-        }
 
         #close-btn {
             background-color: #ff4757;
             color: white;
             border: none;
-            padding: 6px 12px;
+            padding: 8px 15px;
             border-radius: 5px;
             cursor: pointer;
             float: right;
             font-weight: bold;
             margin-top: 10px;
         }
-        #close-btn:hover {
-            background-color: #ff6b81;
+
+        /* মোবাইল স্ক্রিনের জন্য রেসপন্সিভ স্টাইল */
+        @media (max-width: 600px) {
+            #popup-modal {
+                top: auto;
+                bottom: 10px;
+                left: 5%;
+                right: 5%;
+                width: 90%;
+                max-height: 50vh;
+                box-sizing: border-box;
+            }
+            #info-card {
+                max-width: 220px;
+                font-size: 11px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- ব্যানার হাইড/শো করার বাটন -->
     <button id="toggle-info-btn" onclick="toggleInfoCard()">👁️ ব্যানার হাইড করুন</button>
 
-    <!-- মার্বেলগুলোর তথ্য কার্ড -->
     <div id="info-card">
         <h3>পারিবারিক গাছ (Family Tree)</h3>
         <p><strong>মূল প্রবীণ দম্পতি:</strong></p>
         <p>• ধনেশ (FT-021) & ছবিতা (FT-079)</p>
         <hr class="divider">
-        <p><strong>ধনেশ-ছবিতার পরিবারসমূহ:</strong></p>
+        <p><strong>পরিবারসমূহ:</strong></p>
         <p>• কনিকা & অবিনাশ (সন্তান: বাঁধন, লাবণ্য)</p>
         <p>• মনিকা & গোলাপ (সন্তান: ওম, বেদ)</p>
-        <p>• জুয়েল (FT-011) & জয়া (FT-012)</p>
-        <p>• জুয়েল-জয়ার সন্তান: তীর্থ (FT-013)</p>
+        <p>• জুয়েল & জয়া (সন্তান: তীর্থ)</p>
         <hr class="divider">
-        <p style="color: #ffeb3b; font-size: 12px;">
-            🎮 <strong>কন্ট্রোল নির্দেশিকা:</strong><br>
-            • মাউস ড্র্যাগ করে ঘুরিয়ে দেখুন<br>
-            • মাউসের চাকা ঘুড়িয়ে জুম করুন<br>
-            • কিবোর্ডের Arrow Key দিয়ে ঘুরান
+        <p style="color: #ffeb3b; font-size: 11px;">
+            📱 মার্বেলে স্পর্শ/ট্যাপ করে বিবরণ দেখুন।
         </p>
     </div>
 
-    <!-- সাইড পপ-আপ মডাল উইন্ডো -->
+    <!-- সাইড/বটম পপ-আপ মডাল -->
     <div id="popup-modal">
         <h2 id="modal-title">প্রোফাইল বিবরণ</h2>
         <p><strong>আইডি:</strong> <span id="m-id"></span></p>
@@ -152,12 +144,10 @@
         <button id="close-btn" onclick="closePopup()">বন্ধ করুন</button>
     </div>
 
-    <!-- Three.js CDN এবং OrbitControls -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
     <script>
-        // ১. ব্যানার হাইড/শো টগল ফাংশন
         function toggleInfoCard() {
             const card = document.getElementById('info-card');
             const btn = document.getElementById('toggle-info-btn');
@@ -170,26 +160,21 @@
             }
         }
 
-        // ২. সিন, ক্যামেরা, এবং রেন্ডারার সেটআপ
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         document.body.appendChild(renderer.domElement);
 
-        // মাউস ও কিবোর্ড মোশন কন্ট্রোল (OrbitControls)
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true; // স্মুথ মোশনের জন্য
+        controls.enableDamping = true;
         controls.dampingFactor = 0.05;
-        controls.screenSpacePanning = true;
 
         let isAnimating = true;
         const defaultCameraPos = new THREE.Vector3(0, 0, 24);
         camera.position.copy(defaultCameraPos);
-        controls.target.set(0, 0, 0);
-        controls.update();
 
-        // লাইটিং
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
         scene.add(ambientLight);
         const pointLight = new THREE.PointLight(0xffffff, 1.2);
@@ -198,14 +183,10 @@
 
         const geometry = new THREE.SphereGeometry(1, 64, 64);
         const clickableMarbles = [];
-        const marbleMap = {}; // ID দিয়ে দ্রুত খুঁজে পাওয়ার জন্য
+        const marbleMap = {};
 
         function createMarbleMaterial(colorValue) {
-            return new THREE.MeshPhongMaterial({
-                color: colorValue,
-                shininess: 100,
-                specular: 0x444444
-            });
+            return new THREE.MeshPhongMaterial({ color: colorValue, shininess: 100 });
         }
 
         function createTextSprite(text) {
@@ -213,12 +194,9 @@
             const context = canvas.getContext('2d');
             canvas.width = 256;
             canvas.height = 128;
-
             context.font = 'Bold 40px "Segoe UI", sans-serif';
             context.fillStyle = '#ffffff';
             context.textAlign = 'center';
-            context.shadowColor = 'rgba(0, 0, 0, 0.8)';
-            context.shadowBlur = 6;
             context.fillText(text, 128, 64);
 
             const texture = new THREE.CanvasTexture(canvas);
@@ -229,7 +207,6 @@
             return sprite;
         }
 
-        // --- মার্বেল তৈরির ডাটাবেস ---
         const membersData = [
             { id: "FT-001", bnName: "অবিনাশ চন্দ্র রায়", enName: "Abinash Chandra Roy", nick: "অবিনাশ", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-002", father: null, mother: null, children: ["FT-003", "FT-004"] },
             { id: "FT-002", bnName: "ফেন্সি রানি রায় (কনিকা)", enName: "Fency Rani Roy", nick: "কনিকা", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-001", father: "FT-021", mother: "FT-079", children: ["FT-003", "FT-004"] },
@@ -246,7 +223,6 @@
             { id: "FT-009", bnName: "বেদ চন্দ্র রায়", enName: "Veda Chandra Roy", nick: "বেদ", gender: "পুরুষ (Male)", color: 0x3366ff, spouse: null, father: "FT-006", mother: "FT-007", children: [] }
         ];
 
-        // থ্রিডি অবজেক্ট তৈরি
         membersData.forEach(data => {
             const marble = new THREE.Mesh(geometry, createMarbleMaterial(data.color));
             marble.userData = data;
@@ -256,7 +232,6 @@
             marbleMap[data.id] = marble;
         });
 
-        // --- সংযোগকারী সুতো (Lines) ---
         const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff, opacity: 0.5, transparent: true });
         function createThread(p1, p2) {
             const geom = new THREE.BufferGeometry().setFromPoints([p1, p2]);
@@ -282,7 +257,6 @@
 
         const threads = connections.map(pair => createThread(pair[0].position, pair[1].position));
 
-        // ৪. অ্যানিমেশন লুপ
         let angle = 0;
         function animate() {
             requestAnimationFrame(animate);
@@ -290,11 +264,9 @@
             if (isAnimating) {
                 angle += 0.005;
 
-                // ১ম স্তর: প্রবীণ দম্পতি (ধনেশ ও ছবিতা)
                 marbleMap["FT-021"].position.set(Math.cos(angle) * 4, 7, Math.sin(angle) * 4);
                 marbleMap["FT-079"].position.set(Math.cos(angle + Math.PI) * 4, 7, Math.sin(angle + Math.PI) * 4);
 
-                // ২য় স্তর: সন্তান ও তাঁদের দাম্পত্য সঙ্গীরা
                 marbleMap["FT-002"].position.set(Math.cos(angle - 2) * 7 - 2, 2, Math.sin(angle - 2) * 7);
                 marbleMap["FT-001"].position.set(Math.cos(angle - 2) * 7 - 5, 2, Math.sin(angle - 2) * 7);
 
@@ -304,7 +276,6 @@
                 marbleMap["FT-007"].position.set(Math.cos(angle + 2) * 7 + 2, 2, Math.sin(angle + 2) * 7);
                 marbleMap["FT-006"].position.set(Math.cos(angle + 2) * 7 + 5, 2, Math.sin(angle + 2) * 7);
 
-                // ৩য় স্তর: নাতি-নাতনিরা
                 marbleMap["FT-003"].position.set(Math.cos(angle * 1.5) * 9 - 6, -5, Math.sin(angle * 1.5) * 9);
                 marbleMap["FT-004"].position.set(Math.cos(angle * 1.5 + 0.8) * 9 - 6, -5, Math.sin(angle * 1.5 + 0.8) * 9);
 
@@ -321,19 +292,29 @@
                 clickableMarbles.forEach(m => m.rotation.y += 0.01);
             }
 
-            // মোশন কন্ট্রোল আপডেট
             controls.update();
             renderer.render(scene, camera);
         }
 
         animate();
 
-        // ৫. ক্লিক ও ইন্টারঅ্যাকশন
+        // --- টাচ ও ক্লিক হ্যান্ডলিং (মোবাইল সাপোর্টের জন্য) ---
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
+        let touchStartX = 0, touchStartY = 0;
 
-        window.addEventListener('click', (event) => {
+        window.addEventListener('pointerdown', (e) => {
+            touchStartX = e.clientX;
+            touchStartY = e.clientY;
+        });
+
+        window.addEventListener('pointerup', (event) => {
             if (event.target.closest('#popup-modal') || event.target.closest('#toggle-info-btn')) return;
+
+            // যদি ড্র্যাগ বা স্ক্রোল করা হয়, তবে ট্যাপ গণনা করা হবে না
+            const deltaX = Math.abs(event.clientX - touchStartX);
+            const deltaY = Math.abs(event.clientY - touchStartY);
+            if (deltaX > 10 || deltaY > 10) return;
 
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -346,13 +327,10 @@
             }
         });
 
-        // নির্দিষ্ট মার্বেল সিলেক্ট করা ও স্মুথ জুমিং
         function selectMarble(selectedMarble) {
             isAnimating = false;
-
             const pos = selectedMarble.position;
             
-            // স্মুথ ক্যামেরা পজিশনিং ও ফোকাস
             controls.target.copy(pos);
             camera.position.set(pos.x, pos.y, pos.z + 4.5);
             controls.update();
@@ -360,14 +338,10 @@
             showPopup(selectedMarble.userData);
         }
 
-        // আইডি দিয়ে মার্বেল লিংকে ক্লিক করলে জুমিং
         function focusById(id) {
-            if (marbleMap[id]) {
-                selectMarble(marbleMap[id]);
-            }
+            if (marbleMap[id]) selectMarble(marbleMap[id]);
         }
 
-        // সম্পর্কের নাম ও লিংকের এইচটিএমএল জেনারেট করা
         function renderRelationLink(id) {
             if (!id || !marbleMap[id]) return "N/A";
             const data = marbleMap[id].userData;
@@ -400,9 +374,7 @@
             controls.target.set(0, 0, 0);
             controls.update();
 
-            setTimeout(() => {
-                isAnimating = true;
-            }, 500);
+            setTimeout(() => { isAnimating = true; }, 500);
         }
 
         window.addEventListener('resize', () => {
