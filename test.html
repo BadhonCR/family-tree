@@ -80,18 +80,25 @@
 </head>
 <body>
 
-    <!-- মার্বেল দুটির প্রাথমিক তথ্য কার্ড -->
+    <!-- মার্বেলগুলোর প্রাথমিক তথ্য কার্ড -->
     <div id="info-card">
-        <h3>মার্বেল ১ (স্বামী):</h3>
+        <h3>মার্বেল ১ (বাবা):</h3>
         <p>নাম: অবিনাশ চন্দ্র রায়</p>
         <p>আইডি: FT-001 | রং: নীল</p>
         
         <hr class="divider">
 
-        <h3>মার্বেল ২ (স্ত্রী):</h3>
+        <h3>মার্বেল ২ (মা):</h3>
         <p>নাম: ফেন্সি রানি রায়</p>
         <p>আইডি: FT-002 | রং: গোলাপি</p>
-        <p style="color: #ffeb3b; font-size: 12px; margin-top: 5px;">* মার্বেলের উপর ক্লিক করে বিস্তারিত দেখুন</p>
+        
+        <hr class="divider">
+
+        <h3>মার্বেল ৩ (সন্তান):</h3>
+        <p>নাম: বাঁধন চন্দ্র রায়</p>
+        <p>আইডি: FT-003 | রং: নীল</p>
+        
+        <p style="color: #ffeb3b; font-size: 12px; margin-top: 8px;">* মার্বেলের উপর ক্লিক করে বিস্তারিত দেখুন</p>
     </div>
 
     <!-- পপ-আপ মডাল উইন্ডো -->
@@ -128,8 +135,8 @@
         scene.add(pointLight);
 
         // সাধারণ গোলকের জিওমেট্রি
-        const geometry = new THREE.SphereGeometry(1.5, 64, 64);
-        const clickableMarbles = []; // রে-কাস্টিংয়ের জন্য অ্যারে
+        const geometry = new THREE.SphereGeometry(1.2, 64, 64);
+        const clickableMarbles = []; // রে-কাস্টিংয়ের জন্য অ্যারে
 
         // ৩. প্রথম মার্বেল (FT-001: অবিনাশ চন্দ্র রায়)
         const material1 = new THREE.MeshPhongMaterial({
@@ -138,17 +145,14 @@
             specular: 0x00ffff
         });
         const marble1 = new THREE.Mesh(geometry, material1);
-        marble1.position.set(-2.5, 0, 0);
-        
-        // বিস্তারিত ডেটা ইনপুট
         marble1.userData = {
             id: "FT-001",
             bnName: "অবিনাশ চন্দ্র রায়",
             enName: "Abinash Chandra Roy",
             gender: "পুরুষ (Male)",
             spouse: "ফেন্সি রানি রায় (Fency Rani Roy)",
-            father: "প্রদত্ত নয়",
-            mother: "প্রদত্ত নয়",
+            father: "প্রদত্ত নয়",
+            mother: "প্রদত্ত নয়",
             other: "প্রতিষ্ঠাতা সদস্য"
         };
         scene.add(marble1);
@@ -161,71 +165,109 @@
             specular: 0xffb6c1
         });
         const marble2 = new THREE.Mesh(geometry, material2);
-        marble2.position.set(2.5, 0, 0);
-        
-        // বিস্তারিত ডেটা ইনপুট
         marble2.userData = {
             id: "FT-002",
             bnName: "ফেন্সি রানি রায়",
             enName: "Fency Rani Roy",
             gender: "মহিলা (Female)",
             spouse: "অবিনাশ চন্দ্র রায় (Abinash Chandra Roy)",
-            father: "প্রদত্ত নয়",
-            mother: "প্রদত্ত নয়",
+            father: "প্রদত্ত নয়",
+            mother: "প্রদত্ত নয়",
             other: "সহ-প্রতিষ্ঠাতা"
         };
         scene.add(marble2);
         clickableMarbles.push(marble2);
 
-        // ৫. দুটি মার্বেলকে সুতো বা লাইন দিয়ে যুক্ত করা
+        // ৫. তৃতীয় মার্বেল (FT-003: বাঁধন চন্দ্র রায়)
+        const material3 = new THREE.MeshPhongMaterial({
+            color: 0x0055ff, // Blue (Male)
+            shininess: 100,
+            specular: 0x00ffff
+        });
+        const marble3 = new THREE.Mesh(geometry, material3);
+        marble3.userData = {
+            id: "FT-003",
+            bnName: "বাঁধন চন্দ্র রায়",
+            enName: "Badhon Chandra Roy",
+            gender: "পুরুষ (Male)",
+            spouse: "প্রদত্ত নয়",
+            father: "অবিনাশ চন্দ্র রায় (Abinash Chandra Roy)",
+            mother: "ফেন্সি রানি রায় (Fency Rani Roy)",
+            other: "সন্তান"
+        };
+        scene.add(marble3);
+        clickableMarbles.push(marble3);
+
+        // ৬. সংযোগকারী সুতো (Lines)
         const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 2 });
-        const points = [];
-        points.push(marble1.position);
-        points.push(marble2.position);
-        
-        const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
-        const connectingThread = new THREE.Line(lineGeometry, lineMaterial);
-        scene.add(connectingThread);
+
+        // সুতো ১: মার্বেল ১ এবং মার্বেল ২ (স্বামী-স্ত্রী)
+        const lineGeom1 = new THREE.BufferGeometry().setFromPoints([marble1.position, marble2.position]);
+        const thread1 = new THREE.Line(lineGeom1, lineMaterial);
+        scene.add(thread1);
+
+        // সুতো ২: মার্বেল ৩ এবং মার্বেল ১ (সন্তান-বাবা)
+        const lineGeom2 = new THREE.BufferGeometry().setFromPoints([marble3.position, marble1.position]);
+        const thread2 = new THREE.Line(lineGeom2, lineMaterial);
+        scene.add(thread2);
+
+        // সুতো ৩: মার্বেল ৩ এবং মার্বেল ২ (সন্তান-মা)
+        const lineGeom3 = new THREE.BufferGeometry().setFromPoints([marble3.position, marble2.position]);
+        const thread3 = new THREE.Line(lineGeom3, lineMaterial);
+        scene.add(thread3);
 
         // ক্যামেরার অবস্থান নির্ধারণ
-        camera.position.z = 6;
+        camera.position.z = 8;
 
-        // ৬. অ্যানিমেশন লুপ (মার্বেল ও সুতো একসাথে ঘোরানোর জন্য)
+        // ৭. অ্যানিমেশন লুপ (মার্বেল ও সুতো একসাথে ঘোরানোর জন্য)
         let angle = 0;
         function animate() {
             requestAnimationFrame(animate);
 
-            // দুটি মার্বেলকে কেন্দ্র করে বৃত্তাকারে ঘোরানো
             angle += 0.01;
-            const radius = 2.5;
+            const radius = 3.0;
 
+            // ৩টি মার্বেলকে ত্রিভুজাকারে ১২০ ডিগ্রী ব্যবধানে ঘুরানো
             marble1.position.x = Math.cos(angle) * radius;
             marble1.position.z = Math.sin(angle) * radius;
 
-            marble2.position.x = Math.cos(angle + Math.PI) * radius;
-            marble2.position.z = Math.sin(angle + Math.PI) * radius;
+            marble2.position.x = Math.cos(angle + (Math.PI * 2 / 3)) * radius;
+            marble2.position.z = Math.sin(angle + (Math.PI * 2 / 3)) * radius;
+
+            marble3.position.x = Math.cos(angle + (Math.PI * 4 / 3)) * radius;
+            marble3.position.z = Math.sin(angle + (Math.PI * 4 / 3)) * radius;
 
             // সুতোর পজিশন আপডেট করা
-            const positions = connectingThread.geometry.attributes.position;
-            positions.setXYZ(0, marble1.position.x, marble1.position.y, marble1.position.z);
-            positions.setXYZ(1, marble2.position.x, marble2.position.y, marble2.position.z);
-            positions.needsUpdate = true;
+            const pos1 = thread1.geometry.attributes.position;
+            pos1.setXYZ(0, marble1.position.x, marble1.position.y, marble1.position.z);
+            pos1.setXYZ(1, marble2.position.x, marble2.position.y, marble2.position.z);
+            pos1.needsUpdate = true;
 
-            // নিজস্ব অক্ষেও মার্বেলগুলোর ঘূর্ণন
+            const pos2 = thread2.geometry.attributes.position;
+            pos2.setXYZ(0, marble3.position.x, marble3.position.y, marble3.position.z);
+            pos2.setXYZ(1, marble1.position.x, marble1.position.y, marble1.position.z);
+            pos2.needsUpdate = true;
+
+            const pos3 = thread3.geometry.attributes.position;
+            pos3.setXYZ(0, marble3.position.x, marble3.position.y, marble3.position.z);
+            pos3.setXYZ(1, marble2.position.x, marble2.position.y, marble2.position.z);
+            pos3.needsUpdate = true;
+
+            // নিজস্ব অক্ষে মার্বেলগুলোর ঘূর্ণন
             marble1.rotation.y += 0.02;
             marble2.rotation.y += 0.02;
+            marble3.rotation.y += 0.02;
 
             renderer.render(scene, camera);
         }
 
         animate();
 
-        // ৭. মাউস ক্লিক এবং পপ-আপ হ্যান্ডলিং (Raycasting)
+        // ৮. মাউস ক্লিক এবং পপ-আপ হ্যান্ডলিং (Raycasting)
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
 
         window.addEventListener('click', (event) => {
-            // মাউস কোঅর্ডিনেট নরমালাইজ করা (-1 থেকে +1)
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
