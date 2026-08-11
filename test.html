@@ -122,7 +122,7 @@
         <p>• জুয়েল & জয়া (সন্তান: তীর্থ)</p>
         <hr class="divider">
         <p style="color: #ffeb3b; font-size: 11px;">
-            💡 মার্বেলে ক্লিক করলে পারিবারিক গাছ সাজবে। ফাঁকা জায়গায় ক্লিক করলে ঘোরা থমকে যাবে।
+            ✨ যেকোনো মার্বেলে ক্লিক করলে মসৃণ অ্যানিমেশনের মাধ্যমে গাছটি নতুন করে সাজবে।
         </p>
     </div>
 
@@ -141,6 +141,8 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <!-- স্মুথ ট্রানজিশনের জন্য TWEEN লাইব্রেরি -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
 
     <script>
         function toggleInfoCard() {
@@ -183,7 +185,12 @@
         const marbleMap = {};
 
         function createMarbleMaterial(colorValue) {
-            return new THREE.MeshPhongMaterial({ color: colorValue, shininess: 100 });
+            return new THREE.MeshPhongMaterial({ 
+                color: colorValue, 
+                shininess: 100,
+                transparent: true,
+                opacity: 1
+            });
         }
 
         function createTextSprite(text) {
@@ -232,7 +239,7 @@
         const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff, opacity: 0.5, transparent: true });
         function createThread(p1, p2) {
             const geom = new THREE.BufferGeometry().setFromPoints([p1, p2]);
-            const line = new THREE.Line(geom, lineMaterial);
+            const line = new THREE.Line(geom, lineMaterial.clone());
             scene.add(line);
             return line;
         }
@@ -255,8 +262,9 @@
         const threads = connections.map(pair => createThread(pair[0].position, pair[1].position));
 
         let angle = 0;
-        function animate() {
+        function animate(time) {
             requestAnimationFrame(animate);
+            TWEEN.update(time);
 
             if (isAnimating) {
                 angle += 0.005;
@@ -281,13 +289,14 @@
                 marbleMap["FT-008"].position.set(Math.cos(angle * 1.5 + 3.2) * 9 + 6, -5, Math.sin(angle * 1.5 + 3.2) * 9);
                 marbleMap["FT-009"].position.set(Math.cos(angle * 1.5 + 4) * 9 + 6, -5, Math.sin(angle * 1.5 + 4) * 9);
 
-                threads.forEach((thread, index) => {
-                    const points = [connections[index][0].position, connections[index][1].position];
-                    thread.geometry.setFromPoints(points);
-                });
-
                 clickableMarbles.forEach(m => m.rotation.y += 0.01);
             }
+
+            // সুতো সংযোগ আপডেট
+            threads.forEach((thread, index) => {
+                const points = [connections[index][0].position, connections[index][1].position];
+                thread.geometry.setFromPoints(points);
+            });
 
             controls.update();
             renderer.render(scene, camera);
@@ -329,71 +338,114 @@
             }
         });
 
+        // স্থানান্তরের জন্য অ্যানিমেটেড ফাংশন
+        function animateMarbleTo(mesh, targetPos, duration = 1000) {
+            mesh.visible = true;
+            new TWEEN.Tween(mesh.position)
+                .to(targetPos, duration)
+                .easing(TWEEN.Easing.Cubic.Out)
+                .start();
+
+            new TWEEN.Tween(mesh.material)
+                .to({ opacity: 1 }, duration)
+                .start();
+            
+            if (mesh.children[0]) {
+                new TWEEN.Tween(mesh.children[0].material)
+                    .to({ opacity: 1 }, duration)
+                    .start();
+            }
+        }
+
+        function fadeOutMarble(mesh, duration = 800) {
+            new TWEEN.Tween(mesh.material)
+                .to({ opacity: 0 }, duration)
+                .onComplete(() => { mesh.visible = false; })
+                .start();
+
+            if (mesh.children[0]) {
+                new TWEEN.Tween(mesh.children[0].material)
+                    .to({ opacity: 0 }, duration)
+                    .start();
+            }
+        }
+
         function selectMarble(selectedMarble) {
             isAnimating = false;
             isMarbleSelected = true;
             
-            // সব মার্বেল সাময়িকভাবে লুকিয়ে রাখা
-            clickableMarbles.forEach(m => m.visible = false);
-
-            // সিলেক্ট করা মার্বেল মাঝখানে (0,0,0) সেট করা
-            selectedMarble.position.set(0, 0, 0);
-            selectedMarble.visible = true;
-
             const data = selectedMarble.userData;
+            const activeIds = new Set([data.id]);
 
-            // দাম্পত্য সঙ্গী (পাশাপাশি)
+            if (data.spouse) activeIds.add(data.spouse);
+            if (data.father) activeIds.add(data.father);
+            if (data.mother) activeIds.add(data.mother);
+            if (data.children) data.children.forEach(id => activeIds.add(id));
+
+            // ১. মূল নির্বাচিত মার্বেল স্থানান্তর
+            animateMarbleTo(selectedMarble, { x: 0, y: 0, z: 0 });
+
+            // ২. দাম্পত্য সঙ্গী
             if (data.spouse && marbleMap[data.spouse]) {
-                const spouseMesh = marbleMap[data.spouse];
-                spouseMesh.position.set(3.5, 0, 0);
-                spouseMesh.visible = true;
+                animateMarbleTo(marbleMap[data.spouse], { x: 3.5, y: 0, z: 0 });
             }
 
-            // পিতা (উপরে বামে)
+            // ৩. পিতা
             if (data.father && marbleMap[data.father]) {
-                const fatherMesh = marbleMap[data.father];
-                fatherMesh.position.set(-1.8, 3.5, 0);
-                fatherMesh.visible = true;
+                animateMarbleTo(marbleMap[data.father], { x: -1.8, y: 3.5, z: 0 });
             }
 
-            // মাতা (উপরে ডানে)
+            // ৪. মাতা
             if (data.mother && marbleMap[data.mother]) {
-                const motherMesh = marbleMap[data.mother];
-                motherMesh.position.set(1.8, 3.5, 0);
-                motherMesh.visible = true;
+                animateMarbleTo(marbleMap[data.mother], { x: 1.8, y: 3.5, z: 0 });
             }
 
-            // সন্তানগণ (নিচে সারিবদ্ধভাবে)
+            // ৫. সন্তানগণ
             if (data.children && data.children.length > 0) {
                 const count = data.children.length;
                 data.children.forEach((childId, index) => {
                     if (marbleMap[childId]) {
-                        const childMesh = marbleMap[childId];
                         const xPos = (index - (count - 1) / 2) * 3.5;
-                        childMesh.position.set(xPos, -3.5, 0);
-                        childMesh.visible = true;
+                        animateMarbleTo(marbleMap[childId], { x: xPos, y: -3.5, z: 0 });
                     }
                 });
             }
 
-            // রেখাগুলোর পজিশন আপডেট করা এবং প্রাসঙ্গিক রেখাগুলো দৃশ্যমান করা
-            threads.forEach((thread, index) => {
-                const pair = connections[index];
-                const points = [pair[0].position, pair[1].position];
-                thread.geometry.setFromPoints(points);
-                
-                // শুধুমাত্র দৃশ্যমান মার্বেলগুলোর মাঝের রেখাগুলো দেখাবে
-                if (pair[0].visible && pair[1].visible) {
-                    thread.visible = true;
-                } else {
-                    thread.visible = false;
+            // ৬. অনাকাঙ্ক্ষিত মার্বেলগুলো অদৃশ্য করা
+            clickableMarbles.forEach(m => {
+                if (!activeIds.has(m.userData.id)) {
+                    fadeOutMarble(m);
                 }
             });
 
-            // ক্যামেরা ফোকাস রিসেট
-            controls.target.set(0, 0, 0);
-            camera.position.set(0, 0, 10);
-            controls.update();
+            // ৭. সুতো (Threads) অ্যানিমেশন ও নিয়ন্ত্রণ
+            threads.forEach((thread, index) => {
+                const pair = connections[index];
+                const isPairActive = activeIds.has(pair[0].userData.id) && activeIds.has(pair[1].userData.id);
+
+                if (isPairActive) {
+                    thread.visible = true;
+                    new TWEEN.Tween(thread.material)
+                        .to({ opacity: 0.8 }, 1000)
+                        .start();
+                } else {
+                    new TWEEN.Tween(thread.material)
+                        .to({ opacity: 0 }, 600)
+                        .onComplete(() => { thread.visible = false; })
+                        .start();
+                }
+            });
+
+            // ক্যামেরা স্মুথ মুভমেন্ট
+            new TWEEN.Tween(camera.position)
+                .to({ x: 0, y: 0, z: 12 }, 1000)
+                .easing(TWEEN.Easing.Cubic.Out)
+                .start();
+
+            new TWEEN.Tween(controls.target)
+                .to({ x: 0, y: 0, z: 0 }, 1000)
+                .easing(TWEEN.Easing.Cubic.Out)
+                .start();
 
             showPopup(data);
         }
@@ -431,16 +483,32 @@
         function closePopup() {
             document.getElementById('popup-modal').style.display = 'none';
             
-            // সব মার্বেল এবং রেখা আবার দৃশ্যমান করা
-            clickableMarbles.forEach(m => m.visible = true);
-            threads.forEach(t => t.visible = true);
+            // সব মার্বেল এবং সুতো ফিরিয়ে আনা
+            clickableMarbles.forEach(m => {
+                m.visible = true;
+                new TWEEN.Tween(m.material).to({ opacity: 1 }, 800).start();
+                if (m.children[0]) {
+                    new TWEEN.Tween(m.children[0].material).to({ opacity: 1 }, 800).start();
+                }
+            });
 
-            camera.position.copy(defaultCameraPos);
-            controls.target.set(0, 0, 0);
-            controls.update();
+            threads.forEach(t => {
+                t.visible = true;
+                new TWEEN.Tween(t.material).to({ opacity: 0.5 }, 800).start();
+            });
+
+            new TWEEN.Tween(camera.position)
+                .to(defaultCameraPos, 1000)
+                .easing(TWEEN.Easing.Cubic.Out)
+                .start();
+
+            new TWEEN.Tween(controls.target)
+                .to({ x: 0, y: 0, z: 0 }, 1000)
+                .easing(TWEEN.Easing.Cubic.Out)
+                .start();
 
             isMarbleSelected = false;
-            setTimeout(() => { isAnimating = true; }, 300);
+            setTimeout(() => { isAnimating = true; }, 500);
         }
 
         window.addEventListener('resize', () => {
