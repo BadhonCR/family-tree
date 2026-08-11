@@ -39,6 +39,8 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.5);
             z-index: 10;
             max-width: 280px;
+            max-height: 80vh;
+            overflow-y: auto;
             transition: all 0.3s ease;
         }
         .hidden { display: none !important; }
@@ -113,16 +115,14 @@
 
     <div id="info-card">
         <h3>পারিবারিক গাছ (Family Tree)</h3>
-        <p><strong>মূল প্রবীণ দম্পতি:</strong></p>
-        <p>• ধনেশ (FT-021) & ছবিতা (FT-079)</p>
+        <p><strong>সর্বজ্যেষ্ঠ দম্পতি:</strong></p>
+        <p>• দিনোনাথ (FT-016) & দুলালী (FT-017)</p>
         <hr class="divider">
-        <p><strong>পরিবারসমূহ:</strong></p>
-        <p>• কনিকা & অবিনাশ (সন্তান: বাঁধন, লাবণ্য)</p>
-        <p>• মনিকা & গোলাপ (সন্তান: ওম, বেদ)</p>
-        <p>• জুয়েল & জয়া (সন্তান: তীর্থ)</p>
+        <p><strong>মূল বংশধরগণ:</strong></p>
+        <p>• জয়ন্তী, বাসন্তী, দিনেশ, ধনেশ, গণেশ, কর্তিক, নিয়তী, কাঞ্চন</p>
         <hr class="divider">
         <p style="color: #ffeb3b; font-size: 11px;">
-            ✨ যেকোনো মার্বেলে ক্লিক করলে মসৃণ অ্যানিমেশনের মাধ্যমে গাছটি নতুন করে সাজবে।
+            ✨ যেকোনো মার্বেলে ক্লিক করলে স্মুথ অ্যানিমেশনের মাধ্যমে পিতা-মাতা, স্বামী/স্ত্রী ও সন্তানগণ সাজবে।
         </p>
     </div>
 
@@ -141,7 +141,6 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    <!-- স্মুথ ট্রানজিশনের জন্য TWEEN লাইব্রেরি -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
 
     <script>
@@ -171,7 +170,7 @@
         let isAnimating = true;
         let isMarbleSelected = false;
 
-        const defaultCameraPos = new THREE.Vector3(0, 0, 24);
+        const defaultCameraPos = new THREE.Vector3(0, 0, 30);
         camera.position.copy(defaultCameraPos);
 
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
@@ -212,12 +211,39 @@
         }
 
         const membersData = [
+            // মূল জেষ্ঠ্য দম্পতি
+            { id: "FT-016", bnName: "দিনোনাথ রায়", enName: "Dinonath Roy", nick: "খোকা সরকার", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-017", father: null, mother: null, children: ["FT-018", "FT-019", "FT-020", "FT-021", "FT-022", "FT-023", "FT-024", "FT-025"] },
+            { id: "FT-017", bnName: "দুলালী রাণী রায়", enName: "Dulali Rani Roy", nick: "নলিনী", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-016", father: null, mother: null, children: ["FT-018", "FT-019", "FT-020", "FT-021", "FT-022", "FT-023", "FT-024", "FT-025"] },
+            
+            // সন্তানসমূহ (FT-016 & FT-017 এর)
+            { id: "FT-018", bnName: "জয়ন্তী রাণী রায়", enName: "Joyonti Rani Roy", nick: "জয়ন্তী", gender: "মহিলা (Female)", color: 0xff1493, spouse: null, father: "FT-016", mother: "FT-017", children: [] },
+            { id: "FT-019", bnName: "বাসন্তী রাণী রায়", enName: "Basonti Rani Roy", nick: "বাসন্তী", gender: "মহিলা (Female)", color: 0xff1493, spouse: null, father: "FT-016", mother: "FT-017", children: [] },
+            { id: "FT-020", bnName: "দিনেশ চন্দ্র রায়", enName: "Dinash Chandra Roy", nick: "দিনেশ", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: null, father: "FT-016", mother: "FT-017", children: [] },
+            { id: "FT-021", bnName: "ধনেশ চন্দ্র রায়", enName: "Dhonesh Chandra Roy", nick: "ধনেশ", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-079", father: "FT-016", mother: "FT-017", children: ["FT-002", "FT-011", "FT-007"] },
+            { id: "FT-022", bnName: "গণেশ চন্দ্র রায়", enName: "Gonesh Chandra Roy", nick: "গণেশ", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: null, father: "FT-016", mother: "FT-017", children: [] },
+            { id: "FT-023", bnName: "কর্তিক চন্দ্র রায়", enName: "Karttik Chandra Roy", nick: "কর্তিক", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-055", father: "FT-016", mother: "FT-017", children: ["FT-056", "FT-059"] },
+            { id: "FT-024", bnName: "নিয়তী রানি রায়", enName: "Nioti Rani Roy", nick: "নিয়তী", gender: "মহিলা (Female)", color: 0xff1493, spouse: null, father: "FT-016", mother: "FT-017", children: [] },
+            { id: "FT-025", bnName: "কাঞ্চন চন্দ্র রায়", enName: "Kanchon Chandra Roy", nick: "কাঞ্চন", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-066", father: "FT-016", mother: "FT-017", children: ["FT-067", "FT-068"] },
+
+            // কাঞ্চন (FT-025) এর পরিবার
+            { id: "FT-066", bnName: "রত্না রাণী রায়", enName: "Ratna Rani Roy", nick: "রত্না", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-025", father: null, mother: null, children: ["FT-067", "FT-068"] },
+            { id: "FT-067", bnName: "রয়েল চন্দ্র রায়", enName: "Royel Chandra Roy", nick: "রয়েল", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-025", mother: "FT-066", children: [] },
+            { id: "FT-068", bnName: "দেব চন্দ্র রায়", enName: "Dev Chandra Roy", nick: "দেব", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-025", mother: "FT-066", children: [] },
+
+            // কর্তিক (FT-023) এর পরিবার
+            { id: "FT-055", bnName: "লক্ষ্মী রাণী রায়", enName: "Lakkhi Rani Roy", nick: "লক্ষ্মী", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-023", father: null, mother: null, children: ["FT-056", "FT-059"] },
+            { id: "FT-056", bnName: "কেয়া রায় ঘোষ", enName: "Keya Roy Ghosh", nick: "কেয়া", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-057", father: "FT-023", mother: "FT-055", children: ["FT-058"] },
+            { id: "FT-057", bnName: "তন্ময় ঘোষ", enName: "Tonmoy Ghosh", nick: "তন্ময়", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-056", father: null, mother: null, children: ["FT-058"] },
+            { id: "FT-058", bnName: "কৃত্তিকা ঘোষ তনয়া", enName: "Krittika Ghosh Tanoya", nick: "কৃত্তিকা", gender: "মহিলা (Female)", color: 0xff69b4, spouse: null, father: "FT-057", mother: "FT-056", children: [] },
+            { id: "FT-059", bnName: "অপু রায়", enName: "Apu Roy", nick: "অপু", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: "FT-060", father: "FT-023", mother: "FT-055", children: [] },
+            { id: "FT-060", bnName: "শ্রাবন্তী রায়", enName: "Srabonti Ray", nick: "শ্রাবন্তী", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-059", father: null, mother: null, children: [] },
+
+            // ধনেশ (FT-021) ও পূর্ববর্তী অন্যান্য পরিবার
+            { id: "FT-079", bnName: "ছবিতা রানী রায়", enName: "Sabita Rani Roy", nick: "ছবিতা", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-021", father: null, mother: null, children: ["FT-002", "FT-011", "FT-007"] },
             { id: "FT-001", bnName: "অবিনাশ চন্দ্র রায়", enName: "Abinash Chandra Roy", nick: "অবিনাশ", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-002", father: null, mother: null, children: ["FT-003", "FT-004"] },
             { id: "FT-002", bnName: "ফেন্সি রানি রায় (কনিকা)", enName: "Fency Rani Roy", nick: "কনিকা", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-001", father: "FT-021", mother: "FT-079", children: ["FT-003", "FT-004"] },
             { id: "FT-003", bnName: "বাঁধন চন্দ্র রায়", enName: "Badhon Chandra Roy", nick: "বাঁধন", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-001", mother: "FT-002", children: [] },
             { id: "FT-004", bnName: "লাবণ্য চন্দ্র রায়", enName: "Labonno Chandra Roy", nick: "লাবণ্য", gender: "পুরুষ (Male)", color: 0x3366ff, spouse: null, father: "FT-001", mother: "FT-002", children: [] },
-            { id: "FT-021", bnName: "ধনেশ চন্দ্র রায়", enName: "Dhonesh Chandra Roy", nick: "ধনেশ", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-079", father: null, mother: null, children: ["FT-002", "FT-011", "FT-007"] },
-            { id: "FT-079", bnName: "ছবিতা রানী রায়", enName: "Sabita Rani Roy", nick: "ছবিতা", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-021", father: null, mother: null, children: ["FT-002", "FT-011", "FT-007"] },
             { id: "FT-011", bnName: "জুয়েল চন্দ্র রায়", enName: "Juel Chandra Roy", nick: "জুয়েল", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-012", father: "FT-021", mother: "FT-079", children: ["FT-013"] },
             { id: "FT-012", bnName: "জয়া রানী রায়", enName: "Joya Rani Roy", nick: "জয়া", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-011", father: null, mother: null, children: ["FT-013"] },
             { id: "FT-013", bnName: "তীর্থ চন্দ্র রায়", enName: "Tirtho Chandra Roy", nick: "তীর্থ", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-011", mother: "FT-012", children: [] },
@@ -244,20 +270,52 @@
             return line;
         }
 
-        const connections = [
-            [marbleMap["FT-001"], marbleMap["FT-002"]],
-            [marbleMap["FT-003"], marbleMap["FT-001"]], [marbleMap["FT-003"], marbleMap["FT-002"]],
-            [marbleMap["FT-004"], marbleMap["FT-001"]], [marbleMap["FT-004"], marbleMap["FT-002"]],
-            [marbleMap["FT-021"], marbleMap["FT-079"]],
-            [marbleMap["FT-002"], marbleMap["FT-021"]], [marbleMap["FT-002"], marbleMap["FT-079"]],
-            [marbleMap["FT-011"], marbleMap["FT-021"]], [marbleMap["FT-011"], marbleMap["FT-079"]],
-            [marbleMap["FT-011"], marbleMap["FT-012"]],
-            [marbleMap["FT-013"], marbleMap["FT-011"]], [marbleMap["FT-013"], marbleMap["FT-012"]],
-            [marbleMap["FT-007"], marbleMap["FT-021"]], [marbleMap["FT-007"], marbleMap["FT-079"]],
-            [marbleMap["FT-007"], marbleMap["FT-006"]],
-            [marbleMap["FT-008"], marbleMap["FT-007"]], [marbleMap["FT-008"], marbleMap["FT-006"]],
-            [marbleMap["FT-009"], marbleMap["FT-007"]], [marbleMap["FT-009"], marbleMap["FT-006"]]
+        const connectionsData = [
+            // FT-016 & FT-017
+            ["FT-016", "FT-017"],
+            ["FT-018", "FT-016"], ["FT-018", "FT-017"],
+            ["FT-019", "FT-016"], ["FT-019", "FT-017"],
+            ["FT-020", "FT-016"], ["FT-020", "FT-017"],
+            ["FT-021", "FT-016"], ["FT-021", "FT-017"],
+            ["FT-022", "FT-016"], ["FT-022", "FT-017"],
+            ["FT-023", "FT-016"], ["FT-023", "FT-017"],
+            ["FT-024", "FT-016"], ["FT-024", "FT-017"],
+            ["FT-025", "FT-016"], ["FT-025", "FT-017"],
+
+            // কাঞ্চন
+            ["FT-025", "FT-066"],
+            ["FT-067", "FT-025"], ["FT-067", "FT-066"],
+            ["FT-068", "FT-025"], ["FT-068", "FT-066"],
+
+            // কর্তিক
+            ["FT-023", "FT-055"],
+            ["FT-056", "FT-023"], ["FT-056", "FT-055"],
+            ["FT-059", "FT-023"], ["FT-059", "FT-055"],
+            ["FT-056", "FT-057"],
+            ["FT-058", "FT-056"], ["FT-058", "FT-057"],
+            ["FT-059", "FT-060"],
+
+            // ধনেশ ও অন্যান্য
+            ["FT-021", "FT-079"],
+            ["FT-002", "FT-021"], ["FT-002", "FT-079"],
+            ["FT-011", "FT-021"], ["FT-011", "FT-079"],
+            ["FT-007", "FT-021"], ["FT-007", "FT-079"],
+            ["FT-001", "FT-002"],
+            ["FT-003", "FT-001"], ["FT-003", "FT-002"],
+            ["FT-004", "FT-001"], ["FT-004", "FT-002"],
+            ["FT-011", "FT-012"],
+            ["FT-013", "FT-011"], ["FT-013", "FT-012"],
+            ["FT-007", "FT-006"],
+            ["FT-008", "FT-007"], ["FT-008", "FT-006"],
+            ["FT-009", "FT-007"], ["FT-009", "FT-006"]
         ];
+
+        const connections = [];
+        connectionsData.forEach(pair => {
+            if (marbleMap[pair[0]] && marbleMap[pair[1]]) {
+                connections.push([marbleMap[pair[0]], marbleMap[pair[1]]]);
+            }
+        });
 
         const threads = connections.map(pair => createThread(pair[0].position, pair[1].position));
 
@@ -267,32 +325,55 @@
             TWEEN.update(time);
 
             if (isAnimating) {
-                angle += 0.005;
+                angle += 0.003;
 
-                marbleMap["FT-021"].position.set(Math.cos(angle) * 4, 7, Math.sin(angle) * 4);
-                marbleMap["FT-079"].position.set(Math.cos(angle + Math.PI) * 4, 7, Math.sin(angle + Math.PI) * 4);
+                // শীর্ষ জেনারেশন (দিনোনাথ & দুলালী)
+                marbleMap["FT-016"].position.set(Math.cos(angle) * 5, 12, Math.sin(angle) * 5);
+                marbleMap["FT-017"].position.set(Math.cos(angle + Math.PI) * 5, 12, Math.sin(angle + Math.PI) * 5);
 
-                marbleMap["FT-002"].position.set(Math.cos(angle - 2) * 7 - 2, 2, Math.sin(angle - 2) * 7);
-                marbleMap["FT-001"].position.set(Math.cos(angle - 2) * 7 - 5, 2, Math.sin(angle - 2) * 7);
+                // মধ্যম জেনারেশন (সন্তানগণ)
+                const midChildren = ["FT-018", "FT-019", "FT-020", "FT-021", "FT-022", "FT-023", "FT-024", "FT-025"];
+                midChildren.forEach((id, idx) => {
+                    const childAngle = angle + (idx * (Math.PI * 2 / midChildren.length));
+                    if (marbleMap[id]) {
+                        marbleMap[id].position.set(Math.cos(childAngle) * 12, 4, Math.sin(childAngle) * 12);
+                    }
+                });
 
-                marbleMap["FT-011"].position.set(Math.cos(angle) * 7, 2, Math.sin(angle) * 7);
-                marbleMap["FT-012"].position.set(Math.cos(angle) * 7 + 3, 2, Math.sin(angle) * 7);
+                // দাম্পত্য সঙ্গীগণ
+                if(marbleMap["FT-079"]) marbleMap["FT-079"].position.set(marbleMap["FT-021"].position.x + 2, 4, marbleMap["FT-021"].position.z + 2);
+                if(marbleMap["FT-055"]) marbleMap["FT-055"].position.set(marbleMap["FT-023"].position.x + 2, 4, marbleMap["FT-023"].position.z + 2);
+                if(marbleMap["FT-066"]) marbleMap["FT-066"].position.set(marbleMap["FT-025"].position.x + 2, 4, marbleMap["FT-025"].position.z + 2);
 
-                marbleMap["FT-007"].position.set(Math.cos(angle + 2) * 7 + 2, 2, Math.sin(angle + 2) * 7);
-                marbleMap["FT-006"].position.set(Math.cos(angle + 2) * 7 + 5, 2, Math.sin(angle + 2) * 7);
+                // পরবর্তী প্রজন্ম (নিচের লেভেল)
+                const lowerGen = ["FT-002", "FT-011", "FT-007", "FT-056", "FT-059", "FT-067", "FT-068"];
+                lowerGen.forEach((id, idx) => {
+                    const lAngle = angle * 1.2 + (idx * (Math.PI * 2 / lowerGen.length));
+                    if (marbleMap[id]) {
+                        marbleMap[id].position.set(Math.cos(lAngle) * 16, -4, Math.sin(lAngle) * 16);
+                    }
+                });
 
-                marbleMap["FT-003"].position.set(Math.cos(angle * 1.5) * 9 - 6, -5, Math.sin(angle * 1.5) * 9);
-                marbleMap["FT-004"].position.set(Math.cos(angle * 1.5 + 0.8) * 9 - 6, -5, Math.sin(angle * 1.5 + 0.8) * 9);
+                // শেষ প্রজন্ম
+                const bottomGen = ["FT-003", "FT-004", "FT-013", "FT-008", "FT-009", "FT-058"];
+                bottomGen.forEach((id, idx) => {
+                    const bAngle = angle * 1.5 + (idx * (Math.PI * 2 / bottomGen.length));
+                    if (marbleMap[id]) {
+                        marbleMap[id].position.set(Math.cos(bAngle) * 20, -11, Math.sin(bAngle) * 20);
+                    }
+                });
 
-                marbleMap["FT-013"].position.set(Math.cos(angle * 1.5 + 2) * 9, -5, Math.sin(angle * 1.5 + 2) * 9);
-
-                marbleMap["FT-008"].position.set(Math.cos(angle * 1.5 + 3.2) * 9 + 6, -5, Math.sin(angle * 1.5 + 3.2) * 9);
-                marbleMap["FT-009"].position.set(Math.cos(angle * 1.5 + 4) * 9 + 6, -5, Math.sin(angle * 1.5 + 4) * 9);
+                // অন্যান্য স্পাউসসমূহ
+                if(marbleMap["FT-001"]) marbleMap["FT-001"].position.set(marbleMap["FT-002"].position.x + 2, -4, marbleMap["FT-002"].position.z);
+                if(marbleMap["FT-012"]) marbleMap["FT-012"].position.set(marbleMap["FT-011"].position.x + 2, -4, marbleMap["FT-011"].position.z);
+                if(marbleMap["FT-006"]) marbleMap["FT-006"].position.set(marbleMap["FT-007"].position.x + 2, -4, marbleMap["FT-007"].position.z);
+                if(marbleMap["FT-057"]) marbleMap["FT-057"].position.set(marbleMap["FT-056"].position.x + 2, -4, marbleMap["FT-056"].position.z);
+                if(marbleMap["FT-060"]) marbleMap["FT-060"].position.set(marbleMap["FT-059"].position.x + 2, -4, marbleMap["FT-059"].position.z);
 
                 clickableMarbles.forEach(m => m.rotation.y += 0.01);
             }
 
-            // সুতো সংযোগ আপডেট
+            // সুতো আপডেট
             threads.forEach((thread, index) => {
                 const points = [connections[index][0].position, connections[index][1].position];
                 thread.geometry.setFromPoints(points);
@@ -304,7 +385,7 @@
 
         animate();
 
-        // --- টাচ ও ক্লিক হ্যান্ডলিং ---
+        // --- ইন্টারঅ্যাকশন হ্যান্ডলিং ---
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
         let touchStartX = 0, touchStartY = 0;
@@ -338,7 +419,6 @@
             }
         });
 
-        // স্থানান্তরের জন্য অ্যানিমেটেড ফাংশন
         function animateMarbleTo(mesh, targetPos, duration = 1000) {
             mesh.visible = true;
             new TWEEN.Tween(mesh.position)
@@ -382,7 +462,7 @@
             if (data.mother) activeIds.add(data.mother);
             if (data.children) data.children.forEach(id => activeIds.add(id));
 
-            // ১. মূল নির্বাচিত মার্বেল স্থানান্তর
+            // ১. মূল নির্বাচিত মার্বেল
             animateMarbleTo(selectedMarble, { x: 0, y: 0, z: 0 });
 
             // ২. দাম্পত্য সঙ্গী
@@ -411,14 +491,14 @@
                 });
             }
 
-            // ৬. অনাকাঙ্ক্ষিত মার্বেলগুলো অদৃশ্য করা
+            // ৬. অনাকাঙ্ক্ষিত মার্বেল ফেড-আউট
             clickableMarbles.forEach(m => {
                 if (!activeIds.has(m.userData.id)) {
                     fadeOutMarble(m);
                 }
             });
 
-            // ৭. সুতো (Threads) অ্যানিমেশন ও নিয়ন্ত্রণ
+            // ৭. সুতো অ্যানিমেশন
             threads.forEach((thread, index) => {
                 const pair = connections[index];
                 const isPairActive = activeIds.has(pair[0].userData.id) && activeIds.has(pair[1].userData.id);
@@ -438,7 +518,7 @@
 
             // ক্যামেরা স্মুথ মুভমেন্ট
             new TWEEN.Tween(camera.position)
-                .to({ x: 0, y: 0, z: 12 }, 1000)
+                .to({ x: 0, y: 0, z: 14 }, 1000)
                 .easing(TWEEN.Easing.Cubic.Out)
                 .start();
 
@@ -483,7 +563,6 @@
         function closePopup() {
             document.getElementById('popup-modal').style.display = 'none';
             
-            // সব মার্বেল এবং সুতো ফিরিয়ে আনা
             clickableMarbles.forEach(m => {
                 m.visible = true;
                 new TWEEN.Tween(m.material).to({ opacity: 1 }, 800).start();
