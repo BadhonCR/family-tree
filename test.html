@@ -122,7 +122,7 @@
         <p>• জুয়েল & জয়া (সন্তান: তীর্থ)</p>
         <hr class="divider">
         <p style="color: #ffeb3b; font-size: 11px;">
-            💡 ফাঁকা জায়গায় ক্লিক করে ঘোরানো থামান বা শুরু করুন।
+            💡 মার্বেলে ক্লিক করলে পারিবারিক গাছ সাজবে। ফাঁকা জায়গায় ক্লিক করলে ঘোরা থমকে যাবে।
         </p>
     </div>
 
@@ -167,7 +167,7 @@
         controls.dampingFactor = 0.05;
 
         let isAnimating = true;
-        let isMarbleSelected = false; // মার্বেল সিলেক্ট করা আছে কিনা তা ট্র্যাক করার জন্য
+        let isMarbleSelected = false;
 
         const defaultCameraPos = new THREE.Vector3(0, 0, 24);
         camera.position.copy(defaultCameraPos);
@@ -306,10 +306,8 @@
         });
 
         window.addEventListener('pointerup', (event) => {
-            // বাটন বা পপ-আপ মডালে ক্লিক করলে অ্যানিমেশন স্টেট পরিবর্তন হবে না
             if (event.target.closest('#popup-modal') || event.target.closest('#toggle-info-btn')) return;
 
-            // যদি ড্র্যাগ বা স্ক্রোল করা হয়, তবে ট্যাপ টগল হবে না
             const deltaX = Math.abs(event.clientX - touchStartX);
             const deltaY = Math.abs(event.clientY - touchStartY);
             if (deltaX > 8 || deltaY > 8) return;
@@ -321,14 +319,12 @@
             const intersects = raycaster.intersectObjects(clickableMarbles);
 
             if (intersects.length > 0) {
-                // মার্বেলে ক্লিক করলে
                 selectMarble(intersects[0].object);
             } else {
-                // ফাঁকা জায়গায় ক্লিক করলে (Toggle Feature)
                 if (isMarbleSelected) {
-                    closePopup(); // যদি কোনো মার্বেল সিলেক্ট থাকে, তবে পপ-আপ বন্ধ হবে
+                    closePopup();
                 } else {
-                    isAnimating = !isAnimating; // অ্যানিমেশন চালু/বন্ধ হবে
+                    isAnimating = !isAnimating;
                 }
             }
         });
@@ -336,13 +332,70 @@
         function selectMarble(selectedMarble) {
             isAnimating = false;
             isMarbleSelected = true;
-            const pos = selectedMarble.position;
             
-            controls.target.copy(pos);
-            camera.position.set(pos.x, pos.y, pos.z + 4.5);
+            // সব মার্বেল সাময়িকভাবে লুকিয়ে রাখা
+            clickableMarbles.forEach(m => m.visible = false);
+
+            // সিলেক্ট করা মার্বেল মাঝখানে (0,0,0) সেট করা
+            selectedMarble.position.set(0, 0, 0);
+            selectedMarble.visible = true;
+
+            const data = selectedMarble.userData;
+
+            // দাম্পত্য সঙ্গী (পাশাপাশি)
+            if (data.spouse && marbleMap[data.spouse]) {
+                const spouseMesh = marbleMap[data.spouse];
+                spouseMesh.position.set(3.5, 0, 0);
+                spouseMesh.visible = true;
+            }
+
+            // পিতা (উপরে বামে)
+            if (data.father && marbleMap[data.father]) {
+                const fatherMesh = marbleMap[data.father];
+                fatherMesh.position.set(-1.8, 3.5, 0);
+                fatherMesh.visible = true;
+            }
+
+            // মাতা (উপরে ডানে)
+            if (data.mother && marbleMap[data.mother]) {
+                const motherMesh = marbleMap[data.mother];
+                motherMesh.position.set(1.8, 3.5, 0);
+                motherMesh.visible = true;
+            }
+
+            // সন্তানগণ (নিচে সারিবদ্ধভাবে)
+            if (data.children && data.children.length > 0) {
+                const count = data.children.length;
+                data.children.forEach((childId, index) => {
+                    if (marbleMap[childId]) {
+                        const childMesh = marbleMap[childId];
+                        const xPos = (index - (count - 1) / 2) * 3.5;
+                        childMesh.position.set(xPos, -3.5, 0);
+                        childMesh.visible = true;
+                    }
+                });
+            }
+
+            // রেখাগুলোর পজিশন আপডেট করা এবং প্রাসঙ্গিক রেখাগুলো দৃশ্যমান করা
+            threads.forEach((thread, index) => {
+                const pair = connections[index];
+                const points = [pair[0].position, pair[1].position];
+                thread.geometry.setFromPoints(points);
+                
+                // শুধুমাত্র দৃশ্যমান মার্বেলগুলোর মাঝের রেখাগুলো দেখাবে
+                if (pair[0].visible && pair[1].visible) {
+                    thread.visible = true;
+                } else {
+                    thread.visible = false;
+                }
+            });
+
+            // ক্যামেরা ফোকাস রিসেট
+            controls.target.set(0, 0, 0);
+            camera.position.set(0, 0, 10);
             controls.update();
 
-            showPopup(selectedMarble.userData);
+            showPopup(data);
         }
 
         function focusById(id) {
@@ -377,6 +430,11 @@
 
         function closePopup() {
             document.getElementById('popup-modal').style.display = 'none';
+            
+            // সব মার্বেল এবং রেখা আবার দৃশ্যমান করা
+            clickableMarbles.forEach(m => m.visible = true);
+            threads.forEach(t => t.visible = true);
+
             camera.position.copy(defaultCameraPos);
             controls.target.set(0, 0, 0);
             controls.update();
