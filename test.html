@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Marble - Abinash Chandra Roy</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #0b0b0b;
+            font-family: Arial, sans-serif;
+        }
+        #info-card {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            pointer-events: none;
+        }
+        h2, p {
+            margin: 0 0 5px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- মার্বেলের তথ্য প্রদর্শনের জন্য কার্ড -->
+    <div id="info-card" data-id="FT-001">
+        <h2>নাম: Abinash Chandra Roy</h2>
+        <p>আইডি: FT-001</p>
+        <p>রং: নীল (Blue)</p>
+    </div>
+
+    <!-- Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        // ১. সিন (Scene), ক্যামেরা (Camera), এবং রেন্ডারার (Renderer) সেটআপ
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // ২. আলোর ব্যবস্থা (Lighting)
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+
+        const pointLight = new THREE.PointLight(0xffffff, 1.2);
+        pointLight.position.set(5, 5, 5);
+        scene.add(pointLight);
+
+        // ৩. মার্বেল বা গোলক তৈরি (Sphere Geometry & Material)
+        // মার্বেলটিকে আকর্ষণীয় করতে গ্লসি (Shininess) ও নীল রঙ দেওয়া হয়েছে
+        const geometry = new THREE.SphereGeometry(2, 64, 64);
+        const material = new THREE.MeshPhongMaterial({
+            color: 0x0055ff,       // উজ্জ্বল নীল রঙ
+            shininess: 100,        // চকচকে ভাব
+            specular: 0x00ffff     // রিফ্লেকশন বা আলো ফলার রঙ
+        });
+
+        const marble = new THREE.Mesh(geometry, material);
+        
+        // মার্বেলের ডেটা বা আইডি যুক্ত করা
+        marble.userData = { id: "FT-001", name: "Abinash Chandra Roy" };
+        
+        scene.add(marble);
+
+        // ক্যামেরার অবস্থান নির্ধারণ
+        camera.position.z = 6;
+
+        // ৪. অ্যানিমেশন লুপ (মার্বেলটিকে ঘুরানোর জন্য)
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // মার্বেলটিকে নিজের অক্ষে ঘুরানো
+            marble.rotation.x += 0.01;
+            marble.rotation.y += 0.01;
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        // উইন্ডো রিসাইজ হ্যান্ডেল করা
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
