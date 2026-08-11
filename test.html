@@ -130,7 +130,12 @@
         <p>• জুয়েল (FT-011) & জয়া (FT-012)</p>
         <p>• জুয়েল-জয়ার সন্তান: তীর্থ (FT-013)</p>
         <hr class="divider">
-        <p style="color: #ffeb3b; font-size: 12px;">* স্বজনের নামে ক্লিক করলে সেখানে ক্যামেরা জুম হবে।</p>
+        <p style="color: #ffeb3b; font-size: 12px;">
+            🎮 <strong>কন্ট্রোল নির্দেশিকা:</strong><br>
+            • মাউস ড্র্যাগ করে ঘুরিয়ে দেখুন<br>
+            • মাউসের চাকা ঘুড়িয়ে জুম করুন<br>
+            • কিবোর্ডের Arrow Key দিয়ে ঘুরান
+        </p>
     </div>
 
     <!-- সাইড পপ-আপ মডাল উইন্ডো -->
@@ -147,8 +152,9 @@
         <button id="close-btn" onclick="closePopup()">বন্ধ করুন</button>
     </div>
 
-    <!-- Three.js CDN -->
+    <!-- Three.js CDN এবং OrbitControls -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
     <script>
         // ১. ব্যানার হাইড/শো টগল ফাংশন
@@ -171,11 +177,17 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
+        // মাউস ও কিবোর্ড মোশন কন্ট্রোল (OrbitControls)
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true; // স্মুথ মোশনের জন্য
+        controls.dampingFactor = 0.05;
+        controls.screenSpacePanning = true;
+
         let isAnimating = true;
         const defaultCameraPos = new THREE.Vector3(0, 0, 24);
-        let targetCameraPos = defaultCameraPos.clone();
-        let targetLookAt = new THREE.Vector3(0, 0, 0);
-        let currentLookAt = new THREE.Vector3(0, 0, 0);
+        camera.position.copy(defaultCameraPos);
+        controls.target.set(0, 0, 0);
+        controls.update();
 
         // লাইটিং
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
@@ -254,23 +266,21 @@
         }
 
         const connections = [
-            [marbleMap["FT-001"], marbleMap["FT-002"]], // অবিনাশ - কনিকা
+            [marbleMap["FT-001"], marbleMap["FT-002"]],
             [marbleMap["FT-003"], marbleMap["FT-001"]], [marbleMap["FT-003"], marbleMap["FT-002"]],
             [marbleMap["FT-004"], marbleMap["FT-001"]], [marbleMap["FT-004"], marbleMap["FT-002"]],
-            [marbleMap["FT-021"], marbleMap["FT-079"]], // ধনেশ - ছবিতা
+            [marbleMap["FT-021"], marbleMap["FT-079"]],
             [marbleMap["FT-002"], marbleMap["FT-021"]], [marbleMap["FT-002"], marbleMap["FT-079"]],
             [marbleMap["FT-011"], marbleMap["FT-021"]], [marbleMap["FT-011"], marbleMap["FT-079"]],
-            [marbleMap["FT-011"], marbleMap["FT-012"]], // জুয়েল - জয়া
-            [marbleMap["FT-013"], marbleMap["FT-011"]], [marbleMap["FT-013"], marbleMap["FT-012"]], // তীর্থ - জুয়েল, জয়া
+            [marbleMap["FT-011"], marbleMap["FT-012"]],
+            [marbleMap["FT-013"], marbleMap["FT-011"]], [marbleMap["FT-013"], marbleMap["FT-012"]],
             [marbleMap["FT-007"], marbleMap["FT-021"]], [marbleMap["FT-007"], marbleMap["FT-079"]],
-            [marbleMap["FT-007"], marbleMap["FT-006"]], // মনিকা - গোলাপ
+            [marbleMap["FT-007"], marbleMap["FT-006"]],
             [marbleMap["FT-008"], marbleMap["FT-007"]], [marbleMap["FT-008"], marbleMap["FT-006"]],
             [marbleMap["FT-009"], marbleMap["FT-007"]], [marbleMap["FT-009"], marbleMap["FT-006"]]
         ];
 
         const threads = connections.map(pair => createThread(pair[0].position, pair[1].position));
-
-        camera.position.copy(defaultCameraPos);
 
         // ৪. অ্যানিমেশন লুপ
         let angle = 0;
@@ -285,27 +295,21 @@
                 marbleMap["FT-079"].position.set(Math.cos(angle + Math.PI) * 4, 7, Math.sin(angle + Math.PI) * 4);
 
                 // ২য় স্তর: সন্তান ও তাঁদের দাম্পত্য সঙ্গীরা
-                // কনিকা ও অবিনাশ
                 marbleMap["FT-002"].position.set(Math.cos(angle - 2) * 7 - 2, 2, Math.sin(angle - 2) * 7);
                 marbleMap["FT-001"].position.set(Math.cos(angle - 2) * 7 - 5, 2, Math.sin(angle - 2) * 7);
 
-                // জুয়েল ও জয়া
                 marbleMap["FT-011"].position.set(Math.cos(angle) * 7, 2, Math.sin(angle) * 7);
                 marbleMap["FT-012"].position.set(Math.cos(angle) * 7 + 3, 2, Math.sin(angle) * 7);
 
-                // মনিকা ও গোলাপ
                 marbleMap["FT-007"].position.set(Math.cos(angle + 2) * 7 + 2, 2, Math.sin(angle + 2) * 7);
                 marbleMap["FT-006"].position.set(Math.cos(angle + 2) * 7 + 5, 2, Math.sin(angle + 2) * 7);
 
                 // ৩য় স্তর: নাতি-নাতনিরা
-                // অবিনাশ ও কনিকার সন্তান (বাঁধন ও লাবণ্য)
                 marbleMap["FT-003"].position.set(Math.cos(angle * 1.5) * 9 - 6, -5, Math.sin(angle * 1.5) * 9);
                 marbleMap["FT-004"].position.set(Math.cos(angle * 1.5 + 0.8) * 9 - 6, -5, Math.sin(angle * 1.5 + 0.8) * 9);
 
-                // জুয়েল ও জয়ার সন্তান (তীর্থ)
                 marbleMap["FT-013"].position.set(Math.cos(angle * 1.5 + 2) * 9, -5, Math.sin(angle * 1.5 + 2) * 9);
 
-                // মনিকা ও গোলাপের সন্তান (ওম ও বেদ)
                 marbleMap["FT-008"].position.set(Math.cos(angle * 1.5 + 3.2) * 9 + 6, -5, Math.sin(angle * 1.5 + 3.2) * 9);
                 marbleMap["FT-009"].position.set(Math.cos(angle * 1.5 + 4) * 9 + 6, -5, Math.sin(angle * 1.5 + 4) * 9);
 
@@ -317,10 +321,8 @@
                 clickableMarbles.forEach(m => m.rotation.y += 0.01);
             }
 
-            camera.position.lerp(targetCameraPos, 0.05);
-            currentLookAt.lerp(targetLookAt, 0.05);
-            camera.lookAt(currentLookAt);
-
+            // মোশন কন্ট্রোল আপডেট
+            controls.update();
             renderer.render(scene, camera);
         }
 
@@ -344,13 +346,16 @@
             }
         });
 
-        // নির্দিষ্ট মার্বেল সিলেক্ট করা ও জুমিং
+        // নির্দিষ্ট মার্বেল সিলেক্ট করা ও স্মুথ জুমিং
         function selectMarble(selectedMarble) {
             isAnimating = false;
 
-            targetLookAt.copy(selectedMarble.position);
-            const offset = new THREE.Vector3(0, 0, 3.5);
-            targetCameraPos.copy(selectedMarble.position).add(offset);
+            const pos = selectedMarble.position;
+            
+            // স্মুথ ক্যামেরা পজিশনিং ও ফোকাস
+            controls.target.copy(pos);
+            camera.position.set(pos.x, pos.y, pos.z + 4.5);
+            controls.update();
 
             showPopup(selectedMarble.userData);
         }
@@ -362,7 +367,7 @@
             }
         }
 
-        // সম্পর্কের নাম (আইডি ছাড়া কেবল বাংলা নাম) ও লিংকের এইচটিএমএল জেনারেট করা
+        // সম্পর্কের নাম ও লিংকের এইচটিএমএল জেনারেট করা
         function renderRelationLink(id) {
             if (!id || !marbleMap[id]) return "N/A";
             const data = marbleMap[id].userData;
@@ -375,12 +380,10 @@
             document.getElementById('m-ename').innerText = data.enName;
             document.getElementById('m-gender').innerText = data.gender;
             
-            // লিঙ্কড রিলেশন ফিল্ড (শুধুমাত্র নাম জেনারেট করবে)
             document.getElementById('m-spouse').innerHTML = renderRelationLink(data.spouse);
             document.getElementById('m-father').innerHTML = renderRelationLink(data.father);
             document.getElementById('m-mother').innerHTML = renderRelationLink(data.mother);
 
-            // সন্তান তালিকা জেনারেট (শুধুমাত্র নাম জেনারেট করবে)
             if (data.children && data.children.length > 0) {
                 const childLinks = data.children.map(childId => renderRelationLink(childId));
                 document.getElementById('m-children').innerHTML = childLinks.join(', ');
@@ -393,8 +396,9 @@
 
         function closePopup() {
             document.getElementById('popup-modal').style.display = 'none';
-            targetCameraPos.copy(defaultCameraPos);
-            targetLookAt.set(0, 0, 0);
+            camera.position.copy(defaultCameraPos);
+            controls.target.set(0, 0, 0);
+            controls.update();
 
             setTimeout(() => {
                 isAnimating = true;
