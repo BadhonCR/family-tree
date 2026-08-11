@@ -10,10 +10,9 @@
             overflow: hidden;
             background-color: #0b0b0b;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            touch-action: none; /* মোবাইলে স্মুথ থ্রিডি টাচের জন্য */
+            touch-action: none;
         }
 
-        /* বাম দিকের টগল বাটন */
         #toggle-info-btn {
             position: absolute;
             top: 15px;
@@ -29,7 +28,6 @@
             backdrop-filter: blur(5px);
         }
 
-        /* ইনফো কার্ড (উপরে বামে) */
         #info-card {
             position: absolute;
             top: 60px;
@@ -48,7 +46,6 @@
         p { margin: 0 0 5px 0; font-size: 13px; line-height: 1.4; }
         .divider { margin: 8px 0; border: 0; border-top: 1px solid #555; }
 
-        /* পপ-আপ মডাল (পিসি ও বড় স্ক্রিনের জন্য) */
         #popup-modal {
             display: none;
             position: fixed;
@@ -93,7 +90,6 @@
             margin-top: 10px;
         }
 
-        /* মোবাইল স্ক্রিনের জন্য রেসপন্সিভ স্টাইল */
         @media (max-width: 600px) {
             #popup-modal {
                 top: auto;
@@ -126,11 +122,10 @@
         <p>• জুয়েল & জয়া (সন্তান: তীর্থ)</p>
         <hr class="divider">
         <p style="color: #ffeb3b; font-size: 11px;">
-            📱 মার্বেলে স্পর্শ/ট্যাপ করে বিবরণ দেখুন।
+            💡 ফাঁকা জায়গায় ক্লিক করে ঘোরানো থামান বা শুরু করুন।
         </p>
     </div>
 
-    <!-- সাইড/বটম পপ-আপ মডাল -->
     <div id="popup-modal">
         <h2 id="modal-title">প্রোফাইল বিবরণ</h2>
         <p><strong>আইডি:</strong> <span id="m-id"></span></p>
@@ -172,6 +167,8 @@
         controls.dampingFactor = 0.05;
 
         let isAnimating = true;
+        let isMarbleSelected = false; // মার্বেল সিলেক্ট করা আছে কিনা তা ট্র্যাক করার জন্য
+
         const defaultCameraPos = new THREE.Vector3(0, 0, 24);
         camera.position.copy(defaultCameraPos);
 
@@ -298,7 +295,7 @@
 
         animate();
 
-        // --- টাচ ও ক্লিক হ্যান্ডলিং (মোবাইল সাপোর্টের জন্য) ---
+        // --- টাচ ও ক্লিক হ্যান্ডলিং ---
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
         let touchStartX = 0, touchStartY = 0;
@@ -309,12 +306,13 @@
         });
 
         window.addEventListener('pointerup', (event) => {
+            // বাটন বা পপ-আপ মডালে ক্লিক করলে অ্যানিমেশন স্টেট পরিবর্তন হবে না
             if (event.target.closest('#popup-modal') || event.target.closest('#toggle-info-btn')) return;
 
-            // যদি ড্র্যাগ বা স্ক্রোল করা হয়, তবে ট্যাপ গণনা করা হবে না
+            // যদি ড্র্যাগ বা স্ক্রোল করা হয়, তবে ট্যাপ টগল হবে না
             const deltaX = Math.abs(event.clientX - touchStartX);
             const deltaY = Math.abs(event.clientY - touchStartY);
-            if (deltaX > 10 || deltaY > 10) return;
+            if (deltaX > 8 || deltaY > 8) return;
 
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -323,12 +321,21 @@
             const intersects = raycaster.intersectObjects(clickableMarbles);
 
             if (intersects.length > 0) {
+                // মার্বেলে ক্লিক করলে
                 selectMarble(intersects[0].object);
+            } else {
+                // ফাঁকা জায়গায় ক্লিক করলে (Toggle Feature)
+                if (isMarbleSelected) {
+                    closePopup(); // যদি কোনো মার্বেল সিলেক্ট থাকে, তবে পপ-আপ বন্ধ হবে
+                } else {
+                    isAnimating = !isAnimating; // অ্যানিমেশন চালু/বন্ধ হবে
+                }
             }
         });
 
         function selectMarble(selectedMarble) {
             isAnimating = false;
+            isMarbleSelected = true;
             const pos = selectedMarble.position;
             
             controls.target.copy(pos);
@@ -374,7 +381,8 @@
             controls.target.set(0, 0, 0);
             controls.update();
 
-            setTimeout(() => { isAnimating = true; }, 500);
+            isMarbleSelected = false;
+            setTimeout(() => { isAnimating = true; }, 300);
         }
 
         window.addEventListener('resize', () => {
