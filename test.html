@@ -124,12 +124,13 @@
         <p><strong>মূল প্রবীণ দম্পতি:</strong></p>
         <p>• ধনেশ (FT-021) & ছবিতা (FT-079)</p>
         <hr class="divider">
-        <p><strong>ধনেশ-ছবিতার পরিবার:</strong></p>
-        <p>• কনিকা (FT-002) & অবিনাশ (FT-001)</p>
-        <p>• মনিকা (FT-007) & গোলাপ (FT-006)</p>
-        <p>• জুয়েল (FT-011)</p>
+        <p><strong>ধনেশ-ছবিতার পরিবারসমূহ:</strong></p>
+        <p>• কনিকা & অবিনাশ (সন্তান: বাঁধন, লাবণ্য)</p>
+        <p>• মনিকা & গোলাপ (সন্তান: ওম, বেদ)</p>
+        <p>• জুয়েল (FT-011) & জয়া (FT-012)</p>
+        <p>• জুয়েল-জয়ার সন্তান: তীর্থ (FT-013)</p>
         <hr class="divider">
-        <p style="color: #ffeb3b; font-size: 12px;">* মার্বেলে বা প্রোফাইলের লিংকে ক্লিক করলে সেখানে ক্যামেরা জুম হবে।</p>
+        <p style="color: #ffeb3b; font-size: 12px;">* স্বজনের নামে ক্লিক করলে সেখানে ক্যামেরা জুম হবে।</p>
     </div>
 
     <!-- সাইড পপ-আপ মডাল উইন্ডো -->
@@ -171,7 +172,7 @@
         document.body.appendChild(renderer.domElement);
 
         let isAnimating = true;
-        const defaultCameraPos = new THREE.Vector3(0, 0, 22);
+        const defaultCameraPos = new THREE.Vector3(0, 0, 24);
         let targetCameraPos = defaultCameraPos.clone();
         let targetLookAt = new THREE.Vector3(0, 0, 0);
         let currentLookAt = new THREE.Vector3(0, 0, 0);
@@ -224,7 +225,9 @@
             { id: "FT-004", bnName: "লাবণ্য চন্দ্র রায়", enName: "Labonno Chandra Roy", nick: "লাবণ্য", gender: "পুরুষ (Male)", color: 0x3366ff, spouse: null, father: "FT-001", mother: "FT-002", children: [] },
             { id: "FT-021", bnName: "ধনেশ চন্দ্র রায়", enName: "Dhonesh Chandra Roy", nick: "ধনেশ", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-079", father: null, mother: null, children: ["FT-002", "FT-011", "FT-007"] },
             { id: "FT-079", bnName: "ছবিতা রানী রায়", enName: "Sabita Rani Roy", nick: "ছবিতা", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-021", father: null, mother: null, children: ["FT-002", "FT-011", "FT-007"] },
-            { id: "FT-011", bnName: "জুয়েল চন্দ্র রায়", enName: "Juel Chandra Roy", nick: "জুয়েল", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: null, father: "FT-021", mother: "FT-079", children: [] },
+            { id: "FT-011", bnName: "জুয়েল চন্দ্র রায়", enName: "Juel Chandra Roy", nick: "জুয়েল", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-012", father: "FT-021", mother: "FT-079", children: ["FT-013"] },
+            { id: "FT-012", bnName: "জয়া রানী রায়", enName: "Joya Rani Roy", nick: "জয়া", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-011", father: null, mother: null, children: ["FT-013"] },
+            { id: "FT-013", bnName: "তীর্থ চন্দ্র রায়", enName: "Tirtho Chandra Roy", nick: "তীর্থ", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-011", mother: "FT-012", children: [] },
             { id: "FT-007", bnName: "মনিকা রানী রায়", enName: "Monika Rani Roy", nick: "মনিকা", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-006", father: "FT-021", mother: "FT-079", children: ["FT-008", "FT-009"] },
             { id: "FT-006", bnName: "গোলাপ চন্দ্র রায়", enName: "Golap Chandra Roy", nick: "গোলাপ", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-007", father: null, mother: null, children: ["FT-008", "FT-009"] },
             { id: "FT-008", bnName: "ওম চন্দ্র রায়", enName: "Om Chandra Roy", nick: "ওম", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-006", mother: "FT-007", children: [] },
@@ -257,6 +260,8 @@
             [marbleMap["FT-021"], marbleMap["FT-079"]], // ধনেশ - ছবিতা
             [marbleMap["FT-002"], marbleMap["FT-021"]], [marbleMap["FT-002"], marbleMap["FT-079"]],
             [marbleMap["FT-011"], marbleMap["FT-021"]], [marbleMap["FT-011"], marbleMap["FT-079"]],
+            [marbleMap["FT-011"], marbleMap["FT-012"]], // জুয়েল - জয়া
+            [marbleMap["FT-013"], marbleMap["FT-011"]], [marbleMap["FT-013"], marbleMap["FT-012"]], // তীর্থ - জুয়েল, জয়া
             [marbleMap["FT-007"], marbleMap["FT-021"]], [marbleMap["FT-007"], marbleMap["FT-079"]],
             [marbleMap["FT-007"], marbleMap["FT-006"]], // মনিকা - গোলাপ
             [marbleMap["FT-008"], marbleMap["FT-007"]], [marbleMap["FT-008"], marbleMap["FT-006"]],
@@ -275,21 +280,34 @@
             if (isAnimating) {
                 angle += 0.005;
 
+                // ১ম স্তর: প্রবীণ দম্পতি (ধনেশ ও ছবিতা)
                 marbleMap["FT-021"].position.set(Math.cos(angle) * 4, 7, Math.sin(angle) * 4);
                 marbleMap["FT-079"].position.set(Math.cos(angle + Math.PI) * 4, 7, Math.sin(angle + Math.PI) * 4);
 
-                marbleMap["FT-011"].position.set(Math.cos(angle + 1.5) * 6, 2, Math.sin(angle + 1.5) * 6);
-                marbleMap["FT-002"].position.set(Math.cos(angle - 1.5) * 6 - 2, 2, Math.sin(angle - 1.5) * 6);
-                marbleMap["FT-001"].position.set(Math.cos(angle - 1.5) * 6 - 5, 2, Math.sin(angle - 1.5) * 6);
+                // ২য় স্তর: সন্তান ও তাঁদের দাম্পত্য সঙ্গীরা
+                // কনিকা ও অবিনাশ
+                marbleMap["FT-002"].position.set(Math.cos(angle - 2) * 7 - 2, 2, Math.sin(angle - 2) * 7);
+                marbleMap["FT-001"].position.set(Math.cos(angle - 2) * 7 - 5, 2, Math.sin(angle - 2) * 7);
 
-                marbleMap["FT-007"].position.set(Math.cos(angle + 3.5) * 6 + 2, 2, Math.sin(angle + 3.5) * 6);
-                marbleMap["FT-006"].position.set(Math.cos(angle + 3.5) * 6 + 5, 2, Math.sin(angle + 3.5) * 6);
+                // জুয়েল ও জয়া
+                marbleMap["FT-011"].position.set(Math.cos(angle) * 7, 2, Math.sin(angle) * 7);
+                marbleMap["FT-012"].position.set(Math.cos(angle) * 7 + 3, 2, Math.sin(angle) * 7);
 
-                marbleMap["FT-003"].position.set(Math.cos(angle * 1.5) * 8 - 5, -5, Math.sin(angle * 1.5) * 8);
-                marbleMap["FT-004"].position.set(Math.cos(angle * 1.5 + 1) * 8 - 5, -5, Math.sin(angle * 1.5 + 1) * 8);
+                // মনিকা ও গোলাপ
+                marbleMap["FT-007"].position.set(Math.cos(angle + 2) * 7 + 2, 2, Math.sin(angle + 2) * 7);
+                marbleMap["FT-006"].position.set(Math.cos(angle + 2) * 7 + 5, 2, Math.sin(angle + 2) * 7);
 
-                marbleMap["FT-008"].position.set(Math.cos(angle * 1.5 + 2) * 8 + 5, -5, Math.sin(angle * 1.5 + 2) * 8);
-                marbleMap["FT-009"].position.set(Math.cos(angle * 1.5 + 3) * 8 + 5, -5, Math.sin(angle * 1.5 + 3) * 8);
+                // ৩য় স্তর: নাতি-নাতনিরা
+                // অবিনাশ ও কনিকার সন্তান (বাঁধন ও লাবণ্য)
+                marbleMap["FT-003"].position.set(Math.cos(angle * 1.5) * 9 - 6, -5, Math.sin(angle * 1.5) * 9);
+                marbleMap["FT-004"].position.set(Math.cos(angle * 1.5 + 0.8) * 9 - 6, -5, Math.sin(angle * 1.5 + 0.8) * 9);
+
+                // জুয়েল ও জয়ার সন্তান (তীর্থ)
+                marbleMap["FT-013"].position.set(Math.cos(angle * 1.5 + 2) * 9, -5, Math.sin(angle * 1.5 + 2) * 9);
+
+                // মনিকা ও গোলাপের সন্তান (ওম ও বেদ)
+                marbleMap["FT-008"].position.set(Math.cos(angle * 1.5 + 3.2) * 9 + 6, -5, Math.sin(angle * 1.5 + 3.2) * 9);
+                marbleMap["FT-009"].position.set(Math.cos(angle * 1.5 + 4) * 9 + 6, -5, Math.sin(angle * 1.5 + 4) * 9);
 
                 threads.forEach((thread, index) => {
                     const points = [connections[index][0].position, connections[index][1].position];
@@ -313,7 +331,6 @@
         const mouse = new THREE.Vector2();
 
         window.addEventListener('click', (event) => {
-            // যদি ক্লিক মডালের ওপর বা টগল বাটনে হয় তবে থ্রিডি ক্যানভাস ক্লিক ইগনোর হবে
             if (event.target.closest('#popup-modal') || event.target.closest('#toggle-info-btn')) return;
 
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -332,7 +349,6 @@
             isAnimating = false;
 
             targetLookAt.copy(selectedMarble.position);
-            // মডালটি ডানপাশে থাকার কারণে মার্বেলকে পজিশন অনুযায়ী ফোকাস করা
             const offset = new THREE.Vector3(0, 0, 3.5);
             targetCameraPos.copy(selectedMarble.position).add(offset);
 
@@ -346,11 +362,11 @@
             }
         }
 
-        // সম্পর্কের নাম ও লিংকের এইচটিএমএল জেনারেট করা
+        // সম্পর্কের নাম (আইডি ছাড়া কেবল বাংলা নাম) ও লিংকের এইচটিএমএল জেনারেট করা
         function renderRelationLink(id) {
             if (!id || !marbleMap[id]) return "N/A";
             const data = marbleMap[id].userData;
-            return `<span class="relation-link" onclick="focusById('${data.id}')">${data.bnName} (${data.id})</span>`;
+            return `<span class="relation-link" onclick="focusById('${data.id}')">${data.bnName}</span>`;
         }
 
         function showPopup(data) {
@@ -359,12 +375,12 @@
             document.getElementById('m-ename').innerText = data.enName;
             document.getElementById('m-gender').innerText = data.gender;
             
-            // লিঙ্কড রিলেশন ফিল্ড
+            // লিঙ্কড রিলেশন ফিল্ড (শুধুমাত্র নাম জেনারেট করবে)
             document.getElementById('m-spouse').innerHTML = renderRelationLink(data.spouse);
             document.getElementById('m-father').innerHTML = renderRelationLink(data.father);
             document.getElementById('m-mother').innerHTML = renderRelationLink(data.mother);
 
-            // সন্তান তালিকা জেনারেট
+            // সন্তান তালিকা জেনারেট (শুধুমাত্র নাম জেনারেট করবে)
             if (data.children && data.children.length > 0) {
                 const childLinks = data.children.map(childId => renderRelationLink(childId));
                 document.getElementById('m-children').innerHTML = childLinks.join(', ');
