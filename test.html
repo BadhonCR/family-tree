@@ -3,37 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Marble - Abinash Chandra Roy</title>
+    <title>3D Marbles - Interactive Profile</title>
     <style>
         body {
             margin: 0;
             overflow: hidden;
             background-color: #0b0b0b;
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+
+        /* ইনফো কার্ড (উপরে বামে) */
         #info-card {
             position: absolute;
             top: 20px;
             left: 20px;
             color: white;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.75);
             padding: 15px;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
             pointer-events: none;
+            z-index: 10;
         }
-        h2, p {
+        h3, p {
             margin: 0 0 5px 0;
+            font-size: 14px;
+        }
+        .divider {
+            margin: 10px 0;
+            border: 0;
+            border-top: 1px solid #555;
+        }
+
+        /* পপ-আপ মডাল স্টাইল */
+        #popup-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(20, 20, 30, 0.95);
+            color: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            z-index: 100;
+            width: 320px;
+            border: 1px solid #444;
+        }
+        #popup-modal h2 {
+            margin-top: 0;
+            color: #00ffff;
+            font-size: 20px;
+            border-bottom: 2px solid #555;
+            padding-bottom: 8px;
+        }
+        #popup-modal p {
+            margin: 8px 0;
+            font-size: 15px;
+        }
+        #close-btn {
+            background-color: #ff4757;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            float: right;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        #close-btn:hover {
+            background-color: #ff6b81;
         }
     </style>
 </head>
 <body>
 
-    <!-- মার্বেলের তথ্য প্রদর্শনের জন্য কার্ড -->
-    <div id="info-card" data-id="FT-001">
-        <h2>নাম: Abinash Chandra Roy</h2>
-        <p>আইডি: FT-001</p>
-        <p>রং: নীল (Blue)</p>
+    <!-- মার্বেল দুটির প্রাথমিক তথ্য কার্ড -->
+    <div id="info-card">
+        <h3>মার্বেল ১ (স্বামী):</h3>
+        <p>নাম: অবিনাশ চন্দ্র রায়</p>
+        <p>আইডি: FT-001 | রং: নীল</p>
+        
+        <hr class="divider">
+
+        <h3>মার্বেল ২ (স্ত্রী):</h3>
+        <p>নাম: ফেন্সি রানি রায়</p>
+        <p>আইডি: FT-002 | রং: গোলাপি</p>
+        <p style="color: #ffeb3b; font-size: 12px; margin-top: 5px;">* মার্বেলের উপর ক্লিক করে বিস্তারিত দেখুন</p>
+    </div>
+
+    <!-- পপ-আপ মডাল উইন্ডো -->
+    <div id="popup-modal">
+        <h2 id="modal-title">প্রোফাইল বিবরণ</h2>
+        <p><strong>আইডি:</strong> <span id="m-id"></span></p>
+        <p><strong>বাংলা নাম:</strong> <span id="m-bname"></span></p>
+        <p><strong>ইংরেজি নাম:</strong> <span id="m-ename"></span></p>
+        <p><strong>লিঙ্গ:</strong> <span id="m-gender"></span></p>
+        <p><strong>স্বামী/স্ত্রীর নাম:</strong> <span id="m-spouse"></span></p>
+        <p><strong>পিতার নাম:</strong> <span id="m-father"></span></p>
+        <p><strong>মাতার নাম:</strong> <span id="m-mother"></span></p>
+        <p><strong>অন্যান্য তথ্য:</strong> <span id="m-other"></span></p>
+        <button id="close-btn" onclick="closePopup()">বন্ধ করুন</button>
     </div>
 
     <!-- Three.js CDN -->
@@ -48,44 +120,140 @@
         document.body.appendChild(renderer.domElement);
 
         // ২. আলোর ব্যবস্থা (Lighting)
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
         scene.add(ambientLight);
 
         const pointLight = new THREE.PointLight(0xffffff, 1.2);
         pointLight.position.set(5, 5, 5);
         scene.add(pointLight);
 
-        // ৩. মার্বেল বা গোলক তৈরি (Sphere Geometry & Material)
-        // মার্বেলটিকে আকর্ষণীয় করতে গ্লসি (Shininess) ও নীল রঙ দেওয়া হয়েছে
-        const geometry = new THREE.SphereGeometry(2, 64, 64);
-        const material = new THREE.MeshPhongMaterial({
-            color: 0x0055ff,       // উজ্জ্বল নীল রঙ
-            shininess: 100,        // চকচকে ভাব
-            specular: 0x00ffff     // রিফ্লেকশন বা আলো ফলার রঙ
-        });
+        // সাধারণ গোলকের জিওমেট্রি
+        const geometry = new THREE.SphereGeometry(1.5, 64, 64);
+        const clickableMarbles = []; // রে-কাস্টিংয়ের জন্য অ্যারে
 
-        const marble = new THREE.Mesh(geometry, material);
+        // ৩. প্রথম মার্বেল (FT-001: অবিনাশ চন্দ্র রায়)
+        const material1 = new THREE.MeshPhongMaterial({
+            color: 0x0055ff,
+            shininess: 100,
+            specular: 0x00ffff
+        });
+        const marble1 = new THREE.Mesh(geometry, material1);
+        marble1.position.set(-2.5, 0, 0);
         
-        // মার্বেলের ডেটা বা আইডি যুক্ত করা
-        marble.userData = { id: "FT-001", name: "Abinash Chandra Roy" };
+        // বিস্তারিত ডেটা ইনপুট
+        marble1.userData = {
+            id: "FT-001",
+            bnName: "অবিনাশ চন্দ্র রায়",
+            enName: "Abinash Chandra Roy",
+            gender: "পুরুষ (Male)",
+            spouse: "ফেন্সি রানি রায় (Fency Rani Roy)",
+            father: "প্রদত্ত নয়",
+            mother: "প্রদত্ত নয়",
+            other: "প্রতিষ্ঠাতা সদস্য"
+        };
+        scene.add(marble1);
+        clickableMarbles.push(marble1);
+
+        // ৪. দ্বিতীয় মার্বেল (FT-002: ফেন্সি রানি রায়)
+        const material2 = new THREE.MeshPhongMaterial({
+            color: 0xff1493, // Deep Pink
+            shininess: 100,
+            specular: 0xffb6c1
+        });
+        const marble2 = new THREE.Mesh(geometry, material2);
+        marble2.position.set(2.5, 0, 0);
         
-        scene.add(marble);
+        // বিস্তারিত ডেটা ইনপুট
+        marble2.userData = {
+            id: "FT-002",
+            bnName: "ফেন্সি রানি রায়",
+            enName: "Fency Rani Roy",
+            gender: "মহিলা (Female)",
+            spouse: "অবিনাশ চন্দ্র রায় (Abinash Chandra Roy)",
+            father: "প্রদত্ত নয়",
+            mother: "প্রদত্ত নয়",
+            other: "সহ-প্রতিষ্ঠাতা"
+        };
+        scene.add(marble2);
+        clickableMarbles.push(marble2);
+
+        // ৫. দুটি মার্বেলকে সুতো বা লাইন দিয়ে যুক্ত করা
+        const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 2 });
+        const points = [];
+        points.push(marble1.position);
+        points.push(marble2.position);
+        
+        const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+        const connectingThread = new THREE.Line(lineGeometry, lineMaterial);
+        scene.add(connectingThread);
 
         // ক্যামেরার অবস্থান নির্ধারণ
         camera.position.z = 6;
 
-        // ৪. অ্যানিমেশন লুপ (মার্বেলটিকে ঘুরানোর জন্য)
+        // ৬. অ্যানিমেশন লুপ (মার্বেল ও সুতো একসাথে ঘোরানোর জন্য)
+        let angle = 0;
         function animate() {
             requestAnimationFrame(animate);
 
-            // মার্বেলটিকে নিজের অক্ষে ঘুরানো
-            marble.rotation.x += 0.01;
-            marble.rotation.y += 0.01;
+            // দুটি মার্বেলকে কেন্দ্র করে বৃত্তাকারে ঘোরানো
+            angle += 0.01;
+            const radius = 2.5;
+
+            marble1.position.x = Math.cos(angle) * radius;
+            marble1.position.z = Math.sin(angle) * radius;
+
+            marble2.position.x = Math.cos(angle + Math.PI) * radius;
+            marble2.position.z = Math.sin(angle + Math.PI) * radius;
+
+            // সুতোর পজিশন আপডেট করা
+            const positions = connectingThread.geometry.attributes.position;
+            positions.setXYZ(0, marble1.position.x, marble1.position.y, marble1.position.z);
+            positions.setXYZ(1, marble2.position.x, marble2.position.y, marble2.position.z);
+            positions.needsUpdate = true;
+
+            // নিজস্ব অক্ষেও মার্বেলগুলোর ঘূর্ণন
+            marble1.rotation.y += 0.02;
+            marble2.rotation.y += 0.02;
 
             renderer.render(scene, camera);
         }
 
         animate();
+
+        // ৭. মাউস ক্লিক এবং পপ-আপ হ্যান্ডলিং (Raycasting)
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        window.addEventListener('click', (event) => {
+            // মাউস কোঅর্ডিনেট নরমালাইজ করা (-1 থেকে +1)
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(clickableMarbles);
+
+            if (intersects.length > 0) {
+                const selectedData = intersects[0].object.userData;
+                showPopup(selectedData);
+            }
+        });
+
+        function showPopup(data) {
+            document.getElementById('m-id').innerText = data.id;
+            document.getElementById('m-bname').innerText = data.bnName;
+            document.getElementById('m-ename').innerText = data.enName;
+            document.getElementById('m-gender').innerText = data.gender;
+            document.getElementById('m-spouse').innerText = data.spouse;
+            document.getElementById('m-father').innerText = data.father;
+            document.getElementById('m-mother').innerText = data.mother;
+            document.getElementById('m-other').innerText = data.other;
+
+            document.getElementById('popup-modal').style.display = 'block';
+        }
+
+        function closePopup() {
+            document.getElementById('popup-modal').style.display = 'none';
+        }
 
         // উইন্ডো রিসাইজ হ্যান্ডেল করা
         window.addEventListener('resize', () => {
