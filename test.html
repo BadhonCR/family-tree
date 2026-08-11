@@ -18,18 +18,18 @@
             top: 20px;
             left: 20px;
             color: white;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85);
             padding: 15px;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.5);
             pointer-events: none;
             z-index: 10;
-            max-width: 300px;
+            max-width: 320px;
         }
         h3 { margin: 0 0 8px 0; font-size: 16px; color: #00ffff; }
         p { margin: 0 0 5px 0; font-size: 13px; line-height: 1.4; }
         .divider {
-            margin: 10px 0;
+            margin: 8px 0;
             border: 0;
             border-top: 1px solid #555;
         }
@@ -82,12 +82,15 @@
     <!-- মার্বেলগুলোর তথ্য কার্ড -->
     <div id="info-card">
         <h3>পারিবারিক গাছ (Family Tree)</h3>
-        <p><strong>বাবা:</strong> অবিনাশ চন্দ্র রায় (FT-001)</p>
-        <p><strong>মা:</strong> ফেন্সি রানি রায় / কনিকা (FT-002)</p>
+        <p><strong>নাস্তিক/প্রবীণ সদস্য:</strong></p>
+        <p>• ধনেশ (FT-021) & ছবিতা (FT-079)</p>
         <hr class="divider">
-        <p><strong>সন্তান ১:</strong> বাঁধন চন্দ্র রায় (FT-003)</p>
-        <p><strong>সন্তান ২:</strong> লাবণ্য চন্দ্র রায় (FT-004)</p>
-        <p style="color: #ffeb3b; font-size: 12px; margin-top: 8px;">* মার্বেলে ক্লিক করলে ক্যামেরা জুম হবে এবং বিস্তারিত দেখাবে</p>
+        <p><strong>দম্পতি (বাবা-মা):</strong></p>
+        <p>• অবিনাশ (FT-001) & কনিকা (FT-002)</p>
+        <hr class="divider">
+        <p><strong>সন্তানদ্বয়:</strong></p>
+        <p>• বাঁধন (FT-003) & লাবণ্য (FT-004)</p>
+        <p style="color: #ffeb3b; font-size: 12px; margin-top: 8px;">* মার্বেলে ক্লিক করলে জুম ও বিস্তারিত দেখাবে</p>
     </div>
 
     <!-- পপ-আপ মডাল উইন্ডো -->
@@ -115,7 +118,7 @@
 
         // অ্যানিমেশন ও ক্যামেরা কন্ট্রোল ভ্যারিয়েবল
         let isAnimating = true;
-        const defaultCameraPos = new THREE.Vector3(0, 0, 12);
+        const defaultCameraPos = new THREE.Vector3(0, 0, 15);
         let targetCameraPos = defaultCameraPos.clone();
         let targetLookAt = new THREE.Vector3(0, 0, 0);
         let currentLookAt = new THREE.Vector3(0, 0, 0);
@@ -128,7 +131,6 @@
         pointLight.position.set(5, 5, 5);
         scene.add(pointLight);
 
-        // জিওমেট্রি এবং ক্লিকযোগ্য মার্বেলের তালিকা
         const geometry = new THREE.SphereGeometry(1, 64, 64);
         const clickableMarbles = [];
 
@@ -173,7 +175,7 @@
 
         // ২. মা (FT-002) - কনিকা
         const marble2 = new THREE.Mesh(geometry, createMarbleMaterial(0xff1493));
-        marble2.userData = { id: "FT-002", bnName: "ফেন্সি রানি রায় (কনিকা)", enName: "Fency Rani Roy", gender: "মহিলা (Female)", father: "N/A", mother: "N/A" };
+        marble2.userData = { id: "FT-002", bnName: "ফেন্সি রানি রায় (কনিকা)", enName: "Fency Rani Roy", gender: "মহিলা (Female)", father: "ধনেশ চন্দ্র রায়", mother: "ছবিতা রানী রায়" };
         marble2.add(createTextSprite("কনিকা"));
         scene.add(marble2);
         clickableMarbles.push(marble2);
@@ -192,6 +194,20 @@
         scene.add(marble4);
         clickableMarbles.push(marble4);
 
+        // ৫. কনিকার পিতা (FT-021) - ধনেশ (Blue)
+        const marble5 = new THREE.Mesh(geometry, createMarbleMaterial(0x0055ff));
+        marble5.userData = { id: "FT-021", bnName: "ধনেশ চন্দ্র রায়", enName: "Dhonesh Chandra Roy", gender: "পুরুষ (Male)", father: "N/A", mother: "N/A" };
+        marble5.add(createTextSprite("ধনেশ"));
+        scene.add(marble5);
+        clickableMarbles.push(marble5);
+
+        // ৬. কনিকার মাতা (FT-079) - ছবিতা (Pink)
+        const marble6 = new THREE.Mesh(geometry, createMarbleMaterial(0xff1493));
+        marble6.userData = { id: "FT-079", bnName: "ছবিতা রানী রায়", enName: "Sabita Rani Roy", gender: "মহিলা (Female)", father: "N/A", mother: "N/A" };
+        marble6.add(createTextSprite("ছবিতা"));
+        scene.add(marble6);
+        clickableMarbles.push(marble6);
+
         // --- সংযোগকারী সুতো (Lines) ---
         const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff, opacity: 0.5, transparent: true });
 
@@ -202,13 +218,16 @@
             return line;
         }
 
-        const threads = [
-            createThread(marble1.position, marble2.position),
-            createThread(marble3.position, marble1.position),
-            createThread(marble3.position, marble2.position),
-            createThread(marble4.position, marble1.position),
-            createThread(marble4.position, marble2.position)
+        // সুতোর তালিকা (পারিবারিক সম্পর্ক অনুযায়ী)
+        const connections = [
+            [marble1, marble2], // অবিনাশ - কনিকা (স্বামী-স্ত্রী)
+            [marble3, marble1], [marble3, marble2], // বাঁধন - বাবা, মা
+            [marble4, marble1], [marble4, marble2], // লাবণ্য - বাবা, মা
+            [marble5, marble6], // ধনেশ - ছবিতা (কনিকার বাবা-মা / স্বামী-স্ত্রী)
+            [marble2, marble5], [marble2, marble6]  // কনিকা - ধনেশ (বাবা), ছবিতা (মা)
         ];
+
+        const threads = connections.map(pair => createThread(pair[0].position, pair[1].position));
 
         // প্রাথমিক ক্যামেরা অবস্থান
         camera.position.copy(defaultCameraPos);
@@ -221,16 +240,20 @@
             if (isAnimating) {
                 angle += 0.005;
 
-                marble1.position.set(Math.cos(angle) * 2, Math.sin(angle) * 0.5, Math.sin(angle) * 2);
-                marble2.position.set(Math.cos(angle + Math.PI) * 2, Math.sin(angle + Math.PI) * 0.5, Math.sin(angle + Math.PI) * 2);
+                // নতুন অবস্থানসমূহ (পারিবারিক সম্পর্ক সাজিয়ে ঘুরাণো)
+                // কনিকার বাবা-মা (ধনেশ ও ছবিতা) একটু উপরে ঘুরবে
+                marble5.position.set(Math.cos(angle) * 3 + 3, 4, Math.sin(angle) * 3);
+                marble6.position.set(Math.cos(angle + Math.PI) * 3 + 3, 4, Math.sin(angle + Math.PI) * 3);
 
-                marble3.position.set(Math.cos(angle * 1.5 + Math.PI/2) * 5, 3, Math.sin(angle * 1.5 + Math.PI/2) * 5);
-                marble4.position.set(Math.cos(angle * 1.5 - Math.PI/2) * 5, -3, Math.sin(angle * 1.5 - Math.PI/2) * 5);
+                // কেন্দ্রভাগে অবিনাশ ও কনিকা
+                marble1.position.set(Math.cos(angle) * 2.5 - 2, 0, Math.sin(angle) * 2.5);
+                marble2.position.set(Math.cos(angle + Math.PI) * 2.5 - 2, 0, Math.sin(angle + Math.PI) * 2.5);
 
-                const connections = [
-                    [marble1, marble2], [marble3, marble1], [marble3, marble2], [marble4, marble1], [marble4, marble2]
-                ];
+                // সন্তানরা নিচের দিকে ঘুরবে
+                marble3.position.set(Math.cos(angle * 1.5 + Math.PI/2) * 5, -4, Math.sin(angle * 1.5 + Math.PI/2) * 5);
+                marble4.position.set(Math.cos(angle * 1.5 - Math.PI/2) * 5, -4, Math.sin(angle * 1.5 - Math.PI/2) * 5);
 
+                // সুতোর অবস্থান হালনাগাদ করা
                 threads.forEach((thread, index) => {
                     const points = [connections[index][0].position, connections[index][1].position];
                     thread.geometry.setFromPoints(points);
@@ -239,7 +262,7 @@
                 clickableMarbles.forEach(m => m.rotation.y += 0.01);
             }
 
-            // ক্যামেরা স্মুথ লার্প (Lerp) অ্যানিমেশন
+            // ক্যামেরা স্মুথ অ্যানিমেশন
             camera.position.lerp(targetCameraPos, 0.05);
             currentLookAt.lerp(targetLookAt, 0.05);
             camera.lookAt(currentLookAt);
@@ -254,7 +277,6 @@
         const mouse = new THREE.Vector2();
 
         window.addEventListener('click', (event) => {
-            // পপ-আপ খোলা থাকলে ক্যানভাসে ক্লিক ইগনোর হবে
             if (document.getElementById('popup-modal').style.display === 'block') return;
 
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -265,12 +287,9 @@
 
             if (intersects.length > 0) {
                 const selectedMarble = intersects[0].object;
-                isAnimating = false; // অর্বিটাল ঘূর্ণন বন্ধ হবে
+                isAnimating = false;
 
-                // ক্যামেরাকে জুম করে মার্বেলের সামনে নিয়ে যাওয়ার টার্গেট সেট
                 targetLookAt.copy(selectedMarble.position);
-                
-                // মার্বেল থেকে ৩ ইউনিট দূরত্ব বজায় রেখে ক্যামেরা যাবে
                 const offset = new THREE.Vector3(0, 0, 3.5);
                 targetCameraPos.copy(selectedMarble.position).add(offset);
 
@@ -286,7 +305,6 @@
             document.getElementById('m-father').innerText = data.father;
             document.getElementById('m-mother').innerText = data.mother;
 
-            // জুম হওয়া সম্পন্ন হওয়ার পর পপ-আপ দেখাবে
             setTimeout(() => {
                 document.getElementById('popup-modal').style.display = 'block';
             }, 300);
@@ -294,18 +312,15 @@
 
         function closePopup() {
             document.getElementById('popup-modal').style.display = 'none';
-            
-            // ক্যামেরাকে আগের ডিফল্ট জায়গায় রিসেট করা
             targetCameraPos.copy(defaultCameraPos);
             targetLookAt.set(0, 0, 0);
 
-            // ক্যামেরা কিছুটা পিছিয়ে গেলে ঘূর্ণন অ্যানিমেশন চালু করা
             setTimeout(() => {
                 isAnimating = true;
             }, 500);
         }
 
-        // উইন্ডো রিসাইজ হ্যান্ডেল করা
+        // উইন্ডো রিসাইজ
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
