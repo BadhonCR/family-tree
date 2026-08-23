@@ -272,7 +272,6 @@
             return sprite;
         }
 
-        // id ➔ uid তে পরিবর্তন করা হয়েছে
         const membersData = [
             // মূল জেষ্ঠ্য দম্পতি
             { uid: "FT-016", bnName: "দিনোনাথ রায়", enName: "Dinonath Roy", nick: "খোকা সরকার", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-017", father: null, mother: null, children: ["FT-018", "FT-019", "FT-020", "FT-021", "FT-022", "FT-023", "FT-024", "FT-025"] },
@@ -281,7 +280,15 @@
             // সন্তানসমূহ (FT-016 & FT-017 এর)
             { uid: "FT-018", bnName: "জয়ন্তী রাণী রায়", enName: "Joyonti Rani Roy", nick: "জয়ন্তী", gender: "মহিলা (Female)", color: 0xff1493, spouse: null, father: "FT-016", mother: "FT-017", children: [] },
             { uid: "FT-019", bnName: "বাসন্তী রাণী রায়", enName: "Basonti Rani Roy", nick: "বাসন্তী", gender: "মহিলা (Female)", color: 0xff1493, spouse: null, father: "FT-016", mother: "FT-017", children: [] },
-            { uid: "FT-020", bnName: "দিনেশ চন্দ্র রায়", enName: "Dinash Chandra Roy", nick: "দিনেশ", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: null, father: "FT-016", mother: "FT-017", children: [] },
+            
+            // FT-020 এর তথ্য আপডেট ও নতুন মার্বেলসমূহ যুক্ত করা হয়েছে
+            { uid: "FT-020", bnName: "দিনেশ চন্দ্র রায়", enName: "Dinash Chandra Roy", nick: "দিনেশ", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-047", father: "FT-016", mother: "FT-017", children: ["FT-048", "FT-049", "FT-050"] },
+            { uid: "FT-047", bnName: "ভদ্রা রাণী রায়", enName: "Bhadra Rani Roy", nick: "ভদ্রা", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-020", father: null, mother: null, children: ["FT-048", "FT-049", "FT-050"] },
+            { uid: "FT-048", bnName: "দিপিকা রানী রায়", enName: "Depika Rani Roy", nick: "দিপিকা", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-051", father: "FT-020", mother: "FT-047", children: [] },
+            { uid: "FT-049", bnName: "দিতী রানী রায়", enName: "Diti Rani Roy", nick: "দিতী", gender: "মহিলা (Female)", color: 0xff1493, spouse: null, father: "FT-020", mother: "FT-047", children: [] },
+            { uid: "FT-050", bnName: "অনিক রায় প্রান্ত", enName: "Anik Roy Pranto", nick: "প্রান্ত", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-020", mother: "FT-047", children: [] },
+            { uid: "FT-051", bnName: "সুধাংশু রায়", enName: "Sudhangsu Roy", nick: "সুধাংশু", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-048", father: null, mother: null, children: [] },
+
             { uid: "FT-021", bnName: "ধনেশ চন্দ্র রায়", enName: "Dhonesh Chandra Roy", nick: "ধনেশ", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-079", father: "FT-016", mother: "FT-017", children: ["FT-002", "FT-011", "FT-007"] },
             { uid: "FT-022", bnName: "গণেশ চন্দ্র রায়", enName: "Gonesh Chandra Roy", nick: "গণেশ", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: null, father: "FT-016", mother: "FT-017", children: [] },
             { uid: "FT-023", bnName: "কর্তিক চন্দ্র রায়", enName: "Karttik Chandra Roy", nick: "কর্তিক", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-055", father: "FT-016", mother: "FT-017", children: ["FT-056", "FT-059"] },
@@ -345,6 +352,13 @@
             ["FT-024", "FT-016"], ["FT-024", "FT-017"],
             ["FT-025", "FT-016"], ["FT-025", "FT-017"],
 
+            // দিনেশ (FT-020) ও ভদ্রা (FT-047) এবং তাদের সন্তান ও জামাতা
+            ["FT-020", "FT-047"],
+            ["FT-048", "FT-020"], ["FT-048", "FT-047"],
+            ["FT-049", "FT-020"], ["FT-049", "FT-047"],
+            ["FT-050", "FT-020"], ["FT-050", "FT-047"],
+            ["FT-048", "FT-051"],
+
             // কাঞ্চন
             ["FT-025", "FT-066"],
             ["FT-067", "FT-025"], ["FT-067", "FT-066"],
@@ -404,12 +418,13 @@
                 });
 
                 // দাম্পত্য সঙ্গীগণ
+                if(marbleMap["FT-047"]) marbleMap["FT-047"].position.set(marbleMap["FT-020"].position.x + 2, 4, marbleMap["FT-020"].position.z + 2);
                 if(marbleMap["FT-079"]) marbleMap["FT-079"].position.set(marbleMap["FT-021"].position.x + 2, 4, marbleMap["FT-021"].position.z + 2);
                 if(marbleMap["FT-055"]) marbleMap["FT-055"].position.set(marbleMap["FT-023"].position.x + 2, 4, marbleMap["FT-023"].position.z + 2);
                 if(marbleMap["FT-066"]) marbleMap["FT-066"].position.set(marbleMap["FT-025"].position.x + 2, 4, marbleMap["FT-025"].position.z + 2);
 
                 // পরবর্তী প্রজন্ম (নিচের লেভেল)
-                const lowerGen = ["FT-002", "FT-011", "FT-007", "FT-056", "FT-059", "FT-067", "FT-068"];
+                const lowerGen = ["FT-048", "FT-049", "FT-050", "FT-002", "FT-011", "FT-007", "FT-056", "FT-059", "FT-067", "FT-068"];
                 lowerGen.forEach((uid, idx) => {
                     const lAngle = angle * 1.2 + (idx * (Math.PI * 2 / lowerGen.length));
                     if (marbleMap[uid]) {
@@ -427,6 +442,7 @@
                 });
 
                 // অন্যান্য স্পাউসসমূহ
+                if(marbleMap["FT-051"]) marbleMap["FT-051"].position.set(marbleMap["FT-048"].position.x + 2, -4, marbleMap["FT-048"].position.z);
                 if(marbleMap["FT-001"]) marbleMap["FT-001"].position.set(marbleMap["FT-002"].position.x + 2, -4, marbleMap["FT-002"].position.z);
                 if(marbleMap["FT-012"]) marbleMap["FT-012"].position.set(marbleMap["FT-011"].position.x + 2, -4, marbleMap["FT-011"].position.z);
                 if(marbleMap["FT-006"]) marbleMap["FT-006"].position.set(marbleMap["FT-007"].position.x + 2, -4, marbleMap["FT-007"].position.z);
