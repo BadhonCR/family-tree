@@ -28,6 +28,59 @@
             backdrop-filter: blur(5px);
         }
 
+        /* Search Box Styles */
+        #search-container {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 20;
+            width: 280px;
+        }
+
+        #search-input {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid #00ffff;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            font-size: 14px;
+            box-sizing: border-box;
+            backdrop-filter: blur(5px);
+            outline: none;
+        }
+
+        #search-input::placeholder {
+            color: #aaa;
+        }
+
+        #search-results {
+            position: absolute;
+            top: 45px;
+            left: 0;
+            right: 0;
+            background: rgba(15, 20, 30, 0.95);
+            border: 1px solid #00ffff44;
+            border-radius: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        .search-item {
+            padding: 8px 12px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 13px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .search-item:hover {
+            background: rgba(0, 255, 255, 0.2);
+            color: #00ffff;
+        }
+
         #info-card {
             position: absolute;
             top: 60px;
@@ -106,14 +159,23 @@
                 max-width: 220px;
                 font-size: 11px;
             }
+            #search-container {
+                width: 180px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <button uid="toggle-info-btn" onclick="toggleInfoCard()">👁️ ব্যানার হাইড করুন</button>
+    <button id="toggle-info-btn" onclick="toggleInfoCard()">👁️ ব্যানার হাইড করুন</button>
 
-    <div uid="info-card">
+    <!-- Search UI -->
+    <div id="search-container">
+        <input type="text" id="search-input" placeholder="🔍 UID, নাম (বাংলা/Eng) খুঁজুন..." oninput="handleSearch()">
+        <div id="search-results"></div>
+    </div>
+
+    <div id="info-card">
         <h3>পারিবারিক গাছ (Family Tree)</h3>
         <p><strong>সর্বজ্যেষ্ঠ দম্পতি:</strong></p>
         <p>• দিনোনাথ (FT-016) & দুলালী (FT-017)</p>
@@ -126,17 +188,17 @@
         </p>
     </div>
 
-    <div uid="popup-modal">
-        <h2 uid="modal-title">প্রোফাইল বিবরণ</h2>
-        <p><strong>আইডি:</strong> <span uid="m-uid"></span></p>
-        <p><strong>বাংলা নাম:</strong> <span uid="m-bname"></span></p>
-        <p><strong>ইংরেজি নাম:</strong> <span uid="m-ename"></span></p>
-        <p><strong>লিঙ্গ:</strong> <span uid="m-gender"></span></p>
-        <p><strong>দাম্পত্য সঙ্গী:</strong> <span uid="m-spouse"></span></p>
-        <p><strong>পিতার নাম:</strong> <span uid="m-father"></span></p>
-        <p><strong>মাতার নাম:</strong> <span uid="m-mother"></span></p>
-        <p><strong>সন্তানগণ:</strong> <span uid="m-children"></span></p>
-        <button uid="close-btn" onclick="closePopup()">বন্ধ করুন</button>
+    <div id="popup-modal">
+        <h2 id="modal-title">প্রোফাইল বিবরণ</h2>
+        <p><strong>ইউআইডি (UID):</strong> <span id="m-uid"></span></p>
+        <p><strong>বাংলা নাম:</strong> <span id="m-bname"></span></p>
+        <p><strong>ইংরেজি নাম:</strong> <span id="m-ename"></span></p>
+        <p><strong>লিঙ্গ:</strong> <span id="m-gender"></span></p>
+        <p><strong>দাম্পত্য সঙ্গী:</strong> <span id="m-spouse"></span></p>
+        <p><strong>পিতার নাম:</strong> <span id="m-father"></span></p>
+        <p><strong>মাতার নাম:</strong> <span id="m-mother"></span></p>
+        <p><strong>সন্তানগণ:</strong> <span id="m-children"></span></p>
+        <button id="close-btn" onclick="closePopup()">বন্ধ করুন</button>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -145,8 +207,8 @@
 
     <script>
         function toggleInfoCard() {
-            const card = document.getElementByuid('info-card');
-            const btn = document.getElementByuid('toggle-info-btn');
+            const card = document.getElementById('info-card');
+            const btn = document.getElementById('toggle-info-btn');
             if (card.classList.contains('hidden')) {
                 card.classList.remove('hidden');
                 btn.innerHTML = '👁️ ব্যানার হাইড করুন';
@@ -210,6 +272,7 @@
             return sprite;
         }
 
+        // id ➔ uid তে পরিবর্তন করা হয়েছে
         const membersData = [
             // মূল জেষ্ঠ্য দম্পতি
             { uid: "FT-016", bnName: "দিনোনাথ রায়", enName: "Dinonath Roy", nick: "খোকা সরকার", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-017", father: null, mother: null, children: ["FT-018", "FT-019", "FT-020", "FT-021", "FT-022", "FT-023", "FT-024", "FT-025"] },
@@ -332,9 +395,9 @@
                 marbleMap["FT-017"].position.set(Math.cos(angle + Math.PI) * 5, 12, Math.sin(angle + Math.PI) * 5);
 
                 // মধ্যম জেনারেশন (সন্তানগণ)
-                const muidChildren = ["FT-018", "FT-019", "FT-020", "FT-021", "FT-022", "FT-023", "FT-024", "FT-025"];
-                muidChildren.forEach((uid, uidx) => {
-                    const childAngle = angle + (uidx * (Math.PI * 2 / muidChildren.length));
+                const midChildren = ["FT-018", "FT-019", "FT-020", "FT-021", "FT-022", "FT-023", "FT-024", "FT-025"];
+                midChildren.forEach((uid, idx) => {
+                    const childAngle = angle + (idx * (Math.PI * 2 / midChildren.length));
                     if (marbleMap[uid]) {
                         marbleMap[uid].position.set(Math.cos(childAngle) * 12, 4, Math.sin(childAngle) * 12);
                     }
@@ -347,8 +410,8 @@
 
                 // পরবর্তী প্রজন্ম (নিচের লেভেল)
                 const lowerGen = ["FT-002", "FT-011", "FT-007", "FT-056", "FT-059", "FT-067", "FT-068"];
-                lowerGen.forEach((uid, uidx) => {
-                    const lAngle = angle * 1.2 + (uidx * (Math.PI * 2 / lowerGen.length));
+                lowerGen.forEach((uid, idx) => {
+                    const lAngle = angle * 1.2 + (idx * (Math.PI * 2 / lowerGen.length));
                     if (marbleMap[uid]) {
                         marbleMap[uid].position.set(Math.cos(lAngle) * 16, -4, Math.sin(lAngle) * 16);
                     }
@@ -356,8 +419,8 @@
 
                 // শেষ প্রজন্ম
                 const bottomGen = ["FT-003", "FT-004", "FT-013", "FT-008", "FT-009", "FT-058"];
-                bottomGen.forEach((uid, uidx) => {
-                    const bAngle = angle * 1.5 + (uidx * (Math.PI * 2 / bottomGen.length));
+                bottomGen.forEach((uid, idx) => {
+                    const bAngle = angle * 1.5 + (idx * (Math.PI * 2 / bottomGen.length));
                     if (marbleMap[uid]) {
                         marbleMap[uid].position.set(Math.cos(bAngle) * 20, -11, Math.sin(bAngle) * 20);
                     }
@@ -385,6 +448,43 @@
 
         animate();
 
+        // --- সার্চ ফিল্টার হ্যান্ডলিং ---
+        function handleSearch() {
+            const query = document.getElementById('search-input').value.trim().toLowerCase();
+            const resultsContainer = document.getElementById('search-results');
+            resultsContainer.innerHTML = '';
+
+            if (!query) {
+                resultsContainer.style.display = 'none';
+                return;
+            }
+
+            const matched = membersData.filter(m => 
+                m.uid.toLowerCase().includes(query) ||
+                m.bnName.toLowerCase().includes(query) ||
+                m.enName.toLowerCase().includes(query) ||
+                m.nick.toLowerCase().includes(query)
+            );
+
+            if (matched.length > 0) {
+                resultsContainer.style.display = 'block';
+                matched.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'search-item';
+                    div.innerHTML = `<strong>${item.bnName}</strong> (${item.uid})<br><small style="color:#aaa">${item.enName}</small>`;
+                    div.onclick = () => {
+                        focusByUid(item.uid);
+                        resultsContainer.style.display = 'none';
+                        document.getElementById('search-input').value = item.bnName;
+                    };
+                    resultsContainer.appendChild(div);
+                });
+            } else {
+                resultsContainer.style.display = 'block';
+                resultsContainer.innerHTML = `<div class="search-item" style="color: #ff4757;">কোন তথ্য পাওয়া যায়নি</div>`;
+            }
+        }
+
         // --- ইন্টারঅ্যাকশন হ্যান্ডলিং ---
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
@@ -396,7 +496,7 @@
         });
 
         window.addEventListener('pointerup', (event) => {
-            if (event.target.closest('#popup-modal') || event.target.closest('#toggle-info-btn')) return;
+            if (event.target.closest('#popup-modal') || event.target.closest('#toggle-info-btn') || event.target.closest('#search-container')) return;
 
             const deltaX = Math.abs(event.clientX - touchStartX);
             const deltaY = Math.abs(event.clientY - touchStartY);
@@ -455,12 +555,12 @@
             isMarbleSelected = true;
             
             const data = selectedMarble.userData;
-            const activeuids = new Set([data.uid]);
+            const activeUids = new Set([data.uid]);
 
-            if (data.spouse) activeuids.add(data.spouse);
-            if (data.father) activeuids.add(data.father);
-            if (data.mother) activeuids.add(data.mother);
-            if (data.children) data.children.forEach(uid => activeuids.add(uid));
+            if (data.spouse) activeUids.add(data.spouse);
+            if (data.father) activeUids.add(data.father);
+            if (data.mother) activeUids.add(data.mother);
+            if (data.children) data.children.forEach(uid => activeUids.add(uid));
 
             // ১. মূল নির্বাচিত মার্বেল
             animateMarbleTo(selectedMarble, { x: 0, y: 0, z: 0 });
@@ -483,17 +583,17 @@
             // ৫. সন্তানগণ
             if (data.children && data.children.length > 0) {
                 const count = data.children.length;
-                data.children.forEach((childuid, index) => {
-                    if (marbleMap[childuid]) {
+                data.children.forEach((childUid, index) => {
+                    if (marbleMap[childUid]) {
                         const xPos = (index - (count - 1) / 2) * 3.5;
-                        animateMarbleTo(marbleMap[childuid], { x: xPos, y: -3.5, z: 0 });
+                        animateMarbleTo(marbleMap[childUid], { x: xPos, y: -3.5, z: 0 });
                     }
                 });
             }
 
             // ৬. অনাকাঙ্ক্ষিত মার্বেল ফেড-আউট
             clickableMarbles.forEach(m => {
-                if (!activeuids.has(m.userData.uid)) {
+                if (!activeUids.has(m.userData.uid)) {
                     fadeOutMarble(m);
                 }
             });
@@ -501,7 +601,7 @@
             // ৭. সুতো অ্যানিমেশন
             threads.forEach((thread, index) => {
                 const pair = connections[index];
-                const isPairActive = activeuids.has(pair[0].userData.uid) && activeuids.has(pair[1].userData.uid);
+                const isPairActive = activeUids.has(pair[0].userData.uid) && activeUids.has(pair[1].userData.uid);
 
                 if (isPairActive) {
                     thread.visible = true;
@@ -530,38 +630,39 @@
             showPopup(data);
         }
 
-        function focusByuid(uid) {
+        function focusByUid(uid) {
             if (marbleMap[uid]) selectMarble(marbleMap[uid]);
         }
 
         function renderRelationLink(uid) {
             if (!uid || !marbleMap[uid]) return "N/A";
             const data = marbleMap[uid].userData;
-            return `<span class="relation-link" onclick="focusByuid('${data.uid}')">${data.bnName}</span>`;
+            return `<span class="relation-link" onclick="focusByUid('${data.uid}')">${data.bnName}</span>`;
         }
 
         function showPopup(data) {
-            document.getElementByuid('m-uid').innerText = data.uid;
-            document.getElementByuid('m-bname').innerText = data.bnName;
-            document.getElementByuid('m-ename').innerText = data.enName;
-            document.getElementByuid('m-gender').innerText = data.gender;
+            document.getElementById('m-uid').innerText = data.uid;
+            document.getElementById('m-bname').innerText = data.bnName;
+            document.getElementById('m-ename').innerText = data.enName;
+            document.getElementById('m-gender').innerText = data.gender;
             
-            document.getElementByuid('m-spouse').innerHTML = renderRelationLink(data.spouse);
-            document.getElementByuid('m-father').innerHTML = renderRelationLink(data.father);
-            document.getElementByuid('m-mother').innerHTML = renderRelationLink(data.mother);
+            document.getElementById('m-spouse').innerHTML = renderRelationLink(data.spouse);
+            document.getElementById('m-father').innerHTML = renderRelationLink(data.father);
+            document.getElementById('m-mother').innerHTML = renderRelationLink(data.mother);
 
             if (data.children && data.children.length > 0) {
-                const childLinks = data.children.map(childuid => renderRelationLink(childuid));
-                document.getElementByuid('m-children').innerHTML = childLinks.join(', ');
+                const childLinks = data.children.map(childUid => renderRelationLink(childUid));
+                document.getElementById('m-children').innerHTML = childLinks.join(', ');
             } else {
-                document.getElementByuid('m-children').innerText = "N/A";
+                document.getElementById('m-children').innerText = "N/A";
             }
 
-            document.getElementByuid('popup-modal').style.display = 'block';
+            document.getElementById('popup-modal').style.display = 'block';
         }
 
         function closePopup() {
-            document.getElementByuid('popup-modal').style.display = 'none';
+            document.getElementById('popup-modal').style.display = 'none';
+            document.getElementById('search-results').style.display = 'none';
             
             clickableMarbles.forEach(m => {
                 m.visible = true;
