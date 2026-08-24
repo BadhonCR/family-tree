@@ -13,81 +13,139 @@
             touch-action: none;
         }
 
-        /* Control Panel Buttons Container */
-        #top-controls {
+        /* Top Menu Button */
+        #menu-toggle-btn {
             position: absolute;
             top: 15px;
             left: 15px;
-            z-index: 20;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .btn-ui {
-            background: rgba(0, 255, 255, 0.2);
+            z-index: 100;
+            background: rgba(0, 255, 255, 0.25);
             color: #00ffff;
             border: 1px solid #00ffff;
-            padding: 8px 14px;
-            border-radius: 6px;
+            padding: 10px 18px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
-            backdrop-filter: blur(5px);
-            font-size: 13px;
-            transition: background 0.2s, transform 0.1s;
+            backdrop-filter: blur(8px);
+            font-size: 15px;
+            box-shadow: 0 4px 12px rgba(0,255,255,0.2);
+            transition: all 0.2s ease;
         }
 
-        .btn-ui:hover {
-            background: rgba(0, 255, 255, 0.4);
-            transform: translateY(-2px);
+        #menu-toggle-btn:hover {
+            background: rgba(0, 255, 255, 0.45);
+            transform: scale(1.03);
         }
 
-        /* Search Box Styles */
-        #search-container {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            z-index: 20;
-            width: 280px;
+        /* Main Sliding Navigation Menu Drawer */
+        #nav-drawer {
+            position: fixed;
+            top: 0;
+            left: -340px;
+            width: 320px;
+            height: 100%;
+            background: rgba(12, 18, 28, 0.96);
+            border-right: 1px solid #00ffff55;
+            z-index: 1000;
+            transition: left 0.3s ease;
+            box-shadow: 5px 0 25px rgba(0,0,0,0.8);
+            backdrop-filter: blur(12px);
+            display: flex;
+            flex-direction: column;
         }
 
+        #nav-drawer.open {
+            left: 0;
+        }
+
+        .drawer-header {
+            padding: 15px 20px;
+            background: rgba(0, 255, 255, 0.1);
+            border-bottom: 1px solid #00ffff44;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .drawer-header h2 {
+            margin: 0;
+            color: #00ffff;
+            font-size: 18px;
+        }
+
+        .drawer-body {
+            padding: 15px;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        /* Tabs inside Menu */
+        .tab-buttons {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 8px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: rgba(255,255,255,0.05);
+            color: #aaa;
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 8px 4px;
+            border-radius: 6px;
+            font-size: 11px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .tab-btn.active {
+            background: rgba(0, 255, 255, 0.25);
+            color: #00ffff;
+            border-color: #00ffff;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Search Box Styles inside Menu */
         #search-input {
             width: 100%;
-            padding: 10px 14px;
+            padding: 10px;
             border-radius: 8px;
             border: 1px solid #00ffff;
             background: rgba(0, 0, 0, 0.8);
             color: #fff;
-            font-size: 14px;
+            font-size: 13px;
             box-sizing: border-box;
-            backdrop-filter: blur(5px);
             outline: none;
+            margin-bottom: 10px;
         }
 
-        #search-input::placeholder {
-            color: #aaa;
-        }
-
-        #search-results {
-            position: absolute;
-            top: 45px;
-            left: 0;
-            right: 0;
-            background: rgba(15, 20, 30, 0.95);
-            border: 1px solid #00ffff44;
-            border-radius: 8px;
-            max-height: 200px;
+        #search-results-list {
+            max-height: 300px;
             overflow-y: auto;
-            display: none;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            border-radius: 6px;
         }
 
         .search-item {
-            padding: 8px 12px;
+            padding: 10px;
             color: #fff;
             cursor: pointer;
             font-size: 13px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.03);
+            margin-bottom: 5px;
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: 0.2s;
         }
 
         .search-item:hover {
@@ -95,46 +153,32 @@
             color: #00ffff;
         }
 
-        /* Info & Stats Banner */
-        #info-card {
-            position: absolute;
-            top: 60px;
-            left: 15px;
-            color: white;
-            background: rgba(10, 15, 25, 0.9);
-            padding: 16px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,255,255,0.15);
-            border: 1px solid rgba(0, 255, 255, 0.3);
-            z-index: 10;
-            width: 280px;
-            max-height: 80vh;
-            overflow-y: auto;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(8px);
-        }
-        .hidden { display: none !important; }
-        h3 { margin: 0 0 10px 0; font-size: 16px; color: #00ffff; border-bottom: 1px solid #00ffff44; padding-bottom: 5px; }
-        p { margin: 0 0 6px 0; font-size: 13px; line-height: 1.4; }
-        .divider { margin: 10px 0; border: 0; border-top: 1px solid #444; }
-
+        /* Stats Grid & Clickable Cards */
         .stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-top: 8px;
+            gap: 10px;
+            margin-top: 10px;
         }
 
         .stat-box {
             background: rgba(255, 255, 255, 0.05);
-            padding: 8px;
+            padding: 12px 8px;
             border-radius: 8px;
             text-align: center;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .stat-box:hover {
+            background: rgba(0, 255, 255, 0.15);
+            transform: translateY(-2px);
+            border-color: #00ffff;
         }
 
         .stat-number {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
             color: #00ffff;
             margin-bottom: 2px;
@@ -145,25 +189,41 @@
             color: #ccc;
         }
 
-        /* Relationship Modal/Card */
-        #relation-modal {
-            display: none;
-            position: fixed;
-            top: 60px;
-            left: 310px;
-            background: rgba(15, 20, 30, 0.95);
-            color: #fff;
-            padding: 18px;
-            border-radius: 12px;
-            box-shadow: 0 5px 25px rgba(0,0,0,0.8);
-            z-index: 1000;
-            width: 320px;
-            max-height: 80vh;
-            overflow-y: auto;
-            border: 1px solid #00ffff66;
-            backdrop-filter: blur(10px);
+        /* Generation List Styling */
+        .gen-item {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 8px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: 0.2s;
         }
 
+        .gen-item:hover {
+            background: rgba(0, 255, 255, 0.2);
+            border-color: #00ffff;
+        }
+
+        .gen-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .gen-count {
+            font-size: 11px;
+            background: #00ffff22;
+            color: #00ffff;
+            padding: 3px 8px;
+            border-radius: 12px;
+            border: 1px solid #00ffff66;
+        }
+
+        /* Relationship Finder Elements */
         .select-group {
             margin-bottom: 12px;
         }
@@ -196,6 +256,49 @@
             line-height: 1.6;
         }
 
+        /* General Modal List Popup (For Member Lists / Stats Lists) */
+        #list-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(15, 20, 30, 0.98);
+            color: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+            z-index: 2000;
+            width: 340px;
+            max-height: 75vh;
+            overflow-y: auto;
+            border: 1px solid #00ffff66;
+            backdrop-filter: blur(12px);
+        }
+
+        #list-modal h3 {
+            margin-top: 0;
+            color: #00ffff;
+            font-size: 16px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 8px;
+        }
+
+        .modal-member-card {
+            padding: 8px 10px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 6px;
+            margin-bottom: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .modal-member-card:hover {
+            background: rgba(0, 255, 255, 0.2);
+            border-color: #00ffff;
+        }
+
         /* Profile Details Popup Modal */
         #popup-modal {
             display: none;
@@ -207,13 +310,14 @@
             padding: 20px;
             border-radius: 12px;
             box-shadow: 0 5px 25px rgba(0,0,0,0.8);
-            z-index: 1000;
+            z-index: 2500;
             width: 300px;
             max-height: 80vh;
             overflow-y: auto;
             border: 1px solid #00ffff44;
             backdrop-filter: blur(10px);
         }
+
         #popup-modal h2 {
             margin-top: 0;
             color: #00ffff;
@@ -221,7 +325,7 @@
             border-bottom: 2px solid #333;
             padding-bottom: 8px;
         }
-        
+
         .relation-link {
             color: #00ffff;
             text-decoration: underline;
@@ -236,110 +340,111 @@
             padding: 6px 12px;
             border-radius: 5px;
             cursor: pointer;
-            float: right;
             font-weight: bold;
             font-size: 12px;
         }
 
         @media (max-width: 600px) {
-            #relation-modal {
-                top: auto;
-                bottom: 10px;
-                left: 5%;
-                right: 5%;
+            #nav-drawer {
+                width: 290px;
+            }
+            #list-modal, #popup-modal {
                 width: 90%;
-            }
-            #popup-modal {
-                top: auto;
-                bottom: 10px;
-                left: 5%;
-                right: 5%;
-                width: 90%;
-                max-height: 50vh;
-                box-sizing: border-box;
-            }
-            #info-card {
-                width: 240px;
-                font-size: 11px;
-            }
-            #search-container {
-                width: 160px;
             }
         }
     </style>
 </head>
 <body>
 
-    <div id="top-controls">
-        <button id="toggle-info-btn" class="btn-ui" onclick="toggleInfoCard()">📊 পরিসংখ্যান ও তথ্য</button>
-        <button id="toggle-rel-btn" class="btn-ui" onclick="toggleRelationModal()">🔗 সম্পর্ক খুঁজুন</button>
-    </div>
+    <!-- Main Navigation Menu Toggle Button -->
+    <button id="menu-toggle-btn" onclick="toggleDrawer()">☰ মেনু অপশন</button>
 
-    <!-- Search UI -->
-    <div id="search-container">
-        <input type="text" id="search-input" placeholder="🔍 UID, নাম (বাংলা/Eng)..." oninput="handleSearch()">
-        <div id="search-results"></div>
-    </div>
-
-    <!-- Stats & Info Panel -->
-    <div id="info-card">
-        <h3>📊 পারিবারিক পরিসংখ্যান</h3>
+    <!-- Sliding Navigation Menu Drawer -->
+    <div id="nav-drawer">
+        <div class="drawer-header">
+            <h2>পারিবারিক প্যানেল</h2>
+            <button class="btn-close" onclick="toggleDrawer()">✕</button>
+        </div>
         
-        <div class="stats-grid">
-            <div class="stat-box">
-                <div class="stat-number" id="stat-total">0</div>
-                <div class="stat-label">মোট সদস্য</div>
+        <div class="drawer-body">
+            <!-- Tabs Header -->
+            <div class="tab-buttons">
+                <button class="tab-btn active" onclick="switchTab('stats-tab', this)">📊 পরিসংখ্যান</button>
+                <button class="tab-btn" onclick="switchTab('search-tab', this)">🔍 সন্ধান</button>
+                <button class="tab-btn" onclick="switchTab('rel-tab', this)">🔗 সম্পর্ক</button>
             </div>
-            <div class="stat-box">
-                <div class="stat-number" id="stat-families">0</div>
-                <div class="stat-label">পরিবার / দম্পতি</div>
+
+            <!-- TAB 1: STATISTICS & GENERATIONS -->
+            <div id="stats-tab" class="tab-content active">
+                <p style="font-size: 11px; color: #aaa; margin-bottom: 10px;">
+                    💡 বিস্তারিত তালিকা দেখতে যেকোনো পরিসংখ্যানে ক্লিক করুন:
+                </p>
+
+                <div class="stats-grid">
+                    <div class="stat-box" onclick="showFilteredMemberList('all', 'সকল সদস্যের তালিকা')">
+                        <div class="stat-number" id="stat-total">0</div>
+                        <div class="stat-label">মোট সদস্য</div>
+                    </div>
+                    <div class="stat-box" onclick="showCouplesList()">
+                        <div class="stat-number" id="stat-families">0</div>
+                        <div class="stat-label">পরিবার / দম্পতি</div>
+                    </div>
+                    <div class="stat-box" onclick="showFilteredMemberList('male', 'পুরুষ সদস্যদের তালিকা')">
+                        <div class="stat-number" id="stat-male" style="color: #00ccff;">0</div>
+                        <div class="stat-label">পুরুষ সদস্য</div>
+                    </div>
+                    <div class="stat-box" onclick="showFilteredMemberList('female', 'নারী সদস্যদের তালিকা')">
+                        <div class="stat-number" id="stat-female" style="color: #ff1493;">0</div>
+                        <div class="stat-label">নারী সদস্য</div>
+                    </div>
+                </div>
+
+                <h3 style="margin-top:20px; font-size:14px;">🧬 জেনারেশন (বংশপরম্পরা)</h3>
+                <div id="generation-container">
+                    <!-- Automatically Generated Generation Items -->
+                </div>
             </div>
-            <div class="stat-box">
-                <div class="stat-number" id="stat-male" style="color: #00ccff;">0</div>
-                <div class="stat-label">পুরুষ সদস্য</div>
+
+            <!-- TAB 2: SEARCH -->
+            <div id="search-tab" class="tab-content">
+                <input type="text" id="search-input" placeholder="🔍 UID, নাম (বাংলা/Eng)..." oninput="handleSearch()">
+                <div id="search-results-list"></div>
             </div>
-            <div class="stat-box">
-                <div class="stat-number" id="stat-female" style="color: #ff1493;">0</div>
-                <div class="stat-label">নারী সদস্য</div>
+
+            <!-- TAB 3: RELATIONSHIP FINDER -->
+            <div id="rel-tab" class="tab-content">
+                <div class="select-group">
+                    <label>প্রথম ব্যক্তি (Person A):</label>
+                    <select id="rel-person-a" onchange="calculateRelationship()"></select>
+                </div>
+
+                <div class="select-group">
+                    <label>দ্বিতীয় ব্যক্তি (Person B):</label>
+                    <select id="rel-person-b" onchange="calculateRelationship()"></select>
+                </div>
+
+                <div id="rel-result">
+                    দুইজন ব্যক্তি নির্বাচন করুন সম্পর্ক জানার জন্য।
+                </div>
             </div>
         </div>
-
-        <hr class="divider">
-        <p><strong>সর্বজ্যেষ্ঠ দম্পতি:</strong></p>
-        <p>• দিনোনাথ (FT-016) & দুলালী (FT-017)</p>
-        <hr class="divider">
-        <p style="color: #ffeb3b; font-size: 11px;">
-            ✨ যেকোনো মার্বেলে ক্লিক করলে পরিবার ও নিকটাত্মীয়দের সাজানো রূপ দেখা যাবে।
-        </p>
     </div>
 
-    <!-- Relationship Finder Modal -->
-    <div id="relation-modal">
-        <button class="btn-close" onclick="toggleRelationModal()">✕</button>
-        <h3>🔗 পারস্পরিক সম্পর্ক নির্ণয়</h3>
-        
-        <div class="select-group">
-            <label>প্রথম ব্যক্তি (Person A):</label>
-            <select id="rel-person-a" onchange="calculateRelationship()"></select>
-        </div>
-
-        <div class="select-group">
-            <label>দ্বিতীয় ব্যক্তি (Person B):</label>
-            <select id="rel-person-b" onchange="calculateRelationship()"></select>
-        </div>
-
-        <div id="rel-result">
-            দুইজন ব্যক্তি নির্বাচন করুন সম্পর্ক জানার জন্য।
-        </div>
+    <!-- Filtered Member List Modal -->
+    <div id="list-modal">
+        <button class="btn-close" style="float:right;" onclick="closeListModal()">✕</button>
+        <h3 id="list-modal-title">সদস্য তালিকা</h3>
+        <div id="list-modal-body"></div>
     </div>
 
-    <!-- Member Details Popup -->
+    <!-- Member Profile Details Popup -->
     <div id="popup-modal">
         <h2 id="modal-title">প্রোফাইল বিবরণ</h2>
         <p><strong>ইউআইডি (UID):</strong> <span id="m-uid"></span></p>
         <p><strong>বাংলা নাম:</strong> <span id="m-bname"></span></p>
         <p><strong>ইংরেজি নাম:</strong> <span id="m-ename"></span></p>
         <p><strong>লিঙ্গ:</strong> <span id="m-gender"></span></p>
+        <p><strong>জেনারেশন:</strong> <span id="m-gen"></span></p>
         <p><strong>দাম্পত্য সঙ্গী:</strong> <span id="m-spouse"></span></p>
         <p><strong>পিতার নাম:</strong> <span id="m-father"></span></p>
         <p><strong>মাতার নাম:</strong> <span id="m-mother"></span></p>
@@ -352,23 +457,16 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
 
     <script>
-        function toggleInfoCard() {
-            const card = document.getElementById('info-card');
-            if (card.classList.contains('hidden')) {
-                card.classList.remove('hidden');
-            } else {
-                card.classList.add('hidden');
-            }
+        function toggleDrawer() {
+            const drawer = document.getElementById('nav-drawer');
+            drawer.classList.toggle('open');
         }
 
-        function toggleRelationModal() {
-            const modal = document.getElementById('relation-modal');
-            if (modal.style.display === 'block') {
-                modal.style.display = 'none';
-            } else {
-                modal.style.display = 'block';
-                calculateRelationship();
-            }
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(tb => tb.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active');
         }
 
         const scene = new THREE.Scene();
@@ -426,100 +524,139 @@
         }
 
         const membersData = [
-            // মূল জেষ্ঠ্য দম্পতি
+            // মূল জেষ্ঠ্য দম্পতি (Gen 1)
             { uid: "FT-016", bnName: "দিনোনাথ রায়", enName: "Dinonath Roy", nick: "খোকা সরকার", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-017", father: null, mother: null, children: ["FT-018", "FT-019", "FT-020", "FT-021", "FT-022", "FT-023", "FT-024", "FT-025"] },
             { uid: "FT-017", bnName: "দুলালী রাণী রায়", enName: "Dulali Rani Roy", nick: "নলিনী", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-016", father: null, mother: null, children: ["FT-018", "FT-019", "FT-020", "FT-021", "FT-022", "FT-023", "FT-024", "FT-025"] },
             
-            // সন্তানসমূহ (FT-016 & FT-017 এর)
+            // সুরেশ ও সিতোময়ী (Gen 1)
+            { uid: "FT-070", bnName: "সুরেশ দেউ দেব সিংহ", enName: "Suresh Deu Dev Singh", nick: "সুরেশ", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-071", father: null, mother: null, children: ["FT-073", "FT-079", "FT-081", "FT-085"] },
+            { uid: "FT-071", bnName: "সিতোময়ী রায় দেব সিংহ", enName: "Sitomoyi Roy Dev Singh", nick: "সিতোময়ী", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-070", father: null, mother: null, children: ["FT-073", "FT-079", "FT-081", "FT-085"] },
+
+            // Gen 2 (দিনোনাথ & সুরেশ এর সন্তানগণ)
             { uid: "FT-018", bnName: "জয়ন্তী রাণী রায়", enName: "Joyonti Rani Roy", nick: "জয়ন্তী", gender: "মহিলা (Female)", color: 0xff1493, spouse: null, father: "FT-016", mother: "FT-017", children: [] },
             { uid: "FT-019", bnName: "বাসন্তী রাণী রায়", enName: "Basonti Rani Roy", nick: "বাসন্তী", gender: "মহিলা (Female)", color: 0xff1493, spouse: null, father: "FT-016", mother: "FT-017", children: [] },
             
-            // FT-020 এর পরিবার
             { uid: "FT-020", bnName: "দিনেশ চন্দ্র রায়", enName: "Dinash Chandra Roy", nick: "দিনেশ", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-047", father: "FT-016", mother: "FT-017", children: ["FT-048", "FT-049", "FT-050"] },
             { uid: "FT-047", bnName: "ভদ্রা রাণী রায়", enName: "Bhadra Rani Roy", nick: "ভদ্রা", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-020", father: null, mother: null, children: ["FT-048", "FT-049", "FT-050"] },
-            { uid: "FT-048", bnName: "দিপিকা রানী রায়", enName: "Depika Rani Roy", nick: "দিপিকা", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-051", father: "FT-020", mother: "FT-047", children: [] },
-            { uid: "FT-049", bnName: "দিতী রানী রায়", enName: "Diti Rani Roy", nick: "দিতী", gender: "মহিলা (Female)", color: 0xff1493, spouse: null, father: "FT-020", mother: "FT-047", children: [] },
-            { uid: "FT-050", bnName: "অনিক রায় প্রান্ত", enName: "Anik Roy Pranto", nick: "প্রান্ত", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-020", mother: "FT-047", children: [] },
-            { uid: "FT-051", bnName: "সুধাংশু রায়", enName: "Sudhangsu Roy", nick: "সুধাংশু", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-048", father: null, mother: null, children: [] },
 
             { uid: "FT-021", bnName: "ধনেশ চন্দ্র রায়", enName: "Dhonesh Chandra Roy", nick: "ধনেশ", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-079", father: "FT-016", mother: "FT-017", children: ["FT-002", "FT-011", "FT-007"] },
+            { uid: "FT-079", bnName: "ছবিতা রানী রায়", enName: "Sabita Rani Roy", nick: "ছবিতা", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-021", father: "FT-070", mother: "FT-071", children: ["FT-002", "FT-011", "FT-007"] },
+
             { uid: "FT-022", bnName: "গণেশ চন্দ্র রায়", enName: "Gonesh Chandra Roy", nick: "গণেশ", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: null, father: "FT-016", mother: "FT-017", children: [] },
-            { uid: "FT-023", bnName: "কর্তিক চন্দ্র রায়", enName: "Karttik Chandra Roy", nick: "কর্তিক", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-055", father: "FT-016", mother: "FT-017", children: ["FT-056", "FT-059"] },
             
-            // FT-024 (নিয়তী) এর স্বামী FT-062
+            { uid: "FT-023", bnName: "কর্তিক চন্দ্র রায়", enName: "Karttik Chandra Roy", nick: "কর্তিক", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-055", father: "FT-016", mother: "FT-017", children: ["FT-056", "FT-059"] },
+            { uid: "FT-055", bnName: "লক্ষ্মী রাণী রায়", enName: "Lakkhi Rani Roy", nick: "লক্ষ্মী", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-023", father: null, mother: null, children: ["FT-056", "FT-059"] },
+
             { uid: "FT-024", bnName: "নিয়তী রানি রায়", enName: "Nioti Rani Roy", nick: "নিয়তী", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-062", father: "FT-016", mother: "FT-017", children: [] },
             { uid: "FT-062", bnName: "সুধীর চন্দ্র রায়", enName: "Sudir Roy", nick: "সুধীর", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-024", father: null, mother: null, children: [] },
 
             { uid: "FT-025", bnName: "কাঞ্চন চন্দ্র রায়", enName: "Kanchon Chandra Roy", nick: "কাঞ্চন", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-066", father: "FT-016", mother: "FT-017", children: ["FT-067", "FT-068"] },
-
-            // কাঞ্চন (FT-025) এর পরিবার
             { uid: "FT-066", bnName: "রত্না রাণী রায়", enName: "Ratna Rani Roy", nick: "রত্না", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-025", father: null, mother: null, children: ["FT-067", "FT-068"] },
-            { uid: "FT-067", bnName: "রয়েল চন্দ্র রায়", enName: "Royel Chandra Roy", nick: "রয়েল", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-025", mother: "FT-066", children: [] },
-            { uid: "FT-068", bnName: "দেব চন্দ্র রায়", enName: "Dev Chandra Roy", nick: "দেব", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-025", mother: "FT-066", children: [] },
 
-            // কর্তিক (FT-023) এর পরিবার
-            { uid: "FT-055", bnName: "লক্ষ্মী রাণী রায়", enName: "Lakkhi Rani Roy", nick: "লক্ষ্মী", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-023", father: null, mother: null, children: ["FT-056", "FT-059"] },
+            { uid: "FT-073", bnName: "রবীন্দ্রনাথ দেব সিংহ", enName: "Rabindranath Dev Singh", nick: "রবীন্দ্রনাথ", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-074", father: "FT-070", mother: "FT-071", children: ["FT-075"] },
+            { uid: "FT-074", bnName: "সুনতি রানী", enName: "Sunoti Rani", nick: "সুনতি", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-073", father: null, mother: null, children: ["FT-075"] },
+
+            { uid: "FT-081", bnName: "কবিচন্দ্র দেব সিংহ", enName: "Kavichandra Dev Singha", nick: "কবিচন্দ্র", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-082", father: "FT-070", mother: "FT-071", children: ["FT-083"] },
+            { uid: "FT-082", bnName: "পুষ্পদেব সিংহ", enName: "Pushpadev Singh", nick: "পুষ্পদেব", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-081", father: null, mother: null, children: ["FT-083"] },
+
+            { uid: "FT-085", bnName: "নমিতা রানী দেবসিংহ", enName: "Namita Rani Debsingh", nick: "নমিতা", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-086", father: "FT-070", mother: "FT-071", children: ["FT-087", "FT-088"] },
+            { uid: "FT-086", bnName: "মোহন কাজ্জি", enName: "Mohon Kajji", nick: "মোহন", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-085", father: null, mother: null, children: ["FT-087", "FT-088"] },
+
+            // Gen 3
+            { uid: "FT-048", bnName: "দিপিকা রানী রায়", enName: "Depika Rani Roy", nick: "দিপিকা", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-051", father: "FT-020", mother: "FT-047", children: [] },
+            { uid: "FT-051", bnName: "সুধাংশু রায়", enName: "Sudhangsu Roy", nick: "সুধাংশু", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-048", father: null, mother: null, children: [] },
+            { uid: "FT-049", bnName: "দিতী রানী রায়", enName: "Diti Rani Roy", nick: "দিতী", gender: "মহিলা (Female)", color: 0xff1493, spouse: null, father: "FT-020", mother: "FT-047", children: [] },
+            { uid: "FT-050", bnName: "অনিক রায় প্রান্ত", enName: "Anik Roy Pranto", nick: "প্রান্ত", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-020", mother: "FT-047", children: [] },
+
+            { uid: "FT-002", bnName: "ফেন্সি রানি রায় (কনিকা)", enName: "Fency Rani Roy", nick: "কনিকা", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-001", father: "FT-021", mother: "FT-079", children: ["FT-003", "FT-004"] },
+            { uid: "FT-001", bnName: "অবিনাশ চন্দ্র রায়", enName: "Abinash Chandra Roy", nick: "অবিনাশ", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-002", father: null, mother: null, children: ["FT-003", "FT-004"] },
+
+            { uid: "FT-011", bnName: "জুয়েল চন্দ্র রায়", enName: "Juel Chandra Roy", nick: "জুয়েল", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-012", father: "FT-021", mother: "FT-079", children: ["FT-013"] },
+            { uid: "FT-012", bnName: "জয়া রানী রায়", enName: "Joya Rani Roy", nick: "জয়া", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-011", father: null, mother: null, children: ["FT-013"] },
+
+            { uid: "FT-007", bnName: "মনিকা রানী রায়", enName: "Monika Rani Roy", nick: "মনিকা", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-006", father: "FT-021", mother: "FT-079", children: ["FT-008", "FT-009"] },
+            { uid: "FT-006", bnName: "গোলাপ চন্দ্র রায়", enName: "Golap Chandra Roy", nick: "গোলাপ", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-007", father: null, mother: null, children: ["FT-008", "FT-009"] },
+
             { uid: "FT-056", bnName: "কেয়া রায় ঘোষ", enName: "Keya Roy Ghosh", nick: "কেয়া", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-057", father: "FT-023", mother: "FT-055", children: ["FT-058"] },
             { uid: "FT-057", bnName: "তন্ময় ঘোষ", enName: "Tonmoy Ghosh", nick: "তন্ময়", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-056", father: null, mother: null, children: ["FT-058"] },
-            { uid: "FT-058", bnName: "কৃত্তিকা ঘোষ তনয়া", enName: "Krittika Ghosh Tanoya", nick: "কৃত্তিকা", gender: "মহিলা (Female)", color: 0xff69b4, spouse: null, father: "FT-057", mother: "FT-056", children: [] },
+
             { uid: "FT-059", bnName: "অপু রায়", enName: "Apu Roy", nick: "অপু", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: "FT-060", father: "FT-023", mother: "FT-055", children: [] },
             { uid: "FT-060", bnName: "শ্রাবন্তী রায়", enName: "Srabonti Ray", nick: "শ্রাবন্তী", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-059", father: null, mother: null, children: [] },
 
-            // সুরেশ (FT-070) ও সিতোময়ী (FT-071) বংশালয়
-            { uid: "FT-070", bnName: "সুরেশ দেউ দেব সিংহ", enName: "Suresh Deu Dev Singh", nick: "সুরেশ", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-071", father: null, mother: null, children: ["FT-073", "FT-079", "FT-081", "FT-085"] },
-            { uid: "FT-071", bnName: "সিতোময়ী রায় দেব সিংহ", enName: "Sitomoyi Roy Dev Singh", nick: "সিতোময়ী", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-070", father: null, mother: null, children: ["FT-073", "FT-079", "FT-081", "FT-085"] },
+            { uid: "FT-067", bnName: "রয়েল চন্দ্র রায়", enName: "Royel Chandra Roy", nick: "রয়েল", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-025", mother: "FT-066", children: [] },
+            { uid: "FT-068", bnName: "দেব চন্দ্র রায়", enName: "Dev Chandra Roy", nick: "দেব", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-025", mother: "FT-066", children: [] },
 
-            // FT-070 ও FT-071 এর সন্তানগণ:
-            // ১. রবীন্দ্রনাথ (FT-073) পরিবার
-            { uid: "FT-073", bnName: "রবীন্দ্রনাথ দেব সিংহ", enName: "Rabindranath Dev Singh", nick: "রবীন্দ্রনাথ", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-074", father: "FT-070", mother: "FT-071", children: ["FT-075"] },
-            { uid: "FT-074", bnName: "সুনতি রানী", enName: "Sunoti Rani", nick: "সুনতি", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-073", father: null, mother: null, children: ["FT-075"] },
             { uid: "FT-075", bnName: "শিমুল সিংহ দেবব্রত", enName: "Shimul Singh Debabrata", nick: "শিমুল", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: "FT-076", father: "FT-073", mother: "FT-074", children: ["FT-077"] },
             { uid: "FT-076", bnName: "ছায়া রানী রায়", enName: "Chaya Rani Roy", nick: "ছায়া", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-075", father: null, mother: null, children: ["FT-077"] },
-            { uid: "FT-077", bnName: "দিতিপ্রিয়া রায় (শুদ্ধি)", enName: "Ditipriya Roy", nick: "দিতিপ্রিয়া", gender: "মহিলা (Female)", color: 0xff69b4, spouse: null, father: "FT-075", mother: "FT-076", children: [] },
 
-            // ২. ছবিতা (FT-079) - পিতামাতা যুক্ত করা হলো
-            { uid: "FT-079", bnName: "ছবিতা রানী রায়", enName: "Sabita Rani Roy", nick: "ছবিতা", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-021", father: "FT-070", mother: "FT-071", children: ["FT-002", "FT-011", "FT-007"] },
-
-            // ৩. কবিচন্দ্র (FT-081) পরিবার
-            { uid: "FT-081", bnName: "কবিচন্দ্র দেব সিংহ", enName: "Kavichandra Dev Singha", nick: "কবিচন্দ্র", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-082", father: "FT-070", mother: "FT-071", children: ["FT-083"] },
-            { uid: "FT-082", bnName: "পুষ্পদেব সিংহ", enName: "Pushpadev Singh", nick: "পুষ্পদেব", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-081", father: null, mother: null, children: ["FT-083"] },
             { uid: "FT-083", bnName: "নবকুমার রায় দেবসিংহ", enName: "Nabakumar Roy Debsingh", nick: "নবকুমার", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-081", mother: "FT-082", children: [] },
 
-            // ৪. নমিতা (FT-085) পরিবার
-            { uid: "FT-085", bnName: "নমিতা রানী দেবসিংহ", enName: "Namita Rani Debsingh", nick: "নমিতা", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-086", father: "FT-070", mother: "FT-071", children: ["FT-087", "FT-088"] },
-            { uid: "FT-086", bnName: "মোহন কাজ্জি", enName: "Mohon Kajji", nick: "মোহন", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-085", father: null, mother: null, children: ["FT-087", "FT-088"] },
             { uid: "FT-087", bnName: "মধু রায়", enName: "Madhu Roy", nick: "মধু", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-086", mother: "FT-085", children: [] },
             { uid: "FT-088", bnName: "মোহনা রায় মিষ্টি", enName: "Mohona Roy Misty", nick: "মিষ্টি", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-089", father: "FT-086", mother: "FT-085", children: ["FT-090"] },
             { uid: "FT-089", bnName: "চৈতন্য দেব বিচিত্র", enName: "Chaitanya Dev Bichittro", nick: "চৈতন্য", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-088", father: null, mother: null, children: ["FT-090"] },
-            { uid: "FT-090", bnName: "অভিমুন্য রায় অভি", enName: "Abhimanyu Roy Avi", nick: "অভিমুন্য", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-089", mother: "FT-088", children: [] },
 
-            // ধনেশ (FT-021) ও অন্যান্য পূর্ববর্তী পরিবার
-            { uid: "FT-001", bnName: "অবিনাশ চন্দ্র রায়", enName: "Abinash Chandra Roy", nick: "অবিনাশ", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-002", father: null, mother: null, children: ["FT-003", "FT-004"] },
-            { uid: "FT-002", bnName: "ফেন্সি রানি রায় (কনিকা)", enName: "Fency Rani Roy", nick: "কনিকা", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-001", father: "FT-021", mother: "FT-079", children: ["FT-003", "FT-004"] },
+            // Gen 4
             { uid: "FT-003", bnName: "বাঁধন চন্দ্র রায়", enName: "Badhon Chandra Roy", nick: "বাঁধন", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-001", mother: "FT-002", children: [] },
             { uid: "FT-004", bnName: "লাবণ্য চন্দ্র রায়", enName: "Labonno Chandra Roy", nick: "লাবণ্য", gender: "পুরুষ (Male)", color: 0x3366ff, spouse: null, father: "FT-001", mother: "FT-002", children: [] },
-            { uid: "FT-011", bnName: "জুয়েল চন্দ্র রায়", enName: "Juel Chandra Roy", nick: "জুয়েল", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-012", father: "FT-021", mother: "FT-079", children: ["FT-013"] },
-            { uid: "FT-012", bnName: "জয়া রানী রায়", enName: "Joya Rani Roy", nick: "জয়া", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-011", father: null, mother: null, children: ["FT-013"] },
             { uid: "FT-013", bnName: "তীর্থ চন্দ্র রায়", enName: "Tirtho Chandra Roy", nick: "তীর্থ", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-011", mother: "FT-012", children: [] },
-            { uid: "FT-007", bnName: "মনিকা রানী রায়", enName: "Monika Rani Roy", nick: "মনিকা", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-006", father: "FT-021", mother: "FT-079", children: ["FT-008", "FT-009"] },
-            { uid: "FT-006", bnName: "গোলাপ চন্দ্র রায়", enName: "Golap Chandra Roy", nick: "গোলাপ", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-007", father: null, mother: null, children: ["FT-008", "FT-009"] },
             { uid: "FT-008", bnName: "ওম চন্দ্র রায়", enName: "Om Chandra Roy", nick: "ওম", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-006", mother: "FT-007", children: [] },
-            { uid: "FT-009", bnName: "বেদ চন্দ্র রায়", enName: "Veda Chandra Roy", nick: "বেদ", gender: "পুরুষ (Male)", color: 0x3366ff, spouse: null, father: "FT-006", mother: "FT-007", children: [] }
+            { uid: "FT-009", bnName: "বেদ চন্দ্র রায়", enName: "Veda Chandra Roy", nick: "বেদ", gender: "পুরুষ (Male)", color: 0x3366ff, spouse: null, father: "FT-006", mother: "FT-007", children: [] },
+            { uid: "FT-058", bnName: "কৃত্তিকা ঘোষ তনয়া", enName: "Krittika Ghosh Tanoya", nick: "কৃত্তিকা", gender: "মহিলা (Female)", color: 0xff69b4, spouse: null, father: "FT-057", mother: "FT-056", children: [] },
+            { uid: "FT-077", bnName: "দিতিপ্রিয়া রায় (শুদ্ধি)", enName: "Ditipriya Roy", nick: "দিতিপ্রিয়া", gender: "মহিলা (Female)", color: 0xff69b4, spouse: null, father: "FT-075", mother: "FT-076", children: [] },
+            { uid: "FT-090", bnName: "অভিমুন্য রায় অভি", enName: "Abhimanyu Roy Avi", nick: "অভিমুন্য", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-089", mother: "FT-088", children: [] }
         ];
 
-        // --- পরিসংখ্যান ও সিলেকশন পপুলেট করা ---
+        // --- AUTOMATIC GENERATION CALCULATION LOGIC ---
+        const generationMap = {};
+
+        function calculateGenerations() {
+            const memberDict = {};
+            membersData.forEach(m => { memberDict[m.uid] = m; });
+
+            function getMemberGen(uid, visited = new Set()) {
+                if (visited.has(uid)) return 1;
+                visited.add(uid);
+                const m = memberDict[uid];
+                if (!m) return 1;
+
+                if (!m.father && !m.mother) {
+                    if (m.spouse && memberDict[m.spouse]) {
+                        const s = memberDict[m.spouse];
+                        if (s.father || s.mother) {
+                            return getMemberGen(m.spouse, visited);
+                        }
+                    }
+                    return 1;
+                }
+
+                let fGen = m.father ? getMemberGen(m.father, new Set(visited)) : 0;
+                let mGen = m.mother ? getMemberGen(m.mother, new Set(visited)) : 0;
+                return Math.max(fGen, mGen) + 1;
+            }
+
+            membersData.forEach(m => {
+                let gen = getMemberGen(m.uid);
+                generationMap[m.uid] = gen;
+                m.generation = gen;
+            });
+        }
+
+        calculateGenerations();
+
+        // Populate Options & Generation UI
         function initializeStatsAndOptions() {
             const total = membersData.length;
             let males = 0;
             let females = 0;
             const marriedCouples = new Set();
+            const genCounts = {};
 
             const selectA = document.getElementById('rel-person-a');
             const selectB = document.getElementById('rel-person-b');
             selectA.innerHTML = '';
             selectB.innerHTML = '';
 
-            membersData.forEach((m, idx) => {
+            membersData.forEach((m) => {
                 if (m.gender.includes('পুরুষ') || m.gender.includes('Male') || m.gender === 'M') males++;
                 else if (m.gender.includes('মহিলা') || m.gender.includes('Female') || m.gender === 'F') females++;
 
@@ -528,7 +665,9 @@
                     marriedCouples.add(pair);
                 }
 
-                // পপুলেট অপশন
+                let gen = m.generation;
+                genCounts[gen] = (genCounts[gen] || 0) + 1;
+
                 const optA = new Option(`${m.bnName} (${m.nick})`, m.uid);
                 const optB = new Option(`${m.bnName} (${m.nick})`, m.uid);
                 selectA.add(optA);
@@ -543,6 +682,22 @@
             document.getElementById('stat-male').innerText = males;
             document.getElementById('stat-female').innerText = females;
             document.getElementById('stat-families').innerText = marriedCouples.size;
+
+            // Render Generations in UI
+            const genContainer = document.getElementById('generation-container');
+            genContainer.innerHTML = '';
+            
+            const genKeys = Object.keys(genCounts).sort((a,b) => a - b);
+            genKeys.forEach(g => {
+                const div = document.createElement('div');
+                div.className = 'gen-item';
+                div.onclick = () => showFilteredMemberList('gen-' + g, `জেনারেশন ${g} এর সদস্যগণ`);
+                div.innerHTML = `
+                    <span class="gen-title">প্রজন্ম / জেনারেশন ${g}</span>
+                    <span class="gen-count">${genCounts[g]} জন</span>
+                `;
+                genContainer.appendChild(div);
+            });
         }
 
         membersData.forEach(data => {
@@ -592,7 +747,6 @@
             ["FT-058", "FT-056"], ["FT-058", "FT-057"],
             ["FT-059", "FT-060"],
 
-            // সুরেশ ও সিতোময়ী সংযোগ
             ["FT-070", "FT-071"],
             ["FT-073", "FT-070"], ["FT-073", "FT-071"],
             ["FT-079", "FT-070"], ["FT-079", "FT-071"],
@@ -710,7 +864,74 @@
         animate();
         initializeStatsAndOptions();
 
-        // --- সম্পর্ক গণনাকারী (RELATIONSHIP FINDER LOGIC) ---
+        // --- FILTERED MEMBER LIST MODAL HANDLERS ---
+        function showFilteredMemberList(filterType, title) {
+            document.getElementById('list-modal-title').innerText = title;
+            const body = document.getElementById('list-modal-body');
+            body.innerHTML = '';
+
+            let list = [];
+            if (filterType === 'all') {
+                list = membersData;
+            } else if (filterType === 'male') {
+                list = membersData.filter(m => m.gender.includes('পুরুষ') || m.gender.includes('Male') || m.gender === 'M');
+            } else if (filterType === 'female') {
+                list = membersData.filter(m => m.gender.includes('মহিলা') || m.gender.includes('Female') || m.gender === 'F');
+            } else if (filterType.startsWith('gen-')) {
+                const genNum = parseInt(filterType.split('-')[1]);
+                list = membersData.filter(m => m.generation === genNum);
+            }
+
+            if (list.length === 0) {
+                body.innerHTML = '<p style="color:#aaa;">কোনো সদস্য পাওয়া যায়নি।</p>';
+            } else {
+                list.forEach(m => {
+                    const div = document.createElement('div');
+                    div.className = 'modal-member-card';
+                    div.innerHTML = `<strong>${m.bnName}</strong> (${m.nick})<br><small style="color:#00ffff">${m.uid} • Gen ${m.generation}</small>`;
+                    div.onclick = () => {
+                        focusByUid(m.uid);
+                        closeListModal();
+                    };
+                    body.appendChild(div);
+                });
+            }
+
+            document.getElementById('list-modal').style.display = 'block';
+        }
+
+        function showCouplesList() {
+            document.getElementById('list-modal-title').innerText = 'দম্পতি / পরিবার সমূহ';
+            const body = document.getElementById('list-modal-body');
+            body.innerHTML = '';
+
+            const addedPairs = new Set();
+            membersData.forEach(m => {
+                if (m.spouse && marbleMap[m.spouse]) {
+                    const pairKey = [m.uid, m.spouse].sort().join('-');
+                    if (!addedPairs.has(pairKey)) {
+                        addedPairs.add(pairKey);
+                        const spouseObj = marbleMap[m.spouse].userData;
+                        const div = document.createElement('div');
+                        div.className = 'modal-member-card';
+                        div.innerHTML = `<strong>${m.bnName}</strong> & <strong>${spouseObj.bnName}</strong><br><small style="color:#00ffff">${m.uid} & ${spouseObj.uid}</small>`;
+                        div.onclick = () => {
+                            focusByUid(m.uid);
+                            closeListModal();
+                        };
+                        body.appendChild(div);
+                    }
+                }
+            });
+
+            document.getElementById('list-modal').style.display = 'block';
+        }
+
+        function closeListModal() {
+            document.getElementById('list-modal').style.display = 'none';
+        }
+
+        // --- RELATIONSHIP FINDER ---
         function calculateRelationship() {
             const uidA = document.getElementById('rel-person-a').value;
             const uidB = document.getElementById('rel-person-b').value;
@@ -721,24 +942,18 @@
                 return;
             }
 
-            // গ্রাফ তৈরি (সম্পর্কসমূহ)
             const graph = {};
-            membersData.forEach(m => {
-                graph[m.uid] = [];
-            });
+            membersData.forEach(m => { graph[m.uid] = []; });
 
             membersData.forEach(m => {
-                // স্বামী/স্ত্রী
                 if (m.spouse) {
                     graph[m.uid].push({ target: m.spouse, relation: "স্বামী/স্ত্রী" });
                 }
-                // পিতা
                 if (m.father) {
                     graph[m.uid].push({ target: m.father, relation: "পিতা" });
                     const isMale = m.gender.includes("পুরুষ") || m.gender.includes("Male") || m.gender === "M";
                     graph[m.father].push({ target: m.uid, relation: isMale ? "পুত্র" : "কন্যা" });
                 }
-                // মাতা
                 if (m.mother) {
                     graph[m.uid].push({ target: m.mother, relation: "মাতা" });
                     const isMale = m.gender.includes("পুরুষ") || m.gender.includes("Male") || m.gender === "M";
@@ -746,7 +961,6 @@
                 }
             });
 
-            // BFS দিয়ে শর্টেস্ট পাথ খুঁজে বের করা
             const queue = [[{ uid: uidA, rel: "" }]];
             const visited = new Set([uidA]);
             let foundPath = null;
@@ -786,16 +1000,13 @@
             }
         }
 
-        // --- সার্চ ফিল্টার হ্যান্ডলিং ---
+        // --- SEARCH HANDLER ---
         function handleSearch() {
             const query = document.getElementById('search-input').value.trim().toLowerCase();
-            const resultsContainer = document.getElementById('search-results');
+            const resultsContainer = document.getElementById('search-results-list');
             resultsContainer.innerHTML = '';
 
-            if (!query) {
-                resultsContainer.style.display = 'none';
-                return;
-            }
+            if (!query) return;
 
             const matched = membersData.filter(m => 
                 m.uid.toLowerCase().includes(query) ||
@@ -805,25 +1016,21 @@
             );
 
             if (matched.length > 0) {
-                resultsContainer.style.display = 'block';
                 matched.forEach(item => {
                     const div = document.createElement('div');
                     div.className = 'search-item';
                     div.innerHTML = `<strong>${item.bnName}</strong> (${item.uid})<br><small style="color:#aaa">${item.enName}</small>`;
                     div.onclick = () => {
                         focusByUid(item.uid);
-                        resultsContainer.style.display = 'none';
-                        document.getElementById('search-input').value = item.bnName;
                     };
                     resultsContainer.appendChild(div);
                 });
             } else {
-                resultsContainer.style.display = 'block';
                 resultsContainer.innerHTML = `<div class="search-item" style="color: #ff4757;">কোন তথ্য পাওয়া যায়নি</div>`;
             }
         }
 
-        // --- ইন্টারঅ্যাকশন হ্যান্ডলিং ---
+        // --- INTERACTION & SELECTION ---
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
         let touchStartX = 0, touchStartY = 0;
@@ -834,7 +1041,7 @@
         });
 
         window.addEventListener('pointerup', (event) => {
-            if (event.target.closest('#popup-modal') || event.target.closest('#top-controls') || event.target.closest('#search-container') || event.target.closest('#relation-modal') || event.target.closest('#info-card')) return;
+            if (event.target.closest('#popup-modal') || event.target.closest('#nav-drawer') || event.target.closest('#menu-toggle-btn') || event.target.closest('#list-modal')) return;
 
             const deltaX = Math.abs(event.clientX - touchStartX);
             const deltaY = Math.abs(event.clientY - touchStartY);
@@ -900,25 +1107,20 @@
             if (data.mother) activeUids.add(data.mother);
             if (data.children) data.children.forEach(uid => activeUids.add(uid));
 
-            // ১. মূল নির্বাচিত মার্বেল
             animateMarbleTo(selectedMarble, { x: 0, y: 0, z: 0 });
 
-            // ২. দাম্পত্য সঙ্গী
             if (data.spouse && marbleMap[data.spouse]) {
                 animateMarbleTo(marbleMap[data.spouse], { x: 3.5, y: 0, z: 0 });
             }
 
-            // ৩. পিতা
             if (data.father && marbleMap[data.father]) {
                 animateMarbleTo(marbleMap[data.father], { x: -1.8, y: 3.5, z: 0 });
             }
 
-            // ৪. মাতা
             if (data.mother && marbleMap[data.mother]) {
                 animateMarbleTo(marbleMap[data.mother], { x: 1.8, y: 3.5, z: 0 });
             }
 
-            // ৫. সন্তানগণ
             if (data.children && data.children.length > 0) {
                 const count = data.children.length;
                 data.children.forEach((childUid, index) => {
@@ -929,14 +1131,12 @@
                 });
             }
 
-            // ৬. অনাকাঙ্ক্ষিত মার্বেল ফেড-আউট
             clickableMarbles.forEach(m => {
                 if (!activeUids.has(m.userData.uid)) {
                     fadeOutMarble(m);
                 }
             });
 
-            // ৭. সুতো অ্যানিমেশন
             threads.forEach((thread, index) => {
                 const pair = connections[index];
                 const isPairActive = activeUids.has(pair[0].userData.uid) && activeUids.has(pair[1].userData.uid);
@@ -954,7 +1154,6 @@
                 }
             });
 
-            // ক্যামেরা স্মুথ মুভমেন্ট
             new TWEEN.Tween(camera.position)
                 .to({ x: 0, y: 0, z: 14 }, 1000)
                 .easing(TWEEN.Easing.Cubic.Out)
@@ -983,6 +1182,7 @@
             document.getElementById('m-bname').innerText = data.bnName;
             document.getElementById('m-ename').innerText = data.enName;
             document.getElementById('m-gender').innerText = data.gender;
+            document.getElementById('m-gen').innerText = "প্রজন্ম " + data.generation;
             
             document.getElementById('m-spouse').innerHTML = renderRelationLink(data.spouse);
             document.getElementById('m-father').innerHTML = renderRelationLink(data.father);
@@ -1000,7 +1200,6 @@
 
         function closePopup() {
             document.getElementById('popup-modal').style.display = 'none';
-            document.getElementById('search-results').style.display = 'none';
             
             clickableMarbles.forEach(m => {
                 m.visible = true;
