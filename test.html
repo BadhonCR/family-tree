@@ -457,9 +457,19 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
 
     <script>
+        let isDrawerOpen = false;
         function toggleDrawer() {
             const drawer = document.getElementById('nav-drawer');
             drawer.classList.toggle('open');
+            isDrawerOpen = drawer.classList.contains('open');
+
+            if (isDrawerOpen) {
+                isAnimating = false;
+            } else {
+                if (!isMarbleSelected) {
+                    isAnimating = true;
+                }
+            }
         }
 
         function switchTab(tabId, btn) {
@@ -568,11 +578,11 @@
             { uid: "FT-049", bnName: "দিতী রানী রায়", enName: "Diti Rani Roy", nick: "দিতী", gender: "মহিলা (Female)", color: 0xff1493, spouse: null, father: "FT-020", mother: "FT-047", children: [] },
             { uid: "FT-050", bnName: "অনিক রায় প্রান্ত", enName: "Anik Roy Pranto", nick: "প্রান্ত", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-020", mother: "FT-047", children: [] },
 
-            { uid: "FT-002", bnName: "ফেন্সি রানি রায় (কনিকা)", enName: "Fency Rani Roy", nick: "কনিকা", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-001", father: "FT-021", mother: "FT-079", children: ["FT-003", "FT-004"] },
+            { uid: "FT-002", bnName: "ফেন্সি রানি রায়", enName: "Fency Rani Roy", nick: "কনিকা", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-001", father: "FT-021", mother: "FT-079", children: ["FT-003", "FT-004"] },
             { uid: "FT-001", bnName: "অবিনাশ চন্দ্র রায়", enName: "Abinash Chandra Roy", nick: "অবিনাশ", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-002", father: null, mother: null, children: ["FT-003", "FT-004"] },
 
             { uid: "FT-011", bnName: "জুয়েল চন্দ্র রায়", enName: "Juel Chandra Roy", nick: "জুয়েল", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-012", father: "FT-021", mother: "FT-079", children: ["FT-013"] },
-            { uid: "FT-012", bnName: "জয়া রানী রায়", enName: "Joya Rani Roy", nick: "জয়া", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-011", father: null, mother: null, children: ["FT-013"] },
+            { uid: "FT-012", bnName: "জয়া রানী রায়", enName: "Joya Rani Roy", nick: "জয়া", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-011", father: "FT-100", mother: "FT-101", children: ["FT-013"] },
 
             { uid: "FT-007", bnName: "মনিকা রানী রায়", enName: "Monika Rani Roy", nick: "মনিকা", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-006", father: "FT-021", mother: "FT-079", children: ["FT-008", "FT-009"] },
             { uid: "FT-006", bnName: "গোলাপ চন্দ্র রায়", enName: "Golap Chandra Roy", nick: "গোলাপ", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-007", father: null, mother: null, children: ["FT-008", "FT-009"] },
@@ -594,6 +604,19 @@
             { uid: "FT-087", bnName: "মধু রায়", enName: "Madhu Roy", nick: "মধু", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-086", mother: "FT-085", children: [] },
             { uid: "FT-088", bnName: "মোহনা রায় মিষ্টি", enName: "Mohona Roy Misty", nick: "মিষ্টি", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-089", father: "FT-086", mother: "FT-085", children: ["FT-090"] },
             { uid: "FT-089", bnName: "চৈতন্য দেব বিচিত্র", enName: "Chaitanya Dev Bichittro", nick: "চৈতন্য", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-088", father: null, mother: null, children: ["FT-090"] },
+
+            
+            // নতুন সংযোজিত সদস্য পরিবার (FT-100 - FT-107)
+            { uid: "FT-100", bnName: "যামিনী চন্দ্র রায়", enName: "Jamini Chandra Roy", nick: "যামিনী", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-101", father: null, mother: null, children: ["FT-102", "FT-012", "FT-106"] },
+            { uid: "FT-101", bnName: "মায়া রানী রায়", enName: "Maya Rani Roy", nick: "মায়া", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-100", father: null, mother: null, children: ["FT-102", "FT-012", "FT-106"] },
+
+            { uid: "FT-102", bnName: "মৃণাল চন্দ্র রায়", enName: "Mrinal Chandra Roy", nick: "মৃণাল", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-103", father: "FT-100", mother: "FT-101", children: ["FT-104", "FT-105"] },
+            { uid: "FT-103", bnName: "মুক্তি রানী রায়", enName: "Mukti Rani Roy", nick: "মুক্তি", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-102", father: null, mother: null, children: ["FT-104", "FT-105"] },
+            { uid: "FT-104", bnName: "অভ্র চন্দ্র রায়", enName: "Avro Chandra Roy", nick: "অভ্র", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-102", mother: "FT-103", children: [] },
+            { uid: "FT-105", bnName: "সৃজা মনি রায়", enName: "Srija Moni Roy", nick: "সৃজা", gender: "মহিলা (Female)", color: 0xff69b4, spouse: null, father: "FT-102", mother: "FT-103", children: [] },
+
+            { uid: "FT-106", bnName: "মানিক চন্দ্র রায়", enName: "Manik Chandra Roy", nick: "মানিক", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-107", father: "FT-100", mother: "FT-101", children: [] },
+            { uid: "FT-107", bnName: "সঞ্জিতা রানী রায়", enName: "Sanjita Rani Roy", nick: "সঞ্জিতা", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-106", father: null, mother: null, children: [] },
 
             // Gen 4
             { uid: "FT-003", bnName: "বাঁধন চন্দ্র রায়", enName: "Badhon Chandra Roy", nick: "বাঁধন", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-001", mother: "FT-002", children: [] },
@@ -719,6 +742,15 @@
 
         const connectionsData = [
             ["FT-016", "FT-017"],
+            ["FT-100", "FT-101"],
+            ["FT-102", "FT-100"], ["FT-102", "FT-101"],
+            ["FT-012", "FT-100"], ["FT-012", "FT-101"],
+            ["FT-106", "FT-100"], ["FT-106", "FT-101"],
+            ["FT-102", "FT-103"],
+            ["FT-104", "FT-102"], ["FT-104", "FT-103"],
+            ["FT-105", "FT-102"], ["FT-105", "FT-103"],
+            ["FT-106", "FT-107"],
+
             ["FT-018", "FT-016"], ["FT-018", "FT-017"],
             ["FT-019", "FT-016"], ["FT-019", "FT-017"],
             ["FT-020", "FT-016"], ["FT-020", "FT-017"],
@@ -803,6 +835,20 @@
                 if(marbleMap["FT-017"]) marbleMap["FT-017"].position.set(Math.cos(angle + Math.PI) * 5, 14, Math.sin(angle + Math.PI) * 5);
                 if(marbleMap["FT-070"]) marbleMap["FT-070"].position.set(Math.cos(angle + 1) * 10 + 20, 14, Math.sin(angle + 1) * 10);
                 if(marbleMap["FT-071"]) marbleMap["FT-071"].position.set(Math.cos(angle + 1 + Math.PI) * 10 + 20, 14, Math.sin(angle + 1 + Math.PI) * 10);
+
+                // FT-100 Family Positions
+                if(marbleMap["FT-100"]) marbleMap["FT-100"].position.set(Math.cos(angle + 2.5) * 8 - 18, 14, Math.sin(angle + 2.5) * 8);
+                if(marbleMap["FT-101"]) marbleMap["FT-101"].position.set(Math.cos(angle + 2.5 + Math.PI) * 8 - 18, 14, Math.sin(angle + 2.5 + Math.PI) * 8);
+
+                if(marbleMap["FT-102"]) marbleMap["FT-102"].position.set(marbleMap["FT-100"].position.x - 4, 6, marbleMap["FT-100"].position.z + 4);
+                if(marbleMap["FT-103"]) marbleMap["FT-103"].position.set(marbleMap["FT-102"].position.x + 2, 6, marbleMap["FT-102"].position.z + 2);
+
+                if(marbleMap["FT-106"]) marbleMap["FT-106"].position.set(marbleMap["FT-100"].position.x + 4, 6, marbleMap["FT-100"].position.z - 4);
+                if(marbleMap["FT-107"]) marbleMap["FT-107"].position.set(marbleMap["FT-106"].position.x + 2, 6, marbleMap["FT-106"].position.z + 2);
+
+                if(marbleMap["FT-104"]) marbleMap["FT-104"].position.set(marbleMap["FT-102"].position.x - 2, -2, marbleMap["FT-102"].position.z + 2);
+                if(marbleMap["FT-105"]) marbleMap["FT-105"].position.set(marbleMap["FT-102"].position.x + 2, -2, marbleMap["FT-102"].position.z - 2);
+
 
                 // ২য় লেভেল
                 const midChildren = ["FT-018", "FT-019", "FT-020", "FT-021", "FT-022", "FT-023", "FT-024", "FT-025", "FT-073", "FT-081", "FT-085"];
