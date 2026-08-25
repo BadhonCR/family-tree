@@ -223,7 +223,7 @@
             border: 1px solid #00ffff66;
         }
 
-        /* Relationship Finder Elements - FIXED COLOR CONTRAST */
+        /* Relationship Finder Elements */
         .select-group {
             margin-bottom: 12px;
         }
@@ -310,7 +310,7 @@
             border-color: #00ffff;
         }
 
-        /* Profile Details Popup Modal - ENHANCED LOOK & LAYOUT */
+        /* Profile Details Popup Modal */
         #popup-modal {
             display: none;
             position: fixed;
@@ -374,7 +374,6 @@
             font-weight: 600;
         }
 
-        /* Profile Details Body List */
         .profile-details-list {
             display: flex;
             flex-direction: column;
@@ -414,7 +413,6 @@
             text-align: left;
         }
 
-        /* Profile Image Styles */
         .profile-img-thumb {
             width: 60px;
             height: 60px;
@@ -464,7 +462,6 @@
             transform: translateY(-1px);
         }
 
-        /* Image Lightbox Modal */
         #image-lightbox {
             display: none;
             position: fixed;
@@ -488,21 +485,15 @@
         }
 
         @media (max-width: 600px) {
-            #nav-drawer {
-                width: 290px;
-            }
-            #list-modal, #popup-modal {
-                width: 90%;
-            }
+            #nav-drawer { width: 290px; }
+            #list-modal, #popup-modal { width: 90%; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Main Navigation Menu Toggle Button -->
     <button id="menu-toggle-btn" onclick="toggleDrawer()">☰ মেনু অপশন</button>
 
-    <!-- Sliding Navigation Menu Drawer -->
     <div id="nav-drawer">
         <div class="drawer-header">
             <h2>পারিবারিক প্যানেল</h2>
@@ -510,14 +501,12 @@
         </div>
         
         <div class="drawer-body">
-            <!-- Tabs Header -->
             <div class="tab-buttons">
                 <button class="tab-btn active" onclick="switchTab('stats-tab', this)">📊 পরিসংখ্যান</button>
                 <button class="tab-btn" onclick="switchTab('search-tab', this)">🔍 সন্ধান</button>
                 <button class="tab-btn" onclick="switchTab('rel-tab', this)">🔗 সম্পর্ক</button>
             </div>
 
-            <!-- TAB 1: STATISTICS & GENERATIONS -->
             <div id="stats-tab" class="tab-content active">
                 <p style="font-size: 11px; color: #aaa; margin-bottom: 10px;">
                     💡 বিস্তারিত তালিকা দেখতে যেকোনো পরিসংখ্যানে ক্লিক করুন:
@@ -543,18 +532,14 @@
                 </div>
 
                 <h3 style="margin-top:20px; font-size:14px; color:#00ffff;">🧬 জেনারেশন (বংশপরম্পরা)</h3>
-                <div id="generation-container">
-                    <!-- Automatically Generated Generation Items -->
-                </div>
+                <div id="generation-container"></div>
             </div>
 
-            <!-- TAB 2: SEARCH -->
             <div id="search-tab" class="tab-content">
                 <input type="text" id="search-input" placeholder="🔍 UID, নাম (বাংলা/Eng)..." oninput="handleSearch()">
                 <div id="search-results-list"></div>
             </div>
 
-            <!-- TAB 3: RELATIONSHIP FINDER -->
             <div id="rel-tab" class="tab-content">
                 <div class="select-group">
                     <label>প্রথম ব্যক্তি (Person A):</label>
@@ -573,14 +558,12 @@
         </div>
     </div>
 
-    <!-- Filtered Member List Modal -->
     <div id="list-modal">
         <button class="btn-close" style="float:right;" onclick="closeListModal()">✕</button>
         <h3 id="list-modal-title">সদস্য তালিকা</h3>
         <div id="list-modal-body"></div>
     </div>
 
-    <!-- Member Profile Details Popup -->
     <div id="popup-modal">
         <div class="popup-header-container">
             <div>
@@ -627,7 +610,6 @@
         <button id="close-btn" class="btn-close" style="margin-top:16px; width:100%; padding:9px;" onclick="closePopup()">বন্ধ করুন</button>
     </div>
 
-    <!-- Image Lightbox Modal for Full View -->
     <div id="image-lightbox" onclick="closeLightbox()">
         <img id="lightbox-img" src="" alt="Full View">
     </div>
@@ -637,7 +619,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
 
     <script>
-        // SVG Placeholder for missing image
         const DEFAULT_NO_IMAGE = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 24 24' fill='none' stroke='%2000ffff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='3' width='18' height='18' rx='2' ry='2'/><circle cx='8.5' cy='8.5' r='1.5'/><polyline points='21 15 16 10 5 21'/><line x1='3' y1='3' x2='21' y2='21'/></svg>";
 
         function handleImgError(img) {
@@ -732,15 +713,13 @@
         }
 
         const membersData = [
-            // মূল জেষ্ঠ্য দম্পতি (Gen 1)
+            // Gen 1
             { uid: "FT-016", bnName: "দিনোনাথ রায়", enName: "Dinonath Roy", nick: "খোকা সরকার", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-017", father: null, mother: null, children: ["FT-018", "FT-019", "FT-020", "FT-021", "FT-022", "FT-023", "FT-024", "FT-025"], description: "" },
             { uid: "FT-017", bnName: "দুলালী রাণী রায়", enName: "Dulali Rani Roy", nick: "নলিনী", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-016", father: null, mother: null, children: ["FT-018", "FT-019", "FT-020", "FT-021", "FT-022", "FT-023", "FT-024", "FT-025"], description: "" },
             
-            // সুরেশ ও সিতোময়ী (Gen 1)
             { uid: "FT-070", bnName: "সুরেশ দেউ দেব সিংহ", enName: "Suresh Deu Dev Singh", nick: "সুরেশ", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-071", father: null, mother: null, children: ["FT-073", "FT-079", "FT-081", "FT-085"], description: "" },
             { uid: "FT-071", bnName: "সিতোময়ী রায় দেব সিংহ", enName: "Sitomoyi Roy Dev Singh", nick: "সিতোময়ী", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-070", father: null, mother: null, children: ["FT-073", "FT-079", "FT-081", "FT-085"], description: "" },
 
-            // ননীগোপাল ও মাধবী (Gen 1)
             { uid: "FT-143", bnName: "ননীগোপাল", enName: "Noni Gopal", nick: "ননীগোপাল", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-144", father: null, mother: null, children: ["FT-145", "FT-001"], description: "" },
             { uid: "FT-144", bnName: "মাধবী রানী রায়", enName: "Madhobi Rani Roy", nick: "মাধবী", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-143", father: null, mother: null, children: ["FT-145", "FT-001"], description: "" },
 
@@ -774,10 +753,17 @@
             { uid: "FT-085", bnName: "নমিতা রানী দেবসিংহ", enName: "Namita Rani Debsingh", nick: "নমিতা", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-086", father: "FT-070", mother: "FT-071", children: ["FT-087", "FT-088"], description: "" },
             { uid: "FT-086", bnName: "মোহন কাজ্জি", enName: "Mohon Kajji", nick: "মোহন", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-085", father: null, mother: null, children: ["FT-087", "FT-088"], description: "" },
 
-            { uid: "FT-145", bnName: "মানিক চন্দ্র রায়", enName: "Manik Chandra Roy", nick: "মানিক", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: null, father: "FT-143", mother: "FT-144", children: [], description: "" },
+            // **আপডেট করা অবজেক্টসমূহ**
+            { uid: "FT-145", bnName: "মানিক চন্দ্র রায়", enName: "Manik Chandra Roy", nick: "মানিক", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-146", father: "FT-143", mother: "FT-144", children: ["FT-147", "FT-148", "FT-149"], description: "" },
+            { uid: "FT-146", bnName: "দিনেশ্বরী রানী", enName: "Dineshwari Rani", nick: "দিনেশ্বরী", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-145", father: null, mother: null, children: ["FT-147", "FT-148", "FT-149"], description: "" },
             { uid: "FT-001", bnName: "অবিনাশ চন্দ্র রায়", enName: "Abinash Chandra Roy", nick: "অবিনাশ", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-002", father: "FT-143", mother: "FT-144", children: ["FT-003", "FT-004"], description: "" },
 
             // Gen 3
+            { uid: "FT-147", bnName: "রত্না রাণী রায়", enName: "Ratna Rani Roy", nick: "রত্না", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-150", father: "FT-145", mother: "FT-146", children: ["FT-151", "FT-152"], description: "" },
+            { uid: "FT-150", bnName: "রতন চন্দ্র রায়", enName: "Raton Chandra Roy", nick: "রতন", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-147", father: null, mother: null, children: ["FT-151", "FT-152"], description: "" },
+            { uid: "FT-148", bnName: "স্বপ্না রাণী রায়", enName: "Sopna Rani Roy", nick: "স্বপ্না", gender: "মহিলা (Female)", color: 0xff1493, spouse: null, father: "FT-145", mother: "FT-146", children: [], description: "" },
+            { uid: "FT-149", bnName: "মৈত্রী রাণী রায়", enName: "Maitri Rani Roy", nick: "মৈত্রী", gender: "মহিলা (Female)", color: 0xff1493, spouse: null, father: "FT-145", mother: "FT-146", children: [], description: "" },
+
             { uid: "FT-048", bnName: "দিপিকা রানী রায়", enName: "Depika Rani Roy", nick: "দিপিকা", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-051", father: "FT-020", mother: "FT-047", children: [], description: "" },
             { uid: "FT-051", bnName: "সুধাংশু রায়", enName: "Sudhangsu Roy", nick: "সুধাংশু", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-048", father: null, mother: null, children: [], description: "" },
             { uid: "FT-049", bnName: "দিতী রানী রায়", enName: "Diti Rani Roy", nick: "দিতী", gender: "মহিলা (Female)", color: 0xff1493, spouse: null, father: "FT-020", mother: "FT-047", children: [], description: "" },
@@ -809,7 +795,6 @@
             { uid: "FT-088", bnName: "মোহনা রায় মিষ্টি", enName: "Mohona Roy Misty", nick: "মিষ্টি", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-089", father: "FT-086", mother: "FT-085", children: ["FT-090"], description: "" },
             { uid: "FT-089", bnName: "চৈতন্য দেব বিচিত্র", enName: "Chaitanya Dev Bichittro", nick: "চৈতন্য", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-088", father: null, mother: null, children: ["FT-090"], description: "" },
 
-            // FT-100 Family
             { uid: "FT-100", bnName: "যামিনী চন্দ্র রায়", enName: "Jamini Chandra Roy", nick: "যামিনী", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-101", father: null, mother: null, children: ["FT-102", "FT-012", "FT-106"], description: "" },
             { uid: "FT-101", bnName: "মায়া রানী রায়", enName: "Maya Rani Roy", nick: "মায়া", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-100", father: null, mother: null, children: ["FT-102", "FT-012", "FT-106"], description: "" },
 
@@ -822,6 +807,9 @@
             { uid: "FT-107", bnName: "সঞ্জিতা রানী রায়", enName: "Sanjita Rani Roy", nick: "সঞ্জিতা", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-106", father: null, mother: null, children: [], description: "" },
 
             // Gen 4
+            { uid: "FT-151", bnName: "পৃথিবী রায়", enName: "Prithibi Roy", nick: "পৃথিবী", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-150", mother: "FT-147", children: [], description: "" },
+            { uid: "FT-152", bnName: "রৌদ্র রায়", enName: "Ruddra Roy", nick: "রৌদ্র", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-150", mother: "FT-147", children: [], description: "" },
+
             { uid: "FT-003", bnName: "বাঁধন চন্দ্র রায়", enName: "Badhon Chandra Roy", nick: "বাঁধন", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-001", mother: "FT-002", children: [], description: "" },
             { uid: "FT-004", bnName: "লাবণ্য চন্দ্র রায়", enName: "Labonno Chandra Roy", nick: "লাবণ্য", gender: "পুরুষ (Male)", color: 0x3366ff, spouse: null, father: "FT-001", mother: "FT-002", children: [], description: "" },
             { uid: "FT-013", bnName: "তীর্থ চন্দ্র রায়", enName: "Tirtho Chandra Roy", nick: "তীর্থ", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-011", mother: "FT-012", children: [], description: "" },
@@ -832,7 +820,6 @@
             { uid: "FT-090", bnName: "অভিমুন্য রায় অভি", enName: "Abhimanyu Roy Avi", nick: "অভিমুন্য", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-089", mother: "FT-088", children: [], description: "" }
         ];
 
-        // --- AUTOMATIC GENERATION CALCULATION LOGIC ---
         const generationMap = {};
 
         function calculateGenerations() {
@@ -869,7 +856,6 @@
 
         calculateGenerations();
 
-        // Populate Options & Generation UI
         function initializeStatsAndOptions() {
             const total = membersData.length;
             let males = 0;
@@ -909,7 +895,6 @@
             document.getElementById('stat-female').innerText = females;
             document.getElementById('stat-families').innerText = marriedCouples.size;
 
-            // Render Generations in UI
             const genContainer = document.getElementById('generation-container');
             genContainer.innerHTML = '';
             
@@ -957,6 +942,15 @@
             ["FT-143", "FT-144"],
             ["FT-145", "FT-143"], ["FT-145", "FT-144"],
             ["FT-001", "FT-143"], ["FT-001", "FT-144"],
+            
+            // **নতুন কানেকশন**
+            ["FT-145", "FT-146"],
+            ["FT-147", "FT-145"], ["FT-147", "FT-146"],
+            ["FT-148", "FT-145"], ["FT-148", "FT-146"],
+            ["FT-149", "FT-145"], ["FT-149", "FT-146"],
+            ["FT-147", "FT-150"],
+            ["FT-151", "FT-147"], ["FT-151", "FT-150"],
+            ["FT-152", "FT-147"], ["FT-152", "FT-150"],
 
             ["FT-018", "FT-016"], ["FT-018", "FT-017"],
             ["FT-019", "FT-016"], ["FT-019", "FT-017"],
@@ -1047,6 +1041,7 @@
                 if(marbleMap["FT-144"]) marbleMap["FT-144"].position.set(Math.cos(angle + 3.8 + Math.PI) * 8 + 15, 14, Math.sin(angle + 3.8 + Math.PI) * 8 - 15);
 
                 if(marbleMap["FT-145"]) marbleMap["FT-145"].position.set(marbleMap["FT-143"].position.x - 3, 6, marbleMap["FT-143"].position.z + 3);
+                if(marbleMap["FT-146"]) marbleMap["FT-146"].position.set(marbleMap["FT-145"].position.x + 2, 6, marbleMap["FT-145"].position.z + 2);
 
                 if(marbleMap["FT-100"]) marbleMap["FT-100"].position.set(Math.cos(angle + 2.5) * 8 - 18, 14, Math.sin(angle + 2.5) * 8);
                 if(marbleMap["FT-101"]) marbleMap["FT-101"].position.set(Math.cos(angle + 2.5 + Math.PI) * 8 - 18, 14, Math.sin(angle + 2.5 + Math.PI) * 8);
@@ -1079,7 +1074,7 @@
                 if(marbleMap["FT-086"]) marbleMap["FT-086"].position.set(marbleMap["FT-085"].position.x + 2, 6, marbleMap["FT-085"].position.z + 2);
 
                 // ৩য় লেভেল
-                const lowerGen = ["FT-048", "FT-049", "FT-050", "FT-002", "FT-011", "FT-007", "FT-056", "FT-059", "FT-067", "FT-068", "FT-075", "FT-083", "FT-087", "FT-088"];
+                const lowerGen = ["FT-048", "FT-049", "FT-050", "FT-002", "FT-011", "FT-007", "FT-056", "FT-059", "FT-067", "FT-068", "FT-075", "FT-083", "FT-087", "FT-088", "FT-147", "FT-148", "FT-149"];
                 lowerGen.forEach((uid, idx) => {
                     const lAngle = angle * 1.2 + (idx * (Math.PI * 2 / lowerGen.length));
                     if (marbleMap[uid]) {
@@ -1087,6 +1082,7 @@
                     }
                 });
 
+                if(marbleMap["FT-150"]) marbleMap["FT-150"].position.set(marbleMap["FT-147"].position.x + 2, -2, marbleMap["FT-147"].position.z);
                 if(marbleMap["FT-051"]) marbleMap["FT-051"].position.set(marbleMap["FT-048"].position.x + 2, -2, marbleMap["FT-048"].position.z);
                 if(marbleMap["FT-001"]) marbleMap["FT-001"].position.set(marbleMap["FT-002"].position.x + 2, -2, marbleMap["FT-002"].position.z);
                 if(marbleMap["FT-012"]) marbleMap["FT-012"].position.set(marbleMap["FT-011"].position.x + 2, -2, marbleMap["FT-011"].position.z);
@@ -1097,7 +1093,7 @@
                 if(marbleMap["FT-089"]) marbleMap["FT-089"].position.set(marbleMap["FT-088"].position.x + 2, -2, marbleMap["FT-088"].position.z);
 
                 // ৪র্থ লেভেল
-                const bottomGen = ["FT-003", "FT-004", "FT-013", "FT-008", "FT-009", "FT-058", "FT-077", "FT-090"];
+                const bottomGen = ["FT-003", "FT-004", "FT-013", "FT-008", "FT-009", "FT-058", "FT-077", "FT-090", "FT-151", "FT-152"];
                 bottomGen.forEach((uid, idx) => {
                     const bAngle = angle * 1.5 + (idx * (Math.PI * 2 / bottomGen.length));
                     if (marbleMap[uid]) {
@@ -1120,7 +1116,6 @@
         animate();
         initializeStatsAndOptions();
 
-        // --- FILTERED MEMBER LIST MODAL HANDLERS ---
         function showFilteredMemberList(filterType, title) {
             document.getElementById('list-modal-title').innerText = title;
             const body = document.getElementById('list-modal-body');
@@ -1187,7 +1182,6 @@
             document.getElementById('list-modal').style.display = 'none';
         }
 
-        // --- RELATIONSHIP FINDER ---
         function calculateRelationship() {
             const uidA = document.getElementById('rel-person-a').value;
             const uidB = document.getElementById('rel-person-b').value;
@@ -1256,7 +1250,6 @@
             }
         }
 
-        // --- SEARCH HANDLER ---
         function handleSearch() {
             const query = document.getElementById('search-input').value.trim().toLowerCase();
             const resultsContainer = document.getElementById('search-results-list');
@@ -1286,7 +1279,6 @@
             }
         }
 
-        // --- INTERACTION & SELECTION ---
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
         let touchStartX = 0, touchStartY = 0;
@@ -1451,7 +1443,6 @@
                 document.getElementById('m-children').innerText = "N/A";
             }
 
-            // Description parameter handler
             const descContainer = document.getElementById('desc-container');
             if (data.description && data.description.trim() !== "") {
                 document.getElementById('m-desc').innerText = data.description;
@@ -1460,7 +1451,6 @@
                 descContainer.style.display = 'none';
             }
 
-            // Photo handler with fallback icon
             const imgEl = document.getElementById('m-photo');
             imgEl.onerror = () => handleImgError(imgEl);
             imgEl.src = `images/${data.uid} 01.jpg`;
