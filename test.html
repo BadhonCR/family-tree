@@ -223,7 +223,7 @@
             border: 1px solid #00ffff66;
         }
 
-        /* Relationship Finder Elements */
+        /* Relationship Finder Elements - FIXED COLOR CONTRAST */
         .select-group {
             margin-bottom: 12px;
         }
@@ -248,12 +248,23 @@
 
         #rel-result {
             margin-top: 15px;
-            padding: 10px;
-            background: rgba(0, 255, 255, 0.08);
+            padding: 12px;
+            background: rgba(10, 30, 45, 0.9);
+            color: #e0f7fa;
             border-radius: 8px;
-            border-left: 3px solid #00ffff;
+            border: 1px solid #00ffff88;
+            border-left: 4px solid #00ffff;
             font-size: 13px;
             line-height: 1.6;
+            box-shadow: inset 0 0 10px rgba(0,255,255,0.1);
+        }
+
+        #rel-result b {
+            color: #00ffff;
+        }
+
+        #rel-result i {
+            color: #ffda79;
         }
 
         /* General Modal List Popup */
@@ -299,74 +310,158 @@
             border-color: #00ffff;
         }
 
-        /* Profile Details Popup Modal */
+        /* Profile Details Popup Modal - ENHANCED LOOK & LAYOUT */
         #popup-modal {
             display: none;
             position: fixed;
             top: 20px;
             right: 20px;
-            background: rgba(15, 20, 30, 0.95);
-            color: #fff;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 5px 25px rgba(0,0,0,0.8);
+            background: linear-gradient(145deg, rgba(15, 23, 36, 0.96), rgba(8, 14, 24, 0.98));
+            color: #e2e8f0;
+            padding: 22px;
+            border-radius: 16px;
+            box-shadow: 0 10px 32px rgba(0, 0, 0, 0.85), 0 0 15px rgba(0, 255, 255, 0.15);
             z-index: 2500;
-            width: 320px;
-            max-height: 80vh;
+            width: 330px;
+            max-height: 82vh;
             overflow-y: auto;
-            border: 1px solid #00ffff44;
-            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 255, 255, 0.35);
+            backdrop-filter: blur(16px);
         }
 
         .popup-header-container {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            border-bottom: 2px solid #333;
-            padding-bottom: 10px;
-            margin-bottom: 12px;
+            align-items: center;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+            padding-bottom: 12px;
+            margin-bottom: 14px;
         }
 
         .popup-header-container h2 {
-            margin: 0;
+            margin: 0 0 6px 0;
             color: #00ffff;
-            font-size: 18px;
+            font-size: 19px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-shadow: 0 0 8px rgba(0, 255, 255, 0.3);
+        }
+
+        .uid-gen-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .uid-badge {
+            font-size: 11px;
+            color: #38bdf8;
+            background: rgba(56, 189, 248, 0.12);
+            padding: 3px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            font-weight: 600;
+        }
+
+        .gen-badge {
+            font-size: 11px;
+            color: #00ffff;
+            background: rgba(0, 255, 255, 0.15);
+            padding: 3px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(0, 255, 255, 0.4);
+            font-weight: 600;
+        }
+
+        /* Profile Details Body List */
+        .profile-details-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .profile-field {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .profile-field.block-field {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+        }
+
+        .field-label {
+            color: #94a3b8;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .field-value {
+            color: #f8fafc;
+            font-weight: 500;
+            text-align: right;
+        }
+
+        .block-field .field-value {
+            text-align: left;
         }
 
         /* Profile Image Styles */
         .profile-img-thumb {
-            width: 55px;
-            height: 55px;
-            border-radius: 8px;
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
             object-fit: cover;
             border: 2px solid #00ffff;
             cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0, 255, 255, 0.3);
+            box-shadow: 0 4px 12px rgba(0, 255, 255, 0.25);
             transition: transform 0.2s, border-color 0.2s;
             background-color: #1a2230;
+            flex-shrink: 0;
         }
 
         .profile-img-thumb:hover {
-            transform: scale(1.08);
+            transform: scale(1.06);
             border-color: #ffffff;
         }
 
         .relation-link {
+            color: #38bdf8;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .relation-link:hover {
             color: #00ffff;
             text-decoration: underline;
-            cursor: pointer;
-            font-weight: bold;
         }
 
         .btn-close {
-            background-color: #ff4757;
+            background: linear-gradient(135deg, #ff4757, #ff6b81);
             color: white;
             border: none;
             padding: 6px 12px;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
             font-size: 12px;
+            box-shadow: 0 2px 8px rgba(255, 71, 87, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .btn-close:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
         }
 
         /* Image Lightbox Modal */
@@ -447,7 +542,7 @@
                     </div>
                 </div>
 
-                <h3 style="margin-top:20px; font-size:14px;">🧬 জেনারেশন (বংশপরম্পরা)</h3>
+                <h3 style="margin-top:20px; font-size:14px; color:#00ffff;">🧬 জেনারেশন (বংশপরম্পরা)</h3>
                 <div id="generation-container">
                     <!-- Automatically Generated Generation Items -->
                 </div>
@@ -489,21 +584,47 @@
     <div id="popup-modal">
         <div class="popup-header-container">
             <div>
-                <h2>প্রোফাইল বিবরণ</h2>
-                <h4>ইউআইডি (UID): <span id="m-uid"></span></h4>
+                <h2 id="m-bname">প্রোফাইল বিবরণ</h2>
+                <div class="uid-gen-wrapper">
+                    <span class="uid-badge">UID: <span id="m-uid"></span></span>
+                    <span class="gen-badge" id="m-gen"></span>
+                </div>
             </div>
             <img id="m-photo" class="profile-img-thumb" src="" alt="Profile Photo" onclick="openLightbox(this.src)">
         </div>
-        <p><strong>বাংলা নাম:</strong> <span id="m-bname"></span></p>
-        <p><strong>ইংরেজি নাম:</strong> <span id="m-ename"></span></p>
-        <p><strong>লিঙ্গ:</strong> <span id="m-gender"></span></p>
-        <p><strong>জেনারেশন:</strong> <span id="m-gen"></span></p>
-        <p><strong>দাম্পত্য সঙ্গী:</strong> <span id="m-spouse"></span></p>
-        <p><strong>পিতার নাম:</strong> <span id="m-father"></span></p>
-        <p><strong>মাতার নাম:</strong> <span id="m-mother"></span></p>
-        <p><strong>সন্তানগণ:</strong> <span id="m-children"></span></p>
-        <p><strong>বিবরণ:</strong> <span id="m-desc" style="color: #ffda79;"></span></p>
-        <button id="close-btn" class="btn-close" style="float:none; margin-top:10px; width:100%; padding:8px;" onclick="closePopup()">বন্ধ করুন</button>
+
+        <div class="profile-details-list">
+            <div class="profile-field">
+                <span class="field-label">ইংরেজি নাম:</span>
+                <span class="field-value" id="m-ename"></span>
+            </div>
+            <div class="profile-field">
+                <span class="field-label">লিঙ্গ:</span>
+                <span class="field-value" id="m-gender"></span>
+            </div>
+            <div class="profile-field">
+                <span class="field-label">দাম্পত্য সঙ্গী:</span>
+                <span class="field-value" id="m-spouse"></span>
+            </div>
+            <div class="profile-field">
+                <span class="field-label">পিতার নাম:</span>
+                <span class="field-value" id="m-father"></span>
+            </div>
+            <div class="profile-field">
+                <span class="field-label">মাতার নাম:</span>
+                <span class="field-value" id="m-mother"></span>
+            </div>
+            <div class="profile-field block-field">
+                <span class="field-label">সন্তানগণ:</span>
+                <span class="field-value" id="m-children"></span>
+            </div>
+            <div class="profile-field block-field" id="desc-container">
+                <span class="field-label">বিবরণ:</span>
+                <span class="field-value" id="m-desc" style="color: #ffda79;"></span>
+            </div>
+        </div>
+
+        <button id="close-btn" class="btn-close" style="margin-top:16px; width:100%; padding:9px;" onclick="closePopup()">বন্ধ করুন</button>
     </div>
 
     <!-- Image Lightbox Modal for Full View -->
@@ -1120,7 +1241,7 @@
             }
 
             if (foundPath) {
-                let html = `<strong>সম্পর্কের মাধ্যম (${foundPath.length - 1} ধাপ):</strong><br><br>`;
+                let html = `<strong style="color:#00ffff;">সম্পর্কের মাধ্যম (${foundPath.length - 1} ধাপ):</strong><br><br>`;
                 for (let i = 0; i < foundPath.length; i++) {
                     const person = marbleMap[foundPath[i].uid].userData;
                     if (i === 0) {
@@ -1317,7 +1438,7 @@
             document.getElementById('m-bname').innerText = data.bnName;
             document.getElementById('m-ename').innerText = data.enName;
             document.getElementById('m-gender').innerText = data.gender;
-            document.getElementById('m-gen').innerText = "প্রজন্ম " + data.generation;
+            document.getElementById('m-gen').innerText = "জেনারেশন " + data.generation;
             
             document.getElementById('m-spouse').innerHTML = renderRelationLink(data.spouse);
             document.getElementById('m-father').innerHTML = renderRelationLink(data.father);
@@ -1331,7 +1452,13 @@
             }
 
             // Description parameter handler
-            document.getElementById('m-desc').innerText = data.description ? data.description : "";
+            const descContainer = document.getElementById('desc-container');
+            if (data.description && data.description.trim() !== "") {
+                document.getElementById('m-desc').innerText = data.description;
+                descContainer.style.display = 'flex';
+            } else {
+                descContainer.style.display = 'none';
+            }
 
             // Photo handler with fallback icon
             const imgEl = document.getElementById('m-photo');
