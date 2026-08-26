@@ -1,390 +1,1518 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>3D Genogram - Roy Family</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Marbles - Interactive Family Tree</title>
     <style>
-        body { margin: 0; overflow: hidden; font-family: 'Segoe UI', sans-serif; background: #0a0a1a; color: white; }
-        #info {
-            position: absolute; top: 20px; left: 20px;
-            background: rgba(0,0,0,0.7); padding: 12px 20px; border-radius: 8px;
-            backdrop-filter: blur(6px); border: 1px solid #444; z-index: 10;
-            font-size: 14px; pointer-events: none;
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #0b0b0b;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            touch-action: none;
         }
-        #legend {
-            position: absolute; bottom: 30px; left: 30px;
-            background: rgba(0,0,0,0.6); padding: 10px 16px; border-radius: 8px;
-            backdrop-filter: blur(4px); border: 1px solid #333; font-size: 13px;
-            display: flex; gap: 20px; z-index: 10; pointer-events: none;
+
+        /* Top Menu Button */
+        #menu-toggle-btn {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            z-index: 100;
+            background: rgba(0, 255, 255, 0.25);
+            color: #00ffff;
+            border: 1px solid #00ffff;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            backdrop-filter: blur(8px);
+            font-size: 15px;
+            box-shadow: 0 4px 12px rgba(0,255,255,0.2);
+            transition: all 0.2s ease;
         }
-        .legend-item { display: flex; align-items: center; gap: 6px; }
-        .color-dot { width: 14px; height: 14px; border-radius: 50%; display: inline-block; }
-        #tooltip {
-            position: absolute; display: none;
-            background: rgba(10,10,30,0.9); color: #eee; padding: 10px 16px;
-            border-radius: 8px; border: 1px solid #555; font-size: 13px;
-            max-width: 250px; pointer-events: none; z-index: 20;
-            backdrop-filter: blur(8px); box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+
+        #menu-toggle-btn:hover {
+            background: rgba(0, 255, 255, 0.45);
+            transform: scale(1.03);
         }
-        .controls-hint {
-            position: absolute; bottom: 30px; right: 30px;
-            color: rgba(255,255,255,0.4); background: rgba(0,0,0,0.4);
-            padding: 6px 14px; border-radius: 20px; font-size: 12px;
-            backdrop-filter: blur(4px); border: 1px solid #333; z-index: 10;
-            pointer-events: none;
+
+        /* Main Sliding Navigation Menu Drawer */
+        #nav-drawer {
+            position: fixed;
+            top: 0;
+            left: -340px;
+            width: 320px;
+            height: 100%;
+            background: rgba(12, 18, 28, 0.96);
+            border-right: 1px solid #00ffff55;
+            z-index: 1000;
+            transition: left 0.3s ease;
+            box-shadow: 5px 0 25px rgba(0,0,0,0.8);
+            backdrop-filter: blur(12px);
+            display: flex;
+            flex-direction: column;
         }
-        #loading {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            color: #aaa; font-size: 18px; z-index: 5;
-            width: 90vw; max-height: 90vh; overflow-y: auto;
-            overflow-wrap: anywhere; word-break: break-word; text-align: center;
+
+        #nav-drawer.open {
+            left: 0;
         }
+
+        .drawer-header {
+            padding: 15px 20px;
+            background: rgba(0, 255, 255, 0.1);
+            border-bottom: 1px solid #00ffff44;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .drawer-header h2 {
+            margin: 0;
+            color: #00ffff;
+            font-size: 18px;
+        }
+
+        .drawer-body {
+            padding: 15px;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        /* Tabs inside Menu */
+        .tab-buttons {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 8px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: rgba(255,255,255,0.05);
+            color: #aaa;
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 8px 4px;
+            border-radius: 6px;
+            font-size: 11px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .tab-btn.active {
+            background: rgba(0, 255, 255, 0.25);
+            color: #00ffff;
+            border-color: #00ffff;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Search Box Styles inside Menu */
+        #search-input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #00ffff;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            font-size: 13px;
+            box-sizing: border-box;
+            outline: none;
+            margin-bottom: 10px;
+        }
+
+        #search-results-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border-radius: 6px;
+        }
+
+        .search-item {
+            padding: 10px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 13px;
+            background: rgba(255,255,255,0.03);
+            margin-bottom: 5px;
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: 0.2s;
+        }
+
+        .search-item:hover {
+            background: rgba(0, 255, 255, 0.2);
+            color: #00ffff;
+        }
+
+        /* Stats Grid & Clickable Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px 8px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .stat-box:hover {
+            background: rgba(0, 255, 255, 0.15);
+            transform: translateY(-2px);
+            border-color: #00ffff;
+        }
+
+        .stat-number {
+            font-size: 20px;
+            font-weight: bold;
+            color: #00ffff;
+            margin-bottom: 2px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #ccc;
+        }
+
+        /* Generation List Styling */
+        .gen-item {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 8px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: 0.2s;
+        }
+
+        .gen-item:hover {
+            background: rgba(0, 255, 255, 0.2);
+            border-color: #00ffff;
+        }
+
+        .gen-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .gen-count {
+            font-size: 11px;
+            background: #00ffff22;
+            color: #00ffff;
+            padding: 3px 8px;
+            border-radius: 12px;
+            border: 1px solid #00ffff66;
+        }
+
+        /* Relationship Finder Elements */
+        .select-group {
+            margin-bottom: 12px;
+        }
+
+        .select-group label {
+            display: block;
+            font-size: 12px;
+            color: #aaa;
+            margin-bottom: 4px;
+        }
+
+        .select-group select {
+            width: 100%;
+            padding: 8px;
+            border-radius: 6px;
+            background: #111;
+            color: #fff;
+            border: 1px solid #00ffff66;
+            outline: none;
+            font-size: 13px;
+        }
+
+        #rel-result {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(10, 30, 45, 0.9);
+            color: #e0f7fa;
+            border-radius: 8px;
+            border: 1px solid #00ffff88;
+            border-left: 4px solid #00ffff;
+            font-size: 13px;
+            line-height: 1.6;
+            box-shadow: inset 0 0 10px rgba(0,255,255,0.1);
+        }
+
+        #rel-result b {
+            color: #00ffff;
+        }
+
+        #rel-result i {
+            color: #ffda79;
+        }
+
+        /* General Modal List Popup */
+        #list-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(15, 20, 30, 0.98);
+            color: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+            z-index: 2000;
+            width: 340px;
+            max-height: 75vh;
+            overflow-y: auto;
+            border: 1px solid #00ffff66;
+            backdrop-filter: blur(12px);
+        }
+
+        #list-modal h3 {
+            margin-top: 0;
+            color: #00ffff;
+            font-size: 16px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 8px;
+        }
+
+        .modal-member-card {
+            padding: 8px 10px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 6px;
+            margin-bottom: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .modal-member-card:hover {
+            background: rgba(0, 255, 255, 0.2);
+            border-color: #00ffff;
+        }
+
+        /* Profile Details Popup Modal */
+        #popup-modal {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(145deg, rgba(15, 23, 36, 0.96), rgba(8, 14, 24, 0.98));
+            color: #e2e8f0;
+            padding: 22px;
+            border-radius: 16px;
+            box-shadow: 0 10px 32px rgba(0, 0, 0, 0.85), 0 0 15px rgba(0, 255, 255, 0.15);
+            z-index: 2500;
+            width: 330px;
+            max-height: 82vh;
+            overflow-y: auto;
+            border: 1px solid rgba(0, 255, 255, 0.35);
+            backdrop-filter: blur(16px);
+        }
+
+        .popup-header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+            padding-bottom: 12px;
+            margin-bottom: 14px;
+        }
+
+        .popup-header-container h2 {
+            margin: 0 0 6px 0;
+            color: #00ffff;
+            font-size: 19px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-shadow: 0 0 8px rgba(0, 255, 255, 0.3);
+        }
+
+        .uid-gen-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .uid-badge {
+            font-size: 11px;
+            color: #38bdf8;
+            background: rgba(56, 189, 248, 0.12);
+            padding: 3px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            font-weight: 600;
+        }
+
+        .gen-badge {
+            font-size: 11px;
+            color: #00ffff;
+            background: rgba(0, 255, 255, 0.15);
+            padding: 3px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(0, 255, 255, 0.4);
+            font-weight: 600;
+        }
+
+        .profile-details-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .profile-field {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .profile-field.block-field {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+        }
+
+        .field-label {
+            color: #94a3b8;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .field-value {
+            color: #f8fafc;
+            font-weight: 500;
+            text-align: right;
+        }
+
+        .block-field .field-value {
+            text-align: left;
+        }
+
+        .profile-img-thumb {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 2px solid #00ffff;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 255, 255, 0.25);
+            transition: transform 0.2s, border-color 0.2s;
+            background-color: #1a2230;
+            flex-shrink: 0;
+        }
+
+        .profile-img-thumb:hover {
+            transform: scale(1.06);
+            border-color: #ffffff;
+        }
+
+        .relation-link {
+            color: #38bdf8;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .relation-link:hover {
+            color: #00ffff;
+            text-decoration: underline;
+        }
+
+        .btn-close {
+            background: linear-gradient(135deg, #ff4757, #ff6b81);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 12px;
+            box-shadow: 0 2px 8px rgba(255, 71, 87, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .btn-close:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        #image-lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(8px);
+        }
+
+        #image-lightbox img {
+            max-width: 85%;
+            max-height: 85%;
+            border-radius: 12px;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+            border: 2px solid #00ffff;
+        }
+
+        /* Responsive Mobile Layout Adjustments */
         @media (max-width: 600px) {
-            #info { font-size: 12px; padding: 8px 14px; }
-            #legend { flex-wrap: wrap; gap: 10px; font-size: 11px; }
+            #nav-drawer { 
+                width: 85%; 
+                max-width: 320px;
+            }
+
+            #popup-modal { 
+                width: 90% !important;
+                left: 5% !important;
+                right: auto !important;
+                top: 50% !important;
+                transform: translateY(-50%) !important;
+                max-height: 75vh !important;
+                box-shadow: 0 0 40px rgba(0, 0, 0, 0.9);
+            }
+
+            #list-modal { 
+                width: 85% !important;
+                max-height: 70vh !important;
+            }
         }
     </style>
 </head>
 <body>
-    <div id="info">👨‍👩‍👧‍👦 3D Genogram - Roy Family</div>
-    <div id="legend">
-        <span class="legend-item"><span class="color-dot" style="background:#4a90d9;"></span> পুরুষ</span>
-        <span class="legend-item"><span class="color-dot" style="background:#e74c8b;"></span> নারী</span>
-        <span class="legend-item"><span style="display:inline-block; width:20px; height:2px; background:#66aaff;"></span> পিতৃ-সন্তান</span>
-        <span class="legend-item"><span style="display:inline-block; width:20px; height:2px; background:#ffaa66; border-top:2px dashed #ffaa66;"></span> দাম্পত্য</span>
-    </div>
-    <div id="tooltip"></div>
-    <div class="controls-hint">🔄 ড্র্যাগ · ⚡ স্ক্রল · ডাবল-ক্লিক অটোরোটেট</div>
-    <div id="loading">⏳ লোড হচ্ছে...</div>
 
-    <!-- Three.js + 3d-force-graph CDN -->
+    <button id="menu-toggle-btn" onclick="toggleDrawer()">☰ মেনু অপশন</button>
+
+    <div id="nav-drawer">
+        <div class="drawer-header">
+            <h2>পারিবারিক প্যানেল</h2>
+            <button class="btn-close" onclick="toggleDrawer()">✕</button>
+        </div>
+        
+        <div class="drawer-body">
+            <div class="tab-buttons">
+                <button class="tab-btn active" onclick="switchTab('stats-tab', this)">📊 পরিসংখ্যান</button>
+                <button class="tab-btn" onclick="switchTab('search-tab', this)">🔍 সন্ধান</button>
+                <button class="tab-btn" onclick="switchTab('rel-tab', this)">🔗 সম্পর্ক</button>
+            </div>
+
+            <div id="stats-tab" class="tab-content active">
+                <p style="font-size: 11px; color: #aaa; margin-bottom: 10px;">
+                    💡 বিস্তারিত তালিকা দেখতে যেকোনো পরিসংখ্যানে ক্লিক করুন:
+                </p>
+
+                <div class="stats-grid">
+                    <div class="stat-box" onclick="showFilteredMemberList('all', 'সকল সদস্যের তালিকা')">
+                        <div class="stat-number" id="stat-total">0</div>
+                        <div class="stat-label">মোট সদস্য</div>
+                    </div>
+                    <div class="stat-box" onclick="showCouplesList()">
+                        <div class="stat-number" id="stat-families">0</div>
+                        <div class="stat-label">পরিবার / দম্পতি</div>
+                    </div>
+                    <div class="stat-box" onclick="showFilteredMemberList('male', 'পুরুষ সদস্যদের তালিকা')">
+                        <div class="stat-number" id="stat-male" style="color: #00ccff;">0</div>
+                        <div class="stat-label">পুরুষ সদস্য</div>
+                    </div>
+                    <div class="stat-box" onclick="showFilteredMemberList('female', 'নারী সদস্যদের তালিকা')">
+                        <div class="stat-number" id="stat-female" style="color: #ff1493;">0</div>
+                        <div class="stat-label">নারী সদস্য</div>
+                    </div>
+                </div>
+
+                <h3 style="margin-top:20px; font-size:14px; color:#00ffff;">🧬 জেনারেশন (বংশপরম্পরা)</h3>
+                <div id="generation-container"></div>
+            </div>
+
+            <div id="search-tab" class="tab-content">
+                <input type="text" id="search-input" placeholder="🔍 UID, নাম (বাংলা/Eng)..." oninput="handleSearch()">
+                <div id="search-results-list"></div>
+            </div>
+
+            <div id="rel-tab" class="tab-content">
+                <div class="select-group">
+                    <label>প্রথম ব্যক্তি (Person A):</label>
+                    <select id="rel-person-a" onchange="calculateRelationship()"></select>
+                </div>
+
+                <div class="select-group">
+                    <label>দ্বিতীয় ব্যক্তি (Person B):</label>
+                    <select id="rel-person-b" onchange="calculateRelationship()"></select>
+                </div>
+
+                <div id="rel-result">
+                    দুইজন ব্যক্তি নির্বাচন করুন সম্পর্ক জানার জন্য।
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="list-modal">
+        <button class="btn-close" style="float:right;" onclick="closeListModal()">✕</button>
+        <h3 id="list-modal-title">সদস্য তালিকা</h3>
+        <div id="list-modal-body"></div>
+    </div>
+
+    <div id="popup-modal">
+        <div class="popup-header-container">
+            <div>
+                <h2 id="m-bname">প্রোফাইল বিবরণ</h2>
+                <div class="uid-gen-wrapper">
+                    <span class="uid-badge">UID: <span id="m-uid"></span></span>
+                    <span class="gen-badge" id="m-gen"></span>
+                </div>
+            </div>
+            <img id="m-photo" class="profile-img-thumb" src="" alt="Profile Photo" onclick="openLightbox(this.src)">
+        </div>
+
+        <div class="profile-details-list">
+            <div class="profile-field">
+                <span class="field-label">ইংরেজি নাম:</span>
+                <span class="field-value" id="m-ename"></span>
+            </div>
+            <div class="profile-field">
+                <span class="field-label">লিঙ্গ:</span>
+                <span class="field-value" id="m-gender"></span>
+            </div>
+            <div class="profile-field">
+                <span class="field-label">দাম্পত্য সঙ্গী:</span>
+                <span class="field-value" id="m-spouse"></span>
+            </div>
+            <div class="profile-field">
+                <span class="field-label">পিতার নাম:</span>
+                <span class="field-value" id="m-father"></span>
+            </div>
+            <div class="profile-field">
+                <span class="field-label">মাতার নাম:</span>
+                <span class="field-value" id="m-mother"></span>
+            </div>
+            <div class="profile-field block-field">
+                <span class="field-label">সন্তানগণ:</span>
+                <span class="field-value" id="m-children"></span>
+            </div>
+            <div class="profile-field block-field" id="desc-container">
+                <span class="field-label">বিবরণ:</span>
+                <span class="field-value" id="m-desc" style="color: #ffda79;"></span>
+            </div>
+        </div>
+
+        <button id="close-btn" class="btn-close" style="margin-top:16px; width:100%; padding:9px;" onclick="closePopup()">বন্ধ করুন</button>
+    </div>
+
+    <div id="image-lightbox" onclick="closeLightbox()">
+        <img id="lightbox-img" src="" alt="Full View">
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/3d-force-graph@1.70.4/dist/3d-force-graph.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
 
     <script>
-        // CDN/library লোড না হলে স্পষ্ট বার্তা দেখানো হবে।
-        window.addEventListener('load', function () {
-            if (typeof THREE === 'undefined') {
-                const el = document.getElementById('loading');
-                el.style.display = 'block';
-                el.style.color = '#ff6b6b';
-                el.innerHTML = '❌ Three.js লোড হয়নি। ইন্টারনেট সংযোগ/CDN অ্যাক্সেস পরীক্ষা করুন।';
-            } else if (typeof ForceGraph3D === 'undefined') {
-                const el = document.getElementById('loading');
-                el.style.display = 'block';
-                el.style.color = '#ff6b6b';
-                el.innerHTML = '❌ 3D Force Graph লাইব্রেরি লোড হয়নি। ইন্টারনেট সংযোগ/CDN অ্যাক্সেস পরীক্ষা করুন।';
+        const DEFAULT_NO_IMAGE = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 24 24' fill='none' stroke='%2000ffff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='3' width='18' height='18' rx='2' ry='2'/><circle cx='8.5' cy='8.5' r='1.5'/><polyline points='21 15 16 10 5 21'/><line x1='3' y1='3' x2='21' y2='21'/></svg>";
+
+        function handleImgError(img) {
+            img.onerror = null;
+            img.src = DEFAULT_NO_IMAGE;
+        }
+
+        function openLightbox(src) {
+            if (!src || src.includes("data:image/svg+xml")) return;
+            document.getElementById('lightbox-img').src = src;
+            document.getElementById('image-lightbox').style.display = 'flex';
+        }
+
+        function closeLightbox() {
+            document.getElementById('image-lightbox').style.display = 'none';
+        }
+
+        let isDrawerOpen = false;
+        function toggleDrawer() {
+            const drawer = document.getElementById('nav-drawer');
+            drawer.classList.toggle('open');
+            isDrawerOpen = drawer.classList.contains('open');
+
+            if (isDrawerOpen) {
+                isAnimating = false;
+            } else {
+                if (!isMarbleSelected) {
+                    isAnimating = true;
+                }
             }
-        });
+        }
 
-        // যেকোনো জাভাস্ক্রিপ্ট এরর সরাসরি স্ক্রিনে দেখানোর ব্যবস্থা (সাদা স্ক্রিন/অসীম লোডিং এড়াতে)
-        window.addEventListener('error', function (e) {
-            const loadingEl = document.getElementById('loading');
-            if (loadingEl) {
-                loadingEl.style.display = 'block';
-                loadingEl.style.color = '#ff6b6b';
-                loadingEl.style.maxWidth = '80vw';
-                loadingEl.style.textAlign = 'center';
-                loadingEl.innerHTML = '❌ লোড করতে সমস্যা হয়েছে:<br><span style="font-size:12px;">' + (e.message || e) + '</span>';
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(tb => tb.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        document.body.appendChild(renderer.domElement);
+
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+
+        let isAnimating = true;
+        let isMarbleSelected = false;
+
+        const defaultCameraPos = new THREE.Vector3(0, 0, 30);
+        camera.position.copy(defaultCameraPos);
+
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+        scene.add(ambientLight);
+        const pointLight = new THREE.PointLight(0xffffff, 1.2);
+        pointLight.position.set(5, 5, 5);
+        scene.add(pointLight);
+
+        const geometry = new THREE.SphereGeometry(1, 64, 64);
+        const clickableMarbles = [];
+        const marbleMap = {};
+
+        function createMarbleMaterial(colorValue) {
+            return new THREE.MeshPhongMaterial({ 
+                color: colorValue, 
+                shininess: 100,
+                transparent: true,
+                opacity: 1
+            });
+        }
+
+        function createTextSprite(text) {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = 256;
+            canvas.height = 128;
+            context.font = 'Bold 40px "Segoe UI", sans-serif';
+            context.fillStyle = '#ffffff';
+            context.textAlign = 'center';
+            context.fillText(text, 128, 64);
+
+            const texture = new THREE.CanvasTexture(canvas);
+            const spriteMaterial = new THREE.SpriteMaterial({ map: texture, transparent: true });
+            const sprite = new THREE.Sprite(spriteMaterial);
+            sprite.scale.set(2, 1, 1);
+            sprite.position.set(0, 1.4, 0);
+            return sprite;
+        }
+
+        const membersData = [
+            // Gen 1
+            { uid: "FT-016", bnName: "দিনোনাথ রায়", enName: "Dinonath Roy", nick: "খোকা সরকার", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-017", father: null, mother: null, children: ["FT-018", "FT-019", "FT-020", "FT-021", "FT-022", "FT-023", "FT-024", "FT-025"], description: "" },
+            { uid: "FT-017", bnName: "দুলালী রাণী রায়", enName: "Dulali Rani Roy", nick: "নলিনী", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-016", father: null, mother: null, children: ["FT-018", "FT-019", "FT-020", "FT-021", "FT-022", "FT-023", "FT-024", "FT-025"], description: "" },
+            
+            { uid: "FT-070", bnName: "সুরেশ দেউ দেব সিংহ", enName: "Suresh Deu Dev Singh", nick: "সুরেশ", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-071", father: null, mother: null, children: ["FT-073", "FT-079", "FT-081", "FT-085"], description: "" },
+            { uid: "FT-071", bnName: "সিতোময়ী রায় দেব সিংহ", enName: "Sitomoyi Roy Dev Singh", nick: "সিতোময়ী", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-070", father: null, mother: null, children: ["FT-073", "FT-079", "FT-081", "FT-085"], description: "" },
+
+            { uid: "FT-143", bnName: "ননীগোপাল", enName: "Noni Gopal", nick: "ননীগোপাল", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-144", father: null, mother: null, children: ["FT-145", "FT-001"], description: "" },
+            { uid: "FT-144", bnName: "মাধবী রানী রায়", enName: "Madhobi Rani Roy", nick: "মাধবী", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-143", father: null, mother: null, children: ["FT-145", "FT-001"], description: "" },
+
+            // Gen 2
+            { uid: "FT-018", bnName: "জয়ন্তী রাণী রায়", enName: "Joyonti Rani Roy", nick: "জয়ন্তী", gender: "মহিলা (Female)", color: 0xff1493, spouse: null, father: "FT-016", mother: "FT-017", children: [], description: "" },
+            { uid: "FT-019", bnName: "বাসন্তী রাণী রায়", enName: "Basonti Rani Roy", nick: "বাসন্তী", gender: "মহিলা (Female)", color: 0xff1493, spouse: null, father: "FT-016", mother: "FT-017", children: [], description: "" },
+            
+            { uid: "FT-020", bnName: "দিনেশ চন্দ্র রায়", enName: "Dinash Chandra Roy", nick: "দিনেশ", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-047", father: "FT-016", mother: "FT-017", children: ["FT-048", "FT-049", "FT-050"], description: "" },
+            { uid: "FT-047", bnName: "ভদ্রা রাণী রায়", enName: "Bhadra Rani Roy", nick: "ভদ্রা", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-020", father: null, mother: null, children: ["FT-048", "FT-049", "FT-050"], description: "" },
+
+            { uid: "FT-021", bnName: "ধনেশ চন্দ্র রায়", enName: "Dhonesh Chandra Roy", nick: "ধনেশ", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-079", father: "FT-016", mother: "FT-017", children: ["FT-002", "FT-011", "FT-007"], description: "" },
+            { uid: "FT-079", bnName: "ছবিতা রানী রায়", enName: "Sabita Rani Roy", nick: "ছবিতা", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-021", father: "FT-070", mother: "FT-071", children: ["FT-002", "FT-011", "FT-007"], description: "" },
+
+            { uid: "FT-022", bnName: "গণেশ চন্দ্র রায়", enName: "Gonesh Chandra Roy", nick: "গণেশ", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: null, father: "FT-016", mother: "FT-017", children: [], description: "তিনি অল্প বয়সে মারা যায়।" },
+            
+            { uid: "FT-023", bnName: "কর্তিক চন্দ্র রায়", enName: "Karttik Chandra Roy", nick: "কর্তিক", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-055", father: "FT-016", mother: "FT-017", children: ["FT-056", "FT-059"], description: "" },
+            { uid: "FT-055", bnName: "লক্ষ্মী রাণী রায়", enName: "Lakkhi Rani Roy", nick: "লক্ষ্মী", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-023", father: null, mother: null, children: ["FT-056", "FT-059"], description: "" },
+
+            { uid: "FT-024", bnName: "নিয়তী রানি রায়", enName: "Nioti Rani Roy", nick: "নিয়তী", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-062", father: "FT-016", mother: "FT-017", children: [], description: "তারা নিসন্তান ছিলেন।" },
+            { uid: "FT-062", bnName: "সুধীর চন্দ্র রায়", enName: "Sudir Roy", nick: "সুধীর", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-024", father: null, mother: null, children: [], description: "তারা নিসন্তান ছিলেন।" },
+
+            { uid: "FT-025", bnName: "কাঞ্চন চন্দ্র রায়", enName: "Kanchon Chandra Roy", nick: "কাঞ্চন", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-066", father: "FT-016", mother: "FT-017", children: ["FT-067", "FT-068"], description: "" },
+            { uid: "FT-066", bnName: "রত্না রাণী রায়", enName: "Ratna Rani Roy", nick: "রত্না", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-025", father: null, mother: null, children: ["FT-067", "FT-068"], description: "" },
+
+            { uid: "FT-073", bnName: "রবীন্দ্রনাথ দেব সিংহ", enName: "Rabindranath Dev Singh", nick: "রবীন্দ্রনাথ", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-074", father: "FT-070", mother: "FT-071", children: ["FT-075"], description: "" },
+            { uid: "FT-074", bnName: "সুনতি রানী", enName: "Sunoti Rani", nick: "সুনতি", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-073", father: null, mother: null, children: ["FT-075"], description: "" },
+
+            { uid: "FT-081", bnName: "কবিচন্দ্র দেব সিংহ", enName: "Kavichandra Dev Singha", nick: "কবিচন্দ্র", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-082", father: "FT-070", mother: "FT-071", children: ["FT-083"], description: "" },
+            { uid: "FT-082", bnName: "পুষ্পদেব সিংহ", enName: "Pushpadev Singh", nick: "পুষ্পদেব", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-081", father: null, mother: null, children: ["FT-083"], description: "" },
+
+            { uid: "FT-085", bnName: "নমিতা রানী দেবসিংহ", enName: "Namita Rani Debsingh", nick: "নমিতা", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-086", father: "FT-070", mother: "FT-071", children: ["FT-087", "FT-088"], description: "" },
+            { uid: "FT-086", bnName: "মোহন কাজ্জি", enName: "Mohon Kajji", nick: "মোহন", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-085", father: null, mother: null, children: ["FT-087", "FT-088"], description: "" },
+
+            { uid: "FT-145", bnName: "মানিক চন্দ্র রায়", enName: "Manik Chandra Roy", nick: "মানিক", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-146", father: "FT-143", mother: "FT-144", children: ["FT-147", "FT-148", "FT-149"], description: "" },
+            { uid: "FT-146", bnName: "দিনেশ্বরী রানী", enName: "Dineshwari Rani", nick: "দিনেশ্বরী", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-145", father: null, mother: null, children: ["FT-147", "FT-148", "FT-149"], description: "" },
+            { uid: "FT-001", bnName: "অবিনাশ চন্দ্র রায়", enName: "Abinash Chandra Roy", nick: "অবিনাশ", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-002", father: "FT-143", mother: "FT-144", children: ["FT-003", "FT-004"], description: "" },
+
+            // Gen 3
+            { uid: "FT-147", bnName: "রত্না রাণী রায়", enName: "Ratna Rani Roy", nick: "রত্না", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-150", father: "FT-145", mother: "FT-146", children: ["FT-151", "FT-152"], description: "" },
+            { uid: "FT-150", bnName: "রতন চন্দ্র রায়", enName: "Raton Chandra Roy", nick: "রতন", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-147", father: null, mother: null, children: ["FT-151", "FT-152"], description: "" },
+            { uid: "FT-148", bnName: "স্বপ্না রাণী রায়", enName: "Sopna Rani Roy", nick: "স্বপ্না", gender: "মহিলা (Female)", color: 0xff1493, spouse: null, father: "FT-145", mother: "FT-146", children: [], description: "" },
+            { uid: "FT-149", bnName: "মৈত্রী রাণী রায়", enName: "Maitri Rani Roy", nick: "মৈত্রী", gender: "মহিলা (Female)", color: 0xff1493, spouse: null, father: "FT-145", mother: "FT-146", children: [], description: "" },
+
+            { uid: "FT-048", bnName: "দিপিকা রানী রায়", enName: "Depika Rani Roy", nick: "দিপিকা", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-051", father: "FT-020", mother: "FT-047", children: [], description: "" },
+            { uid: "FT-051", bnName: "সুধাংশু রায়", enName: "Sudhangsu Roy", nick: "সুধাংশু", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-048", father: null, mother: null, children: [], description: "" },
+            { uid: "FT-049", bnName: "দিতী রানী রায়", enName: "Diti Rani Roy", nick: "দিতী", gender: "মহিলা (Female)", color: 0xff1493, spouse: null, father: "FT-020", mother: "FT-047", children: [], description: "" },
+            { uid: "FT-050", bnName: "অনিক রায় প্রান্ত", enName: "Anik Roy Pranto", nick: "প্রান্ত", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-020", mother: "FT-047", children: [], description: "" },
+
+            { uid: "FT-002", bnName: "ফেন্সি রানি রায়", enName: "Fency Rani Roy", nick: "কনিকা", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-001", father: "FT-021", mother: "FT-079", children: ["FT-003", "FT-004"], description: "" },
+
+            { uid: "FT-011", bnName: "জুয়েল চন্দ্র রায়", enName: "Juel Chandra Roy", nick: "জুয়েল", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-012", father: "FT-021", mother: "FT-079", children: ["FT-013"], description: "" },
+            { uid: "FT-012", bnName: "জয়া রানী রায়", enName: "Joya Rani Roy", nick: "জয়া", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-011", father: "FT-100", mother: "FT-101", children: ["FT-013"], description: "" },
+
+            { uid: "FT-007", bnName: "মনিকা রানী রায়", enName: "Monika Rani Roy", nick: "মনিকা", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-006", father: "FT-021", mother: "FT-079", children: ["FT-008", "FT-009"], description: "" },
+            { uid: "FT-006", bnName: "গোলাপ চন্দ্র রায়", enName: "Golap Chandra Roy", nick: "গোলাপ", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-007", father: null, mother: null, children: ["FT-008", "FT-009"], description: "" },
+
+            { uid: "FT-056", bnName: "কেয়া রায় ঘোষ", enName: "Keya Roy Ghosh", nick: "কেয়া", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-057", father: "FT-023", mother: "FT-055", children: ["FT-058"], description: "" },
+            { uid: "FT-057", bnName: "তন্ময় ঘোষ", enName: "Tonmoy Ghosh", nick: "তন্ময়", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-056", father: null, mother: null, children: ["FT-058"], description: "" },
+
+            { uid: "FT-059", bnName: "অপু রায়", enName: "Apu Roy", nick: "অপু", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: "FT-060", father: "FT-023", mother: "FT-055", children: [], description: "" },
+            { uid: "FT-060", bnName: "শ্রাবন্তী রায়", enName: "Srabonti Ray", nick: "শ্রাবন্তী", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-059", father: null, mother: null, children: [], description: "" },
+
+            { uid: "FT-067", bnName: "রয়েল চন্দ্র রায়", enName: "Royel Chandra Roy", nick: "রয়েল", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-025", mother: "FT-066", children: [], description: "" },
+            { uid: "FT-068", bnName: "দেব চন্দ্র রায়", enName: "Dev Chandra Roy", nick: "দেব", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-025", mother: "FT-066", children: [], description: "" },
+
+            { uid: "FT-075", bnName: "শিমুল সিংহ দেবব্রত", enName: "Shimul Singh Debabrata", nick: "শিমুল", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: "FT-076", father: "FT-073", mother: "FT-074", children: ["FT-077"], description: "" },
+            { uid: "FT-076", bnName: "ছায়া রানী রায়", enName: "Chaya Rani Roy", nick: "ছায়া", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-075", father: null, mother: null, children: ["FT-077"], description: "" },
+
+            { uid: "FT-083", bnName: "নবকুমার রায় দেবসিংহ", enName: "Nabakumar Roy Debsingh", nick: "নবকুমার", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-081", mother: "FT-082", children: [], description: "" },
+
+            { uid: "FT-087", bnName: "মধু রায়", enName: "Madhu Roy", nick: "মধু", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-086", mother: "FT-085", children: [], description: "তরুণ বয়সে আত্মহত্যা করেছে।" },
+            { uid: "FT-088", bnName: "মোহনা রায় মিষ্টি", enName: "Mohona Roy Misty", nick: "মিষ্টি", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-089", father: "FT-086", mother: "FT-085", children: ["FT-090"], description: "" },
+            { uid: "FT-089", bnName: "চৈতন্য দেব বিচিত্র", enName: "Chaitanya Dev Bichittro", nick: "চৈতন্য", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-088", father: null, mother: null, children: ["FT-090"], description: "" },
+
+            { uid: "FT-100", bnName: "যামিনী চন্দ্র রায়", enName: "Jamini Chandra Roy", nick: "যামিনী", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-101", father: null, mother: null, children: ["FT-102", "FT-012", "FT-106"], description: "" },
+            { uid: "FT-101", bnName: "মায়া রানী রায়", enName: "Maya Rani Roy", nick: "মায়া", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-100", father: null, mother: null, children: ["FT-102", "FT-012", "FT-106"], description: "" },
+
+            { uid: "FT-102", bnName: "মৃণাল চন্দ্র রায়", enName: "Mrinal Chandra Roy", nick: "মৃণাল", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-103", father: "FT-100", mother: "FT-101", children: ["FT-104", "FT-105"], description: "" },
+            { uid: "FT-103", bnName: "মুক্তি রানী রায়", enName: "Mukti Rani Roy", nick: "মুক্তি", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-102", father: null, mother: null, children: ["FT-104", "FT-105"], description: "" },
+            { uid: "FT-104", bnName: "অভ্র চন্দ্র রায়", enName: "Avro Chandra Roy", nick: "অভ্র", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-102", mother: "FT-103", children: [], description: "" },
+            { uid: "FT-105", bnName: "সৃজা মনি রায়", enName: "Srija Moni Roy", nick: "সৃজা", gender: "মহিলা (Female)", color: 0xff69b4, spouse: null, father: "FT-102", mother: "FT-103", children: [], description: "" },
+
+            { uid: "FT-106", bnName: "মানিক চন্দ্র রায়", enName: "Manik Chandra Roy", nick: "মানিক", gender: "পুরুষ (Male)", color: 0x0055ff, spouse: "FT-107", father: "FT-100", mother: "FT-101", children: [], description: "" },
+            { uid: "FT-107", bnName: "সঞ্জিতা রানী রায়", enName: "Sanjita Rani Roy", nick: "সঞ্জিতা", gender: "মহিলা (Female)", color: 0xff1493, spouse: "FT-106", father: null, mother: null, children: [], description: "" },
+
+            // Gen 4
+            { uid: "FT-151", bnName: "পৃথিবী রায়", enName: "Prithibi Roy", nick: "পৃথিবী", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-150", mother: "FT-147", children: [], description: "" },
+            { uid: "FT-152", bnName: "রৌদ্র রায়", enName: "Ruddra Roy", nick: "রৌদ্র", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-150", mother: "FT-147", children: [], description: "" },
+
+            { uid: "FT-003", bnName: "বাঁধন চন্দ্র রায়", enName: "Badhon Chandra Roy", nick: "বাঁধন", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-001", mother: "FT-002", children: [], description: "" },
+            { uid: "FT-004", bnName: "লাবণ্য চন্দ্র রায়", enName: "Labonno Chandra Roy", nick: "লাবণ্য", gender: "পুরুষ (Male)", color: 0x3366ff, spouse: null, father: "FT-001", mother: "FT-002", children: [], description: "" },
+            { uid: "FT-013", bnName: "তীর্থ চন্দ্র রায়", enName: "Tirtho Chandra Roy", nick: "তীর্থ", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-011", mother: "FT-012", children: [], description: "" },
+            { uid: "FT-008", bnName: "ওম চন্দ্র রায়", enName: "Om Chandra Roy", nick: "ওম", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-006", mother: "FT-007", children: [], description: "" },
+            { uid: "FT-009", bnName: "বেদ চন্দ্র রায়", enName: "Veda Chandra Roy", nick: "বেদ", gender: "পুরুষ (Male)", color: 0x3366ff, spouse: null, father: "FT-006", mother: "FT-007", children: [], description: "" },
+            { uid: "FT-058", bnName: "কৃত্তিকা ঘোষ তনয়া", enName: "Krittika Ghosh Tanoya", nick: "কৃত্তিকা", gender: "মহিলা (Female)", color: 0xff69b4, spouse: null, father: "FT-057", mother: "FT-056", children: [], description: "" },
+            { uid: "FT-077", bnName: "দিতিপ্রিয়া রায় (শুদ্ধি)", enName: "Ditipriya Roy", nick: "দিতিপ্রিয়া", gender: "মহিলা (Female)", color: 0xff69b4, spouse: null, father: "FT-075", mother: "FT-076", children: [], description: "" },
+            { uid: "FT-090", bnName: "অভিমুন্য রায় অভি", enName: "Abhimanyu Roy Avi", nick: "অভিমুন্য", gender: "পুরুষ (Male)", color: 0x00ccff, spouse: null, father: "FT-089", mother: "FT-088", children: [], description: "" }
+        ];
+
+        const generationMap = {};
+
+        function calculateGenerations() {
+            const memberDict = {};
+            membersData.forEach(m => { memberDict[m.uid] = m; });
+
+            function getMemberGen(uid, visited = new Set()) {
+                if (visited.has(uid)) return 1;
+                visited.add(uid);
+                const m = memberDict[uid];
+                if (!m) return 1;
+
+                if (!m.father && !m.mother) {
+                    if (m.spouse && memberDict[m.spouse]) {
+                        const s = memberDict[m.spouse];
+                        if (s.father || s.mother) {
+                            return getMemberGen(m.spouse, visited);
+                        }
+                    }
+                    return 1;
+                }
+
+                let fGen = m.father ? getMemberGen(m.father, new Set(visited)) : 0;
+                let mGen = m.mother ? getMemberGen(m.mother, new Set(visited)) : 0;
+                return Math.max(fGen, mGen) + 1;
             }
-        });
 
-        (function() {
-          try {
-            // --------------------------------------------------------------
-            // ১. Row Data
-            // --------------------------------------------------------------
-            const rawPeople = [
-                { id: "FT-001", name: "Abinash Chandra Roy", nick: "", nameBn: "অবিনাশ চন্দ্র রায়", gender: "M", spouse: "FT-002", father: "FT-108", mother: "", alive: "Yes" },
-                { id: "FT-002", name: "Fency Rani Roy", nick: "Konika", nameBn: "ফেন্সি রানি রায়", gender: "F", spouse: "FT-001", father: "FT-021", mother: "FT-079", alive: "Yes" },
-                { id: "FT-003", name: "Badhon Chandra Roy", nick: "", nameBn: "বাঁধন চন্দ্র রায়", gender: "M", spouse: "", father: "FT-001", mother: "FT-002", alive: "Yes" },
-                { id: "FT-004", name: "Labonno Chandra Roy", nick: "", nameBn: "লাবণ্য চন্দ্র রায়", gender: "M", spouse: "", father: "FT-001", mother: "FT-002", alive: "Yes" },
-                { id: "FT-006", name: "Golap Chandra Roy", nick: "", nameBn: "গোলাপ চন্দ্র রায়", gender: "M", spouse: "FT-007", father: "", mother: "", alive: "Yes" },
-                { id: "FT-007", name: "Monika Rani Roy", nick: "Mani", nameBn: "মনিকা রানী রায়", gender: "F", spouse: "FT-006", father: "FT-021", mother: "FT-079", alive: "Yes" },
-                { id: "FT-008", name: "Om Chandra Roy", nick: "", nameBn: "ওম চন্দ্র রায়", gender: "M", spouse: "", father: "FT-006", mother: "FT-007", alive: "Yes" },
-                { id: "FT-009", name: "Veda Chandra Roy", nick: "", nameBn: "বেদ চন্দ্র রায়", gender: "M", spouse: "", father: "FT-006", mother: "FT-007", alive: "Yes" },
-                { id: "FT-011", name: "Juel Chandra Roy", nick: "", nameBn: "জুয়েল চন্দ্র রায়", gender: "M", spouse: "FT-012", father: "FT-021", mother: "FT-079", alive: "Yes" },
-                { id: "FT-012", name: "Joya Rani Roy", nick: "", nameBn: "জয়া রানী রায়", gender: "F", spouse: "FT-011", father: "", mother: "", alive: "Yes" },
-                { id: "FT-013", name: "Tirtho Chandra Roy", nick: "", nameBn: "তীর্থ চন্দ্র রায়", gender: "M", spouse: "", father: "FT-011", mother: "FT-012", alive: "Yes" },
-                { id: "FT-016", name: "Dinonath Roy", nick: "Khokha Sarker", nameBn: "দিনোনাথ রায়", gender: "M", spouse: "FT-017", father: "", mother: "", alive: "No" },
-                { id: "FT-017", name: "Dulali Rani Roy", nick: "Nolini", nameBn: "দুলালী রাণী রায়", gender: "F", spouse: "FT-016", father: "", mother: "", alive: "No" },
-                { id: "FT-018", name: "Joyonti Rani Roy", nick: "", nameBn: "জয়ন্তী রাণী রায়", gender: "F", spouse: "FT-028", father: "FT-016", mother: "FT-017", alive: "" },
-                { id: "FT-019", name: "Basonti Rani Roy", nick: "", nameBn: "বাসন্তী রাণী রায়", gender: "F", spouse: "FT-036", father: "FT-016", mother: "FT-017", alive: "" },
-                { id: "FT-020", name: "Dinash Chandra Roy", nick: "", nameBn: "দিনেশ চন্দ্র রায়", gender: "M", spouse: "FT-047", father: "FT-016", mother: "FT-017", alive: "" },
-                { id: "FT-021", name: "Dhonesh Chandra Roy", nick: "", nameBn: "ধনেশ চন্দ্র রায়", gender: "M", spouse: "FT-079", father: "FT-016", mother: "FT-017", alive: "" },
-                { id: "FT-022", name: "Gonesh Chandra Roy", nick: "", nameBn: "গণেশ চন্দ্র রায়", gender: "M", spouse: "", father: "FT-016", mother: "FT-017", alive: "" },
-                { id: "FT-023", name: "Karttik Chandra Roy", nick: "", nameBn: "কর্তিক চন্দ্র রায়", gender: "M", spouse: "FT-055", father: "FT-016", mother: "FT-017", alive: "" },
-                { id: "FT-024", name: "Nioti Rani Roy", nick: "", nameBn: "নিয়তী রানি রায়", gender: "F", spouse: "FT-062", father: "FT-016", mother: "FT-017", alive: "" },
-                { id: "FT-025", name: "Kanchon Chandra Roy", nick: "", nameBn: "কাঞ্চন চন্দ্র রায়", gender: "M", spouse: "FT-066", father: "FT-016", mother: "FT-017", alive: "" },
-                { id: "FT-028", name: "Romesh Chandra Roy", nick: "", nameBn: "রমেশ চন্দ্র রায়", gender: "M", spouse: "FT-018", father: "", mother: "", alive: "" },
-                { id: "FT-029", name: "Anju Rani Roy", nick: "", nameBn: "অনজু রাণী রায়", gender: "F", spouse: "", father: "FT-028", mother: "FT-018", alive: "" },
-                { id: "FT-030", name: "Dilip Chandra Roy", nick: "", nameBn: "দিলীপ চন্দ্র রায়", gender: "M", spouse: "", father: "FT-028", mother: "FT-018", alive: "" },
-                { id: "FT-031", name: "Nitta Rani Roy", nick: "", nameBn: "নিত্যা রানী রায়", gender: "F", spouse: "", father: "FT-028", mother: "FT-018", alive: "" },
-                { id: "FT-032", name: "Tuki", nick: "", nameBn: "টুকি", gender: "F", spouse: "", father: "FT-028", mother: "FT-018", alive: "" },
-                { id: "FT-033", name: "Manik", nick: "", nameBn: "মানিক", gender: "M", spouse: "", father: "FT-028", mother: "FT-018", alive: "" },
-                { id: "FT-036", name: "Vola Kagozi", nick: "", nameBn: "ভোলা কাজ্জি", gender: "M", spouse: "FT-019", father: "", mother: "", alive: "No" },
-                { id: "FT-037", name: "Bepul Roy", nick: "", nameBn: "বিপুল কার্জ্জি", gender: "M", spouse: "FT-038", father: "FT-036", mother: "FT-019", alive: "Yes" },
-                { id: "FT-038", name: "Kalpona (Nayoni)", nick: "", nameBn: "কল্পনা (নয়নি)", gender: "F", spouse: "FT-037", father: "", mother: "", alive: "Yes" },
-                { id: "FT-039", name: "Tota Roy", nick: "", nameBn: "তোতা কার্জ্জি", gender: "M", spouse: "", father: "FT-037", mother: "FT-038", alive: "Yes" },
-                { id: "FT-040", name: "Beauty Rani", nick: "", nameBn: "বিউটি রানী", gender: "F", spouse: "FT-041", father: "FT-036", mother: "FT-019", alive: "Yes" },
-                { id: "FT-041", name: "Amullo Chandra Roy", nick: "", nameBn: "অমূল্য চন্দ্র রায়", gender: "M", spouse: "FT-040", father: "", mother: "", alive: "Yes" },
-                { id: "FT-042", name: "Depa Rani", nick: "", nameBn: "দিপা রানী", gender: "F", spouse: "FT-043", father: "FT-041", mother: "FT-040", alive: "Yes" },
-                { id: "FT-043", name: "Mohon Roy", nick: "", nameBn: "", gender: "M", spouse: "FT-042", father: "", mother: "", alive: "Yes" },
-                { id: "FT-047", name: "Bhadra Rani Roy", nick: "", nameBn: "ভদ্রা রাণী রায়", gender: "F", spouse: "FT-020", father: "", mother: "", alive: "Yes" },
-                { id: "FT-048", name: "Depika Rani Roy", nick: "Dippriya Gouri Debi Dasi", nameBn: "দিপিকা রানী রায়", gender: "F", spouse: "FT-051", father: "FT-020", mother: "FT-047", alive: "Yes" },
-                { id: "FT-049", name: "Diti Rani Roy", nick: "", nameBn: "দিতী রানী রায়", gender: "F", spouse: "", father: "FT-020", mother: "FT-047", alive: "Yes" },
-                { id: "FT-050", name: "Anik Roy Pranto", nick: "", nameBn: "অনিক রায় প্রান্ত", gender: "M", spouse: "", father: "FT-020", mother: "FT-047", alive: "Yes" },
-                { id: "FT-051", name: "Sudhangsu Roy", nick: "", nameBn: "সুধাংশু রায়", gender: "M", spouse: "FT-048", father: "", mother: "", alive: "Yes" },
-                { id: "FT-055", name: "Lakkhi Rani Roy", nick: "", nameBn: "লক্ষী রাণী রায়", gender: "F", spouse: "FT-023", father: "", mother: "", alive: "Yes" },
-                { id: "FT-056", name: "Keya Roy Ghosh", nick: "", nameBn: "কেয়া রায় ঘোষ", gender: "F", spouse: "FT-057", father: "FT-023", mother: "FT-055", alive: "Yes" },
-                { id: "FT-057", name: "Tonmoy Ghosh", nick: "", nameBn: "তন্ময় ঘোষ", gender: "M", spouse: "FT-056", father: "", mother: "", alive: "Yes" },
-                { id: "FT-058", name: "Krittika Ghosh Tanoya", nick: "", nameBn: "কৃত্তিকা ঘোষ তনয়া", gender: "F", spouse: "", father: "FT-057", mother: "FT-056", alive: "Yes" },
-                { id: "FT-059", name: "Apu Roy", nick: "", nameBn: "অপু রায়", gender: "M", spouse: "FT-060", father: "FT-023", mother: "FT-055", alive: "Yes" },
-                { id: "FT-060", name: "Srabonti Ray", nick: "", nameBn: "শ্রাবন্তী রায়", gender: "F", spouse: "FT-059", father: "", mother: "", alive: "Yes" },
-                { id: "FT-062", name: "Sudir Roy", nick: "", nameBn: "সুধীর চন্দ্র রায়", gender: "M", spouse: "FT-024", father: "", mother: "", alive: "No" },
-                { id: "FT-063", name: "Narash Roy", nick: "", nameBn: "নরেশ", gender: "M", spouse: "", father: "FT-062", mother: "FT-024", alive: "Yes" },
-                { id: "FT-066", name: "Ratna Rani Roy", nick: "", nameBn: "", gender: "F", spouse: "FT-025", father: "", mother: "", alive: "Yes" },
-                { id: "FT-067", name: "Royel Chandra Roy", nick: "", nameBn: "", gender: "M", spouse: "", father: "FT-025", mother: "FT-066", alive: "Yes" },
-                { id: "FT-068", name: "Dev Chandra Roy", nick: "", nameBn: "", gender: "M", spouse: "", father: "FT-025", mother: "FT-066", alive: "Yes" },
-                { id: "FT-070", name: "Suresh Deu Dev Singh", nick: "", nameBn: "সুরেশ দেউ দেব সিংহ", gender: "M", spouse: "FT-071", father: "", mother: "", alive: "No" },
-                { id: "FT-071", name: "Sitomoyi Roy Dev Singh", nick: "", nameBn: "সিতোময়ী রায় দেব সিংহ", gender: "F", spouse: "FT-070", father: "", mother: "", alive: "Yes" },
-                { id: "FT-073", name: "Rabindranath Dev Singh", nick: "", nameBn: "রবীন্দ্রনাথ দেব সিংহ", gender: "M", spouse: "FT-074", father: "FT-070", mother: "FT-071", alive: "Yes" },
-                { id: "FT-074", name: "Sunoti", nick: "", nameBn: "সুনতি", gender: "F", spouse: "FT-073", father: "", mother: "", alive: "Yes" },
-                { id: "FT-075", name: "Shimul Singh Debabrata", nick: "", nameBn: "শিমুল সিংহ দেবব্রত", gender: "M", spouse: "FT-076", father: "FT-073", mother: "FT-074", alive: "Yes" },
-                { id: "FT-076", name: "Chaya Rani Roy", nick: "", nameBn: "ছায়া রানী রায়", gender: "F", spouse: "FT-075", father: "", mother: "", alive: "Yes" },
-                { id: "FT-077", name: "Ditipriya Roy", nick: "", nameBn: "দিতিপ্রিয়া রায় (শুদ্ধি)", gender: "F", spouse: "", father: "FT-075", mother: "FT-076", alive: "Yes" },
-                { id: "FT-079", name: "Sabita Rani Roy", nick: "", nameBn: "ছবিতা রানী রায়", gender: "F", spouse: "FT-021", father: "FT-070", mother: "FT-071", alive: "Yes" },
-                { id: "FT-081", name: "Kavichandra Dev Singha", nick: "", nameBn: "কবিচন্দ্র দেব সিংহ", gender: "M", spouse: "FT-082", father: "FT-070", mother: "FT-071", alive: "" },
-                { id: "FT-082", name: "Pushpadev Singh", nick: "", nameBn: "পুষ্পদেব সিংহ", gender: "F", spouse: "FT-081", father: "", mother: "", alive: "" },
-                { id: "FT-083", name: "Nabakumar Roy Debsingh", nick: "", nameBn: "নবকুমার রায় দেবসিংহ", gender: "M", spouse: "", father: "FT-081", mother: "FT-082", alive: "" },
-                { id: "FT-085", name: "Namita Rani Debsingh", nick: "", nameBn: "নমিতা রানী দেবসিংহ", gender: "F", spouse: "FT-086", father: "FT-070", mother: "FT-071", alive: "No" },
-                { id: "FT-086", name: "Mohon Kajji", nick: "", nameBn: "মোহন কাজ্জি", gender: "M", spouse: "FT-085", father: "", mother: "", alive: "Yes" },
-                { id: "FT-087", name: "Madhu Kajji", nick: "", nameBn: "মধু কাজ্জি", gender: "M", spouse: "", father: "FT-086", mother: "FT-085", alive: "No" },
-                { id: "FT-088", name: "Mohona Roy Misty", nick: "Misty", nameBn: "মোহনা রায় মিষ্টি", gender: "F", spouse: "FT-089", father: "FT-086", mother: "FT-085", alive: "Yes" },
-                { id: "FT-089", name: "Chaitanya Dev Bichittro", nick: "", nameBn: "চৈতন্য দেব বিচিত্র", gender: "M", spouse: "FT-088", father: "", mother: "", alive: "Yes" },
-                { id: "FT-090", name: "Abhimanyu Roy Avi", nick: "", nameBn: "অভিমুন্য রায় অভি", gender: "M", spouse: "", father: "FT-089", mother: "FT-088", alive: "Yes" },
-                { id: "FT-094", name: "Rajmohon", nick: "", nameBn: "রাজমেহন", gender: "M", spouse: "", father: "", mother: "", alive: "No" },
-                { id: "FT-095", name: "Dakshinamohan", nick: "", nameBn: "দক্ষিণামোহন", gender: "M", spouse: "", father: "FT-094", mother: "", alive: "No" },
-                { id: "FT-096", name: "Nabo Gopal", nick: "", nameBn: "নবগোপাল", gender: "M", spouse: "", father: "FT-094", mother: "", alive: "No" },
-                { id: "FT-097", name: "Annadamohan", nick: "", nameBn: "অন্নদামোহন", gender: "M", spouse: "", father: "FT-094", mother: "", alive: "No" },
-                { id: "FT-098", name: "Ambika", nick: "", nameBn: "অম্বিকা", gender: "M", spouse: "", father: "FT-094", mother: "", alive: "No" },
-                { id: "FT-099", name: "UnKnown Girl 1", nick: "", nameBn: "মেয়ে ১", gender: "", spouse: "", father: "FT-094", mother: "", alive: "" },
-                { id: "FT-100", name: "UnKnown Girl 2", nick: "", nameBn: "মেয়ে ২", gender: "", spouse: "", father: "FT-094", mother: "", alive: "" },
-                { id: "FT-102", name: "Kalipada", nick: "", nameBn: "কালিপদ", gender: "M", spouse: "", father: "FT-095", mother: "", alive: "No" },
-                { id: "FT-103", name: "Khuki", nick: "", nameBn: "খুকি", gender: "F", spouse: "", father: "FT-095", mother: "", alive: "No" },
-                { id: "FT-105", name: "Bijoy", nick: "", nameBn: "বিজয়", gender: "M", spouse: "", father: "FT-096", mother: "", alive: "No" },
-                { id: "FT-106", name: "Akanto", nick: "", nameBn: "একান্ত", gender: "M", spouse: "", father: "FT-105", mother: "", alive: "Yes" },
-                { id: "FT-108", name: "Noni Gopal", nick: "", nameBn: "ননীগোপাল", gender: "M", spouse: "", father: "FT-096", mother: "", alive: "No" },
-                { id: "FT-109", name: "Manik Chandra Roy", nick: "", nameBn: "মানিক চন্দ্র রায়", gender: "M", spouse: "", father: "FT-108", mother: "", alive: "Yes" },
-                { id: "FT-110", name: "Ratna Rani Roy", nick: "", nameBn: "রত্না রাণী রায়", gender: "F", spouse: "FT-113", father: "FT-109", mother: "", alive: "Yes" },
-                { id: "FT-111", name: "Sopna Rani Roy", nick: "", nameBn: "স্বপ্না রাণী রায়", gender: "F", spouse: "", father: "FT-109", mother: "", alive: "Yes" },
-                { id: "FT-112", name: "Maitri Rani Roy", nick: "", nameBn: "মৈত্রী রাণী রায়", gender: "F", spouse: "", father: "FT-109", mother: "", alive: "Yes" },
-                { id: "FT-113", name: "Raton Chandra Roy", nick: "", nameBn: "", gender: "", spouse: "FT-110", father: "", mother: "", alive: "" },
-                { id: "FT-114", name: "Prithibi Roy", nick: "", nameBn: "পৃথিবী রায়", gender: "M", spouse: "", father: "FT-113", mother: "FT-110", alive: "Yes" },
-                { id: "FT-115", name: "Ruddra Roy", nick: "", nameBn: "রৌদ্র রায়", gender: "M", spouse: "", father: "FT-113", mother: "FT-110", alive: "Yes" },
-                { id: "FT-117", name: "Suranjana Rani Roy", nick: "", nameBn: "শুরঞ্জনা রানী রায়", gender: "F", spouse: "", father: "", mother: "FT-111", alive: "Yes" },
-                { id: "FT-118", name: "Son of Sapna", nick: "", nameBn: "স্বপ্নার ছেলে", gender: "M", spouse: "", father: "", mother: "FT-111", alive: "Yes" },
-                { id: "FT-120", name: "Son of Maitri", nick: "", nameBn: "মৈত্রীর ছেলে", gender: "M", spouse: "", father: "", mother: "FT-112", alive: "Yes" },
-                { id: "FT-122", name: "Heman", nick: "", nameBn: "হেমেন চন্দ্র রায়", gender: "M", spouse: "", father: "FT-098", mother: "", alive: "Yes" },
-                { id: "FT-123", name: "Uttom", nick: "", nameBn: "উত্তম চন্দ্র রায়", gender: "M", spouse: "", father: "FT-122", mother: "", alive: "Yes" },
-                { id: "FT-124", name: "Soityan", nick: "", nameBn: "সৈত্যান চন্দ্র রায়", gender: "M", spouse: "", father: "FT-122", mother: "", alive: "Yes" },
-                { id: "FT-125", name: "Suchittra Rani Roy", nick: "", nameBn: "সুচিত্রা রানী রায়", gender: "F", spouse: "", father: "FT-122", mother: "", alive: "Yes" },
-                { id: "FT-126", name: "Suphala Rani Roy", nick: "", nameBn: "সুফলা রানী রায়", gender: "F", spouse: "", father: "FT-122", mother: "", alive: "Yes" },
-                { id: "FT-128", name: "Tumpa Rani Roy", nick: "", nameBn: "টুম্পা রানী রায়", gender: "F", spouse: "", father: "FT-123", mother: "", alive: "Yes" },
-                { id: "FT-129", name: "Mou Rani Roy", nick: "", nameBn: "মৌ", gender: "F", spouse: "", father: "", mother: "FT-125", alive: "Yes" }
-            ];
+            membersData.forEach(m => {
+                let gen = getMemberGen(m.uid);
+                generationMap[m.uid] = gen;
+                m.generation = gen;
+            });
+        }
 
-            // --------------------------------------------------------------
-            // ২. ডেটা প্রসেসিং – নোড ও এজ তৈরি (শুধু বৈধ আইডি সহ)
-            // --------------------------------------------------------------
-            const allIds = new Set(rawPeople.map(p => p.id));
+        calculateGenerations();
 
-            // নোড তৈরি
-            const nodes = rawPeople.map(p => ({
-                id: p.id,
-                name: p.name || p.nick || p.id,
-                gender: p.gender || 'U',
-                alive: p.alive,
-                fullName: p.name,
-                nick: p.nick,
-                nameBn: p.nameBn,
-                spouse: p.spouse,
-                father: p.father,
-                mother: p.mother,
-                group: p.gender === 'M' ? 'male' : (p.gender === 'F' ? 'female' : 'unknown')
-            }));
+        function initializeStatsAndOptions() {
+            const total = membersData.length;
+            let males = 0;
+            let females = 0;
+            const marriedCouples = new Set();
+            const genCounts = {};
 
-            // এজ তৈরি (শুধুমাত্র যদি উভয় আইডি বিদ্যমান থাকে)
-            const edges = [];
-            const edgeSet = new Set(); // ডুপ্লিকেট এজ বাদ দিতে
+            const selectA = document.getElementById('rel-person-a');
+            const selectB = document.getElementById('rel-person-b');
+            selectA.innerHTML = '';
+            selectB.innerHTML = '';
 
-            rawPeople.forEach(p => {
-                // পিতৃ-সন্তান
-                if (p.father && allIds.has(p.father)) {
-                    const key = `${p.father}-${p.id}-parent`;
-                    if (!edgeSet.has(key)) {
-                        edgeSet.add(key);
-                        edges.push({ source: p.father, target: p.id, type: 'parent' });
-                    }
+            membersData.forEach((m) => {
+                if (m.gender.includes('পুরুষ') || m.gender.includes('Male') || m.gender === 'M') males++;
+                else if (m.gender.includes('মহিলা') || m.gender.includes('Female') || m.gender === 'F') females++;
+
+                if (m.spouse) {
+                    const pair = [m.uid, m.spouse].sort().join('-');
+                    marriedCouples.add(pair);
                 }
-                if (p.mother && allIds.has(p.mother)) {
-                    const key = `${p.mother}-${p.id}-parent`;
-                    if (!edgeSet.has(key)) {
-                        edgeSet.add(key);
-                        edges.push({ source: p.mother, target: p.id, type: 'parent' });
-                    }
-                }
-                // দাম্পত্য (spouse) – একবার যোগ করলেই যথেষ্ট
-                if (p.spouse && allIds.has(p.spouse) && p.id < p.spouse) {
-                    const key = `${p.id}-${p.spouse}-spouse`;
-                    if (!edgeSet.has(key)) {
-                        edgeSet.add(key);
-                        edges.push({ source: p.id, target: p.spouse, type: 'spouse' });
-                    }
-                }
+
+                let gen = m.generation;
+                genCounts[gen] = (genCounts[gen] || 0) + 1;
+
+                const optA = new Option(`${m.bnName} (${m.nick})`, m.uid);
+                const optB = new Option(`${m.bnName} (${m.nick})`, m.uid);
+                selectA.add(optA);
+                selectB.add(optB);
             });
 
-            console.log(`📊 মোট নোড: ${nodes.length}, মোট এজ: ${edges.length}`);
-
-            // যদি কোনো নোড না থাকে, তাহলে মেসেজ দেখান
-            if (nodes.length === 0) {
-                document.getElementById('loading').textContent = '❌ কোনো ডেটা পাওয়া যায়নি!';
-                return;
+            if (membersData.length > 1) {
+                selectB.selectedIndex = 1;
             }
 
-            // --------------------------------------------------------------
-            // ৩. 3D ফোর্স গ্রাফ রেন্ডার
-            // --------------------------------------------------------------
-            // দ্রষ্টব্য: 3d-force-graph লাইব্রেরির আসল (UMD) API একটি টু-স্টেপ ফ্যাক্টরি প্যাটার্ন —
-            // প্রথমে ForceGraph3D() কল করলে একটা "ইনস্ট্যান্স" ফাংশন পাওয়া যায়, তারপর সেটাকে
-            // DOM এলিমেন্ট দিয়ে কল করলে (mount) সেটা আসল গ্রাফ চেইনেবল অবজেক্ট রিটার্ন করে।
-            const Graph = ForceGraph3D({ controlType: 'orbit' })(document.body)
-                .width(window.innerWidth)
-                .height(window.innerHeight)
-                .backgroundColor(0x0a0a1a)
-                .nodeColor(node => {
-                    if (node.gender === 'M') return '#4a90d9';
-                    if (node.gender === 'F') return '#e74c8b';
-                    return '#888';
-                })
-                .nodeVal(1.2)
-                .nodeLabel(node => {
-                    return `
-                        <div style="font-size:14px; font-weight:bold;">${node.name}</div>
-                        <div style="font-size:12px; color:#aaa;">${node.nameBn || ''}</div>
-                        <div style="font-size:11px; margin-top:4px; color:#ccc;">
-                            ${node.gender === 'M' ? '♂ পুরুষ' : (node.gender === 'F' ? '♀ নারী' : '')}
-                            ${node.alive === 'Yes' ? ' · জীবিত' : (node.alive === 'No' ? ' · মৃত' : '')}
-                        </div>
-                        <div style="font-size:10px; color:#888; margin-top:2px;">ID: ${node.id}</div>
-                    `;
-                })
-                .linkColor(link => link.type === 'spouse' ? '#ffaa66' : '#66aaff')
-                .linkWidth(link => link.type === 'spouse' ? 2 : 1.5)
-                .linkDirectionalParticles(link => link.type === 'spouse' ? 2 : 0)
-                .linkDirectionalParticleWidth(1)
-                .linkOpacity(0.6)
-                .linkLabel(link => link.type === 'spouse' ? 'দাম্পত্য' : 'পিতৃ-সন্তান')
-                .nodeThreeObject(node => {
-                    // কাস্টম স্ফিয়ার
-                    const color = node.gender === 'M' ? 0x4a90d9 : (node.gender === 'F' ? 0xe74c8b : 0x888888);
-                    const sphere = new THREE.Mesh(
-                        new THREE.SphereGeometry(0.6, 16, 16),
-                        new THREE.MeshStandardMaterial({
-                            color: color,
-                            roughness: 0.4,
-                            metalness: 0.1,
-                            emissive: new THREE.Color(color).multiplyScalar(0.15)
-                        })
-                    );
-                    return sphere;
-                })
-                .onLinkHover(link => {
-                    const tooltip = document.getElementById('tooltip');
-                    if (link) {
-                        tooltip.style.display = 'block';
-                        tooltip.innerHTML = `<strong>${link.type === 'spouse' ? 'দাম্পত্য' : 'পিতৃ-সন্তান'}</strong>`;
-                        tooltip.style.left = (window.event?.clientX || 0) + 14 + 'px';
-                        tooltip.style.top = (window.event?.clientY || 0) - 10 + 'px';
-                    } else {
-                        tooltip.style.display = 'none';
-                    }
-                })
-                .nodeRelSize(4)
-                .linkDistance(link => link.type === 'spouse' ? 30 : 45)
-                .numDimensions(3)
-                .d3VelocityDecay(0.9)
-                .warmupTicks(100)
-                .cooldownTicks(100)
-                .onNodeClick(node => {
-                    // ফেসবুক লিংক খুঁজি
-                    const fb = rawPeople.find(p => p.id === node.id)?.fbId;
-                    if (fb && fb.startsWith('http')) {
-                        window.open(fb, '_blank');
+            document.getElementById('stat-total').innerText = total;
+            document.getElementById('stat-male').innerText = males;
+            document.getElementById('stat-female').innerText = females;
+            document.getElementById('stat-families').innerText = marriedCouples.size;
+
+            const genContainer = document.getElementById('generation-container');
+            genContainer.innerHTML = '';
+            
+            const genKeys = Object.keys(genCounts).sort((a,b) => a - b);
+            genKeys.forEach(g => {
+                const div = document.createElement('div');
+                div.className = 'gen-item';
+                div.onclick = () => showFilteredMemberList('gen-' + g, `জেনারেশন ${g} এর সদস্যগণ`);
+                div.innerHTML = `
+                    <span class="gen-title">প্রজন্ম / জেনারেশন ${g}</span>
+                    <span class="gen-count">${genCounts[g]} জন</span>
+                `;
+                genContainer.appendChild(div);
+            });
+        }
+
+        membersData.forEach(data => {
+            const marble = new THREE.Mesh(geometry, createMarbleMaterial(data.color));
+            marble.userData = data;
+            marble.add(createTextSprite(data.nick));
+            scene.add(marble);
+            clickableMarbles.push(marble);
+            marbleMap[data.uid] = marble;
+        });
+
+        const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff, opacity: 0.5, transparent: true });
+        function createThread(p1, p2) {
+            const geom = new THREE.BufferGeometry().setFromPoints([p1, p2]);
+            const line = new THREE.Line(geom, lineMaterial.clone());
+            scene.add(line);
+            return line;
+        }
+
+        const connectionsData = [
+            ["FT-016", "FT-017"],
+            ["FT-100", "FT-101"],
+            ["FT-102", "FT-100"], ["FT-102", "FT-101"],
+            ["FT-012", "FT-100"], ["FT-012", "FT-101"],
+            ["FT-106", "FT-100"], ["FT-106", "FT-101"],
+            ["FT-102", "FT-103"],
+            ["FT-104", "FT-102"], ["FT-104", "FT-103"],
+            ["FT-105", "FT-102"], ["FT-105", "FT-103"],
+            ["FT-106", "FT-107"],
+
+            ["FT-143", "FT-144"],
+            ["FT-145", "FT-143"], ["FT-145", "FT-144"],
+            ["FT-001", "FT-143"], ["FT-001", "FT-144"],
+            
+            ["FT-145", "FT-146"],
+            ["FT-147", "FT-145"], ["FT-147", "FT-146"],
+            ["FT-148", "FT-145"], ["FT-148", "FT-146"],
+            ["FT-149", "FT-145"], ["FT-149", "FT-146"],
+            ["FT-147", "FT-150"],
+            ["FT-151", "FT-147"], ["FT-151", "FT-150"],
+            ["FT-152", "FT-147"], ["FT-152", "FT-150"],
+
+            ["FT-018", "FT-016"], ["FT-018", "FT-017"],
+            ["FT-019", "FT-016"], ["FT-019", "FT-017"],
+            ["FT-020", "FT-016"], ["FT-020", "FT-017"],
+            ["FT-021", "FT-016"], ["FT-021", "FT-017"],
+            ["FT-022", "FT-016"], ["FT-022", "FT-017"],
+            ["FT-023", "FT-016"], ["FT-023", "FT-017"],
+            ["FT-024", "FT-016"], ["FT-024", "FT-017"],
+            ["FT-025", "FT-016"], ["FT-025", "FT-017"],
+
+            ["FT-020", "FT-047"],
+            ["FT-048", "FT-020"], ["FT-048", "FT-047"],
+            ["FT-049", "FT-020"], ["FT-049", "FT-047"],
+            ["FT-050", "FT-020"], ["FT-050", "FT-047"],
+            ["FT-048", "FT-051"],
+
+            ["FT-024", "FT-062"],
+
+            ["FT-025", "FT-066"],
+            ["FT-067", "FT-025"], ["FT-067", "FT-066"],
+            ["FT-068", "FT-025"], ["FT-068", "FT-066"],
+
+            ["FT-023", "FT-055"],
+            ["FT-056", "FT-023"], ["FT-056", "FT-055"],
+            ["FT-059", "FT-023"], ["FT-059", "FT-055"],
+            ["FT-056", "FT-057"],
+            ["FT-058", "FT-056"], ["FT-058", "FT-057"],
+            ["FT-059", "FT-060"],
+
+            ["FT-070", "FT-071"],
+            ["FT-073", "FT-070"], ["FT-073", "FT-071"],
+            ["FT-079", "FT-070"], ["FT-079", "FT-071"],
+            ["FT-081", "FT-070"], ["FT-081", "FT-071"],
+            ["FT-085", "FT-070"], ["FT-085", "FT-071"],
+
+            ["FT-073", "FT-074"],
+            ["FT-075", "FT-073"], ["FT-075", "FT-074"],
+            ["FT-075", "FT-076"],
+            ["FT-077", "FT-075"], ["FT-077", "FT-076"],
+
+            ["FT-081", "FT-082"],
+            ["FT-083", "FT-081"], ["FT-083", "FT-082"],
+
+            ["FT-085", "FT-086"],
+            ["FT-087", "FT-085"], ["FT-087", "FT-086"],
+            ["FT-088", "FT-085"], ["FT-088", "FT-086"],
+            ["FT-088", "FT-089"],
+            ["FT-090", "FT-088"], ["FT-090", "FT-089"],
+
+            ["FT-021", "FT-079"],
+            ["FT-002", "FT-021"], ["FT-002", "FT-079"],
+            ["FT-011", "FT-021"], ["FT-011", "FT-079"],
+            ["FT-007", "FT-021"], ["FT-007", "FT-079"],
+            ["FT-001", "FT-002"],
+            ["FT-003", "FT-001"], ["FT-003", "FT-002"],
+            ["FT-004", "FT-001"], ["FT-004", "FT-002"],
+            ["FT-011", "FT-012"],
+            ["FT-013", "FT-011"], ["FT-013", "FT-012"],
+            ["FT-007", "FT-006"],
+            ["FT-008", "FT-007"], ["FT-008", "FT-006"],
+            ["FT-009", "FT-007"], ["FT-009", "FT-006"]
+        ];
+
+        const connections = [];
+        connectionsData.forEach(pair => {
+            if (marbleMap[pair[0]] && marbleMap[pair[1]]) {
+                connections.push([marbleMap[pair[0]], marbleMap[pair[1]]]);
+            }
+        });
+
+        const threads = connections.map(pair => createThread(pair[0].position, pair[1].position));
+
+        let angle = 0;
+        function animate(time) {
+            requestAnimationFrame(animate);
+            TWEEN.update(time);
+
+            if (isAnimating) {
+                angle += 0.003;
+
+                // ১ম লেভেল
+                if(marbleMap["FT-016"]) marbleMap["FT-016"].position.set(Math.cos(angle) * 5, 14, Math.sin(angle) * 5);
+                if(marbleMap["FT-017"]) marbleMap["FT-017"].position.set(Math.cos(angle + Math.PI) * 5, 14, Math.sin(angle + Math.PI) * 5);
+                if(marbleMap["FT-070"]) marbleMap["FT-070"].position.set(Math.cos(angle + 1) * 10 + 20, 14, Math.sin(angle + 1) * 10);
+                if(marbleMap["FT-071"]) marbleMap["FT-071"].position.set(Math.cos(angle + 1 + Math.PI) * 10 + 20, 14, Math.sin(angle + 1 + Math.PI) * 10);
+
+                if(marbleMap["FT-143"]) marbleMap["FT-143"].position.set(Math.cos(angle + 3.8) * 8 + 15, 14, Math.sin(angle + 3.8) * 8 - 15);
+                if(marbleMap["FT-144"]) marbleMap["FT-144"].position.set(Math.cos(angle + 3.8 + Math.PI) * 8 + 15, 14, Math.sin(angle + 3.8 + Math.PI) * 8 - 15);
+
+                if(marbleMap["FT-145"]) marbleMap["FT-145"].position.set(marbleMap["FT-143"].position.x - 3, 6, marbleMap["FT-143"].position.z + 3);
+                if(marbleMap["FT-146"]) marbleMap["FT-146"].position.set(marbleMap["FT-145"].position.x + 2, 6, marbleMap["FT-145"].position.z + 2);
+
+                if(marbleMap["FT-100"]) marbleMap["FT-100"].position.set(Math.cos(angle + 2.5) * 8 - 18, 14, Math.sin(angle + 2.5) * 8);
+                if(marbleMap["FT-101"]) marbleMap["FT-101"].position.set(Math.cos(angle + 2.5 + Math.PI) * 8 - 18, 14, Math.sin(angle + 2.5 + Math.PI) * 8);
+
+                if(marbleMap["FT-102"]) marbleMap["FT-102"].position.set(marbleMap["FT-100"].position.x - 4, 6, marbleMap["FT-100"].position.z + 4);
+                if(marbleMap["FT-103"]) marbleMap["FT-103"].position.set(marbleMap["FT-102"].position.x + 2, 6, marbleMap["FT-102"].position.z + 2);
+
+                if(marbleMap["FT-106"]) marbleMap["FT-106"].position.set(marbleMap["FT-100"].position.x + 4, 6, marbleMap["FT-100"].position.z - 4);
+                if(marbleMap["FT-107"]) marbleMap["FT-107"].position.set(marbleMap["FT-106"].position.x + 2, 6, marbleMap["FT-106"].position.z + 2);
+
+                if(marbleMap["FT-104"]) marbleMap["FT-104"].position.set(marbleMap["FT-102"].position.x - 2, -2, marbleMap["FT-102"].position.z + 2);
+                if(marbleMap["FT-105"]) marbleMap["FT-105"].position.set(marbleMap["FT-102"].position.x + 2, -2, marbleMap["FT-102"].position.z - 2);
+
+                // ২য় লেভেল
+                const midChildren = ["FT-018", "FT-019", "FT-020", "FT-021", "FT-022", "FT-023", "FT-024", "FT-025", "FT-073", "FT-081", "FT-085"];
+                midChildren.forEach((uid, idx) => {
+                    const childAngle = angle + (idx * (Math.PI * 2 / midChildren.length));
+                    if (marbleMap[uid]) {
+                        marbleMap[uid].position.set(Math.cos(childAngle) * 14, 6, Math.sin(childAngle) * 14);
                     }
                 });
 
-            // গ্রাফে ডেটা সেট
-            Graph.graphData({ nodes, links: edges });
+                if(marbleMap["FT-047"]) marbleMap["FT-047"].position.set(marbleMap["FT-020"].position.x + 2, 6, marbleMap["FT-020"].position.z + 2);
+                if(marbleMap["FT-062"]) marbleMap["FT-062"].position.set(marbleMap["FT-024"].position.x + 2, 6, marbleMap["FT-024"].position.z + 2);
+                if(marbleMap["FT-079"]) marbleMap["FT-079"].position.set(marbleMap["FT-021"].position.x + 2, 6, marbleMap["FT-021"].position.z + 2);
+                if(marbleMap["FT-055"]) marbleMap["FT-055"].position.set(marbleMap["FT-023"].position.x + 2, 6, marbleMap["FT-023"].position.z + 2);
+                if(marbleMap["FT-066"]) marbleMap["FT-066"].position.set(marbleMap["FT-025"].position.x + 2, 6, marbleMap["FT-025"].position.z + 2);
+                if(marbleMap["FT-074"]) marbleMap["FT-074"].position.set(marbleMap["FT-073"].position.x + 2, 6, marbleMap["FT-073"].position.z + 2);
+                if(marbleMap["FT-082"]) marbleMap["FT-082"].position.set(marbleMap["FT-081"].position.x + 2, 6, marbleMap["FT-081"].position.z + 2);
+                if(marbleMap["FT-086"]) marbleMap["FT-086"].position.set(marbleMap["FT-085"].position.x + 2, 6, marbleMap["FT-085"].position.z + 2);
 
-            // প্রথম লোডেই পুরো জেনোগ্রামটি ক্যামেরার মধ্যে আনুন
-            setTimeout(() => {
-                if (typeof Graph.zoomToFit === 'function') {
-                    Graph.zoomToFit(800, 80);
-                }
-            }, 300);
+                // ৩য় লেভেল
+                const lowerGen = ["FT-048", "FT-049", "FT-050", "FT-002", "FT-011", "FT-007", "FT-056", "FT-059", "FT-067", "FT-068", "FT-075", "FT-083", "FT-087", "FT-088", "FT-147", "FT-148", "FT-149"];
+                lowerGen.forEach((uid, idx) => {
+                    const lAngle = angle * 1.2 + (idx * (Math.PI * 2 / lowerGen.length));
+                    if (marbleMap[uid]) {
+                        marbleMap[uid].position.set(Math.cos(lAngle) * 18, -2, Math.sin(lAngle) * 18);
+                    }
+                });
 
+                if(marbleMap["FT-150"]) marbleMap["FT-150"].position.set(marbleMap["FT-147"].position.x + 2, -2, marbleMap["FT-147"].position.z);
+                if(marbleMap["FT-051"]) marbleMap["FT-051"].position.set(marbleMap["FT-048"].position.x + 2, -2, marbleMap["FT-048"].position.z);
+                if(marbleMap["FT-001"]) marbleMap["FT-001"].position.set(marbleMap["FT-002"].position.x + 2, -2, marbleMap["FT-002"].position.z);
+                if(marbleMap["FT-012"]) marbleMap["FT-012"].position.set(marbleMap["FT-011"].position.x + 2, -2, marbleMap["FT-011"].position.z);
+                if(marbleMap["FT-006"]) marbleMap["FT-006"].position.set(marbleMap["FT-007"].position.x + 2, -2, marbleMap["FT-007"].position.z);
+                if(marbleMap["FT-057"]) marbleMap["FT-057"].position.set(marbleMap["FT-056"].position.x + 2, -2, marbleMap["FT-056"].position.z);
+                if(marbleMap["FT-060"]) marbleMap["FT-060"].position.set(marbleMap["FT-059"].position.x + 2, -2, marbleMap["FT-059"].position.z);
+                if(marbleMap["FT-076"]) marbleMap["FT-076"].position.set(marbleMap["FT-075"].position.x + 2, -2, marbleMap["FT-075"].position.z);
+                if(marbleMap["FT-089"]) marbleMap["FT-089"].position.set(marbleMap["FT-088"].position.x + 2, -2, marbleMap["FT-088"].position.z);
 
-            // লোডিং মেসেজ মুছে ফেলি
-            document.getElementById('loading').style.display = 'none';
+                // ৪র্থ লেভেল
+                const bottomGen = ["FT-003", "FT-004", "FT-013", "FT-008", "FT-009", "FT-058", "FT-077", "FT-090", "FT-151", "FT-152"];
+                bottomGen.forEach((uid, idx) => {
+                    const bAngle = angle * 1.5 + (idx * (Math.PI * 2 / bottomGen.length));
+                    if (marbleMap[uid]) {
+                        marbleMap[uid].position.set(Math.cos(bAngle) * 22, -10, Math.sin(bAngle) * 22);
+                    }
+                });
 
-            // OrbitControls-এর মাধ্যমে অটোরোটেশন
-            const controls = Graph.controls();
-            let autoRotate = true;
-
-            if (controls) {
-                controls.autoRotate = true;
-                controls.autoRotateSpeed = 0.8;
-                if (typeof controls.update === 'function') controls.update();
+                clickableMarbles.forEach(m => m.rotation.y += 0.01);
             }
 
-            // ডাবল-ক্লিক করলে অটোরোটেশন চালু/বন্ধ
-            document.addEventListener('dblclick', () => {
-                autoRotate = !autoRotate;
-                if (controls) {
-                    controls.autoRotate = autoRotate;
-                    if (typeof controls.update === 'function') controls.update();
+            threads.forEach((thread, index) => {
+                const points = [connections[index][0].position, connections[index][1].position];
+                thread.geometry.setFromPoints(points);
+            });
+
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        animate();
+        initializeStatsAndOptions();
+
+        function showFilteredMemberList(filterType, title) {
+            document.getElementById('list-modal-title').innerText = title;
+            const body = document.getElementById('list-modal-body');
+            body.innerHTML = '';
+
+            let list = [];
+            if (filterType === 'all') {
+                list = membersData;
+            } else if (filterType === 'male') {
+                list = membersData.filter(m => m.gender.includes('পুরুষ') || m.gender.includes('Male') || m.gender === 'M');
+            } else if (filterType === 'female') {
+                list = membersData.filter(m => m.gender.includes('মহিলা') || m.gender.includes('Female') || m.gender === 'F');
+            } else if (filterType.startsWith('gen-')) {
+                const genNum = parseInt(filterType.split('-')[1]);
+                list = membersData.filter(m => m.generation === genNum);
+            }
+
+            if (list.length === 0) {
+                body.innerHTML = '<p style="color:#aaa;">কোনো সদস্য পাওয়া যায়নি।</p>';
+            } else {
+                list.forEach(m => {
+                    const div = document.createElement('div');
+                    div.className = 'modal-member-card';
+                    div.innerHTML = `<strong>${m.bnName}</strong> (${m.nick})<br><small style="color:#00ffff">${m.uid} • Gen ${m.generation}</small>`;
+                    div.onclick = () => {
+                        focusByUid(m.uid);
+                        closeListModal();
+                    };
+                    body.appendChild(div);
+                });
+            }
+
+            document.getElementById('list-modal').style.display = 'block';
+        }
+
+        function showCouplesList() {
+            document.getElementById('list-modal-title').innerText = 'দম্পতি / পরিবার সমূহ';
+            const body = document.getElementById('list-modal-body');
+            body.innerHTML = '';
+
+            const addedPairs = new Set();
+            membersData.forEach(m => {
+                if (m.spouse && marbleMap[m.spouse]) {
+                    const pairKey = [m.uid, m.spouse].sort().join('-');
+                    if (!addedPairs.has(pairKey)) {
+                        addedPairs.add(pairKey);
+                        const spouseObj = marbleMap[m.spouse].userData;
+                        const div = document.createElement('div');
+                        div.className = 'modal-member-card';
+                        div.innerHTML = `<strong>${m.bnName}</strong> & <strong>${spouseObj.bnName}</strong><br><small style="color:#00ffff">${m.uid} & ${spouseObj.uid}</small>`;
+                        div.onclick = () => {
+                            focusByUid(m.uid);
+                            closeListModal();
+                        };
+                        body.appendChild(div);
+                    }
                 }
             });
 
-            // উইন্ডো রিসাইজ
-            window.addEventListener('resize', () => {
-                Graph.width(window.innerWidth).height(window.innerHeight);
-            });
+            document.getElementById('list-modal').style.display = 'block';
+        }
 
-            // মাউস মুভে টুলটিপ আপডেট
-            document.addEventListener('mousemove', (e) => {
-                const tooltip = document.getElementById('tooltip');
-                if (tooltip.style.display === 'block') {
-                    tooltip.style.left = e.clientX + 14 + 'px';
-                    tooltip.style.top = e.clientY - 10 + 'px';
+        function closeListModal() {
+            document.getElementById('list-modal').style.display = 'none';
+        }
+
+        function calculateRelationship() {
+            const uidA = document.getElementById('rel-person-a').value;
+            const uidB = document.getElementById('rel-person-b').value;
+            const resDiv = document.getElementById('rel-result');
+
+            if (uidA === uidB) {
+                resDiv.innerHTML = '⚠️ অনুগ্রহ করে দুইজন ভিন্ন ব্যক্তি নির্বাচন করুন।';
+                return;
+            }
+
+            const graph = {};
+            membersData.forEach(m => { graph[m.uid] = []; });
+
+            membersData.forEach(m => {
+                if (m.spouse) {
+                    graph[m.uid].push({ target: m.spouse, relation: "স্বামী/স্ত্রী" });
+                }
+                if (m.father) {
+                    graph[m.uid].push({ target: m.father, relation: "পিতা" });
+                    const isMale = m.gender.includes("পুরুষ") || m.gender.includes("Male") || m.gender === "M";
+                    graph[m.father].push({ target: m.uid, relation: isMale ? "পুত্র" : "কন্যা" });
+                }
+                if (m.mother) {
+                    graph[m.uid].push({ target: m.mother, relation: "মাতা" });
+                    const isMale = m.gender.includes("পুরুষ") || m.gender.includes("Male") || m.gender === "M";
+                    graph[m.mother].push({ target: m.uid, relation: isMale ? "পুত্র" : "কন্যা" });
                 }
             });
 
-            console.log('✅ ৩D জেনোগ্রাম সফলভাবে লোড হয়েছে!');
-        } catch (err) {
-              console.error(err);
-              const loadingEl = document.getElementById('loading');
-              if (loadingEl) {
-                  loadingEl.style.display = 'block';
-                  loadingEl.style.color = '#ff6b6b';
-                  loadingEl.style.maxWidth = '80vw';
-                  loadingEl.style.textAlign = 'center';
-                  loadingEl.innerHTML = '❌ লোড করতে সমস্যা হয়েছে:<br><span style="font-size:12px;">' + (err.message || err) + '</span>';
-              }
-          }
-        })();
+            const queue = [[{ uid: uidA, rel: "" }]];
+            const visited = new Set([uidA]);
+            let foundPath = null;
+
+            while (queue.length > 0) {
+                const path = queue.shift();
+                const lastNode = path[path.length - 1].uid;
+
+                if (lastNode === uidB) {
+                    foundPath = path;
+                    break;
+                }
+
+                if (graph[lastNode]) {
+                    for (let edge of graph[lastNode]) {
+                        if (!visited.has(edge.target)) {
+                            visited.add(edge.target);
+                            queue.push([...path, { uid: edge.target, rel: edge.relation }]);
+                        }
+                    }
+                }
+            }
+
+            if (foundPath) {
+                let html = `<strong style="color:#00ffff;">সম্পর্কের মাধ্যম (${foundPath.length - 1} ধাপ):</strong><br><br>`;
+                for (let i = 0; i < foundPath.length; i++) {
+                    const person = marbleMap[foundPath[i].uid].userData;
+                    if (i === 0) {
+                        html += `<b>${person.bnName}</b> (${person.nick})`;
+                    } else {
+                        html += ` <br> ⬇️ <i>[${foundPath[i].rel}]</i><br> <b>${person.bnName}</b> (${person.nick})`;
+                    }
+                }
+                resDiv.innerHTML = html;
+            } else {
+                resDiv.innerHTML = '❌ কোনো প্রত্যক্ষ বা পরোক্ষ পারিবারিক সম্পর্ক খুঁজে পাওয়া যায়নি।';
+            }
+        }
+
+        function handleSearch() {
+            const query = document.getElementById('search-input').value.trim().toLowerCase();
+            const resultsContainer = document.getElementById('search-results-list');
+            resultsContainer.innerHTML = '';
+
+            if (!query) return;
+
+            const matched = membersData.filter(m => 
+                m.uid.toLowerCase().includes(query) ||
+                m.bnName.toLowerCase().includes(query) ||
+                m.enName.toLowerCase().includes(query) ||
+                m.nick.toLowerCase().includes(query)
+            );
+
+            if (matched.length > 0) {
+                matched.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'search-item';
+                    div.innerHTML = `<strong>${item.bnName}</strong> (${item.uid})<br><small style="color:#aaa">${item.enName}</small>`;
+                    div.onclick = () => {
+                        focusByUid(item.uid);
+                    };
+                    resultsContainer.appendChild(div);
+                });
+            } else {
+                resultsContainer.innerHTML = `<div class="search-item" style="color: #ff4757;">কোন তথ্য পাওয়া যায়নি</div>`;
+            }
+        }
+
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+        let touchStartX = 0, touchStartY = 0;
+
+        window.addEventListener('pointerdown', (e) => {
+            touchStartX = e.clientX;
+            touchStartY = e.clientY;
+        });
+
+        window.addEventListener('pointerup', (event) => {
+            if (event.target.closest('#popup-modal') || event.target.closest('#nav-drawer') || event.target.closest('#menu-toggle-btn') || event.target.closest('#list-modal') || event.target.closest('#image-lightbox')) return;
+
+            const deltaX = Math.abs(event.clientX - touchStartX);
+            const deltaY = Math.abs(event.clientY - touchStartY);
+            if (deltaX > 8 || deltaY > 8) return;
+
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(clickableMarbles);
+
+            if (intersects.length > 0) {
+                selectMarble(intersects[0].object);
+            } else {
+                if (isMarbleSelected) {
+                    closePopup();
+                } else {
+                    isAnimating = !isAnimating;
+                }
+            }
+        });
+
+        function animateMarbleTo(mesh, targetPos, duration = 1000) {
+            mesh.visible = true;
+            new TWEEN.Tween(mesh.position)
+                .to(targetPos, duration)
+                .easing(TWEEN.Easing.Cubic.Out)
+                .start();
+
+            new TWEEN.Tween(mesh.material)
+                .to({ opacity: 1 }, duration)
+                .start();
+            
+            if (mesh.children[0]) {
+                new TWEEN.Tween(mesh.children[0].material)
+                    .to({ opacity: 1 }, duration)
+                    .start();
+            }
+        }
+
+        function fadeOutMarble(mesh, duration = 800) {
+            new TWEEN.Tween(mesh.material)
+                .to({ opacity: 0 }, duration)
+                .onComplete(() => { mesh.visible = false; })
+                .start();
+
+            if (mesh.children[0]) {
+                new TWEEN.Tween(mesh.children[0].material)
+                    .to({ opacity: 0 }, duration)
+                    .start();
+            }
+        }
+
+        function selectMarble(selectedMarble) {
+            isAnimating = false;
+            isMarbleSelected = true;
+            
+            const data = selectedMarble.userData;
+            const activeUids = new Set([data.uid]);
+
+            if (data.spouse) activeUids.add(data.spouse);
+            if (data.father) activeUids.add(data.father);
+            if (data.mother) activeUids.add(data.mother);
+            if (data.children) data.children.forEach(uid => activeUids.add(uid));
+
+            animateMarbleTo(selectedMarble, { x: 0, y: 0, z: 0 });
+
+            if (data.spouse && marbleMap[data.spouse]) {
+                animateMarbleTo(marbleMap[data.spouse], { x: 3.5, y: 0, z: 0 });
+            }
+
+            if (data.father && marbleMap[data.father]) {
+                animateMarbleTo(marbleMap[data.father], { x: -1.8, y: 3.5, z: 0 });
+            }
+
+            if (data.mother && marbleMap[data.mother]) {
+                animateMarbleTo(marbleMap[data.mother], { x: 1.8, y: 3.5, z: 0 });
+            }
+
+            if (data.children && data.children.length > 0) {
+                const count = data.children.length;
+                data.children.forEach((childUid, index) => {
+                    if (marbleMap[childUid]) {
+                        const xPos = (index - (count - 1) / 2) * 3.5;
+                        animateMarbleTo(marbleMap[childUid], { x: xPos, y: -3.5, z: 0 });
+                    }
+                });
+            }
+
+            clickableMarbles.forEach(m => {
+                if (!activeUids.has(m.userData.uid)) {
+                    fadeOutMarble(m);
+                }
+            });
+
+            threads.forEach((thread, index) => {
+                const pair = connections[index];
+                const isPairActive = activeUids.has(pair[0].userData.uid) && activeUids.has(pair[1].userData.uid);
+
+                if (isPairActive) {
+                    thread.visible = true;
+                    new TWEEN.Tween(thread.material)
+                        .to({ opacity: 0.8 }, 1000)
+                        .start();
+                } else {
+                    new TWEEN.Tween(thread.material)
+                        .to({ opacity: 0 }, 600)
+                        .onComplete(() => { thread.visible = false; })
+                        .start();
+                }
+            });
+
+            new TWEEN.Tween(camera.position)
+                .to({ x: 0, y: 0, z: 14 }, 1000)
+                .easing(TWEEN.Easing.Cubic.Out)
+                .start();
+
+            new TWEEN.Tween(controls.target)
+                .to({ x: 0, y: 0, z: 0 }, 1000)
+                .easing(TWEEN.Easing.Cubic.Out)
+                .start();
+
+            showPopup(data);
+        }
+
+        function focusByUid(uid) {
+            const drawer = document.getElementById('nav-drawer');
+            if (drawer.classList.contains('open')) {
+                toggleDrawer();
+            }
+            if (marbleMap[uid]) selectMarble(marbleMap[uid]);
+        }
+
+        function renderRelationLink(uid) {
+            if (!uid || !marbleMap[uid]) return "N/A";
+            const data = marbleMap[uid].userData;
+            return `<span class="relation-link" onclick="focusByUid('${data.uid}')">${data.bnName}</span>`;
+        }
+
+        function showPopup(data) {
+            document.getElementById('m-uid').innerText = data.uid;
+            document.getElementById('m-bname').innerText = data.bnName;
+            document.getElementById('m-ename').innerText = data.enName;
+            document.getElementById('m-gender').innerText = data.gender;
+            document.getElementById('m-gen').innerText = "জেনারেশন " + data.generation;
+            
+            document.getElementById('m-spouse').innerHTML = renderRelationLink(data.spouse);
+            document.getElementById('m-father').innerHTML = renderRelationLink(data.father);
+            document.getElementById('m-mother').innerHTML = renderRelationLink(data.mother);
+
+            if (data.children && data.children.length > 0) {
+                const childLinks = data.children.map(childUid => renderRelationLink(childUid));
+                document.getElementById('m-children').innerHTML = childLinks.join(', ');
+            } else {
+                document.getElementById('m-children').innerText = "N/A";
+            }
+
+            const descContainer = document.getElementById('desc-container');
+            if (data.description && data.description.trim() !== "") {
+                document.getElementById('m-desc').innerText = data.description;
+                descContainer.style.display = 'flex';
+            } else {
+                descContainer.style.display = 'none';
+            }
+
+            const imgEl = document.getElementById('m-photo');
+            imgEl.onerror = () => handleImgError(imgEl);
+            imgEl.src = `images/${data.uid} 01.jpg`;
+
+            document.getElementById('popup-modal').style.display = 'block';
+        }
+
+        function closePopup() {
+            document.getElementById('popup-modal').style.display = 'none';
+            
+            clickableMarbles.forEach(m => {
+                m.visible = true;
+                new TWEEN.Tween(m.material).to({ opacity: 1 }, 800).start();
+                if (m.children[0]) {
+                    new TWEEN.Tween(m.children[0].material).to({ opacity: 1 }, 800).start();
+                }
+            });
+
+            threads.forEach(t => {
+                t.visible = true;
+                new TWEEN.Tween(t.material).to({ opacity: 0.5 }, 800).start();
+            });
+
+            new TWEEN.Tween(camera.position)
+                .to(defaultCameraPos, 1000)
+                .easing(TWEEN.Easing.Cubic.Out)
+                .start();
+
+            new TWEEN.Tween(controls.target)
+                .to({ x: 0, y: 0, z: 0 }, 1000)
+                .easing(TWEEN.Easing.Cubic.Out)
+                .start();
+
+            isMarbleSelected = false;
+            setTimeout(() => { isAnimating = true; }, 500);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
     </script>
 </body>
 </html>
