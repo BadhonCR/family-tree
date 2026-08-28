@@ -37,6 +37,31 @@
             transform: scale(1.03);
         }
 
+        /* Floating Restore / Un-minimize Button */
+        #restore-btn {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1001;
+            background: rgba(0, 255, 255, 0.35);
+            color: #00ffff;
+            border: 1px solid #00ffff;
+            padding: 10px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 255, 255, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        #restore-btn:hover {
+            background: rgba(0, 255, 255, 0.6);
+            transform: scale(1.05);
+        }
+
         /* Main Sliding Navigation Menu Drawer */
         #nav-drawer {
             position: fixed;
@@ -279,30 +304,6 @@
             font-size: 13px;
             line-height: 1.6;
             box-shadow: inset 0 0 10px rgba(0,255,255,0.1);
-        }
-
-        .bloodline-gen-header {
-            font-size: 12px;
-            font-weight: bold;
-            color: #ffda79;
-            margin-top: 10px;
-            margin-bottom: 5px;
-            border-bottom: 1px dashed rgba(255, 218, 121, 0.3);
-            padding-bottom: 3px;
-        }
-
-        .descendant-card {
-            padding: 6px 10px;
-            background: rgba(255,255,255,0.04);
-            border-left: 3px solid #00ffff;
-            margin-bottom: 5px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .descendant-card:hover {
-            background: rgba(0, 255, 255, 0.2);
         }
 
         /* 2D Overlay Container for Bloodline Tree */
@@ -636,6 +637,9 @@
 
     <button id="menu-toggle-btn" onclick="toggleDrawer()">☰ মেনু অপশন</button>
 
+    <!-- Floating Un-minimize Button -->
+    <button id="restore-btn" onclick="toggleDrawer()">📋 প্যানেল খুলুন</button>
+
     <div id="nav-drawer">
         <div class="drawer-header">
             <h2>পারিবারিক প্যানেল</h2>
@@ -804,12 +808,16 @@
         let isDrawerOpen = false;
         function toggleDrawer() {
             const drawer = document.getElementById('nav-drawer');
+            const restoreBtn = document.getElementById('restore-btn');
+            
             drawer.classList.toggle('open');
             isDrawerOpen = drawer.classList.contains('open');
 
             if (isDrawerOpen) {
                 isAnimating = false;
+                restoreBtn.style.display = 'none';
             } else {
+                restoreBtn.style.display = 'block';
                 if (!isMarbleSelected) {
                     isAnimating = true;
                 }
@@ -1080,9 +1088,10 @@
             const selectB = document.getElementById('rel-person-b');
             const selectBloodline = document.getElementById('bloodline-person');
 
-            selectA.innerHTML = '';
-            selectB.innerHTML = '';
-            selectBloodline.innerHTML = '';
+            // Default empty placeholder options
+            selectA.innerHTML = '<option value="">-- ব্যক্তি নির্বাচন করুন --</option>';
+            selectB.innerHTML = '<option value="">-- ব্যক্তি নির্বাচন করুন --</option>';
+            selectBloodline.innerHTML = '<option value="">-- ব্যক্তি নির্বাচন করুন --</option>';
 
             membersData.forEach((m) => {
                 if (m.gender.includes('Male') || m.gender.includes('পুরুষ') || m.gender === 'M') males++;
@@ -1103,10 +1112,6 @@
                 selectB.add(optB);
                 selectBloodline.add(optBlood);
             });
-
-            if (membersData.length > 1) {
-                selectB.selectedIndex = 1;
-            }
 
             document.getElementById('stat-total').innerText = total;
             document.getElementById('stat-male').innerText = males;
@@ -1330,14 +1335,18 @@
         animate();
         initializeStatsAndOptions();
 
-        // ------------------ RELATIVE 2D BLOODLINE CALCULATOR TOOL ------------------
+        // RELATIVE 2D BLOODLINE CALCULATOR TOOL
         function calculateBloodline() {
             const rootUid = document.getElementById('bloodline-person').value;
             const resDiv = document.getElementById('bloodline-result');
             const overlay2D = document.getElementById('tree-2d-overlay');
             const container2D = document.getElementById('tree-2d-view');
 
-            if (!rootUid) return;
+            if (!rootUid) {
+                overlay2D.style.display = 'none';
+                resDiv.innerHTML = 'ব্যক্তি নির্বাচন করলে তার ২ডি জেনারেশন ট্রি স্ক্রিনে দেখা যাবে।';
+                return;
+            }
 
             const rootPerson = membersData.find(m => m.uid === rootUid);
             const relativeGenMap = {};
@@ -1492,6 +1501,11 @@
             const uidB = document.getElementById('rel-person-b').value;
             const resDiv = document.getElementById('rel-result');
 
+            if (!uidA || !uidB) {
+                resDiv.innerHTML = 'দুইজন ব্যক্তি নির্বাচন করুন সম্পর্ক জানার জন্য।';
+                return;
+            }
+
             if (uidA === uidB) {
                 resDiv.innerHTML = '⚠️ অনুগ্রহ করে দুইজন ভিন্ন ব্যক্তি নির্বাচন করুন।';
                 return;
@@ -1594,7 +1608,7 @@
         });
 
         window.addEventListener('pointerup', (event) => {
-            if (event.target.closest('#popup-modal') || event.target.closest('#nav-drawer') || event.target.closest('#menu-toggle-btn') || event.target.closest('#list-modal') || event.target.closest('#image-lightbox') || event.target.closest('#tree-2d-overlay')) return;
+            if (event.target.closest('#popup-modal') || event.target.closest('#nav-drawer') || event.target.closest('#menu-toggle-btn') || event.target.closest('#restore-btn') || event.target.closest('#list-modal') || event.target.closest('#image-lightbox') || event.target.closest('#tree-2d-overlay')) return;
 
             const deltaX = Math.abs(event.clientX - touchStartX);
             const deltaY = Math.abs(event.clientY - touchStartY);
