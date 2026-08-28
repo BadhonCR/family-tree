@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Marbles - Dual Generation Family Tree</title>
+    <title>3D Marbles - Interactive Family Tree</title>
     <style>
         body {
             margin: 0;
@@ -82,11 +82,12 @@
             background: rgba(0, 255, 255, 0.2);
             color: #00ffff;
             border: 1px solid #00ffff66;
-            padding: 4px 10px;
+            padding: 2px 10px;
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 12px;
+            font-size: 16px;
+            line-height: 1.2;
             transition: 0.2s;
         }
 
@@ -299,11 +300,98 @@
             cursor: pointer;
             transition: 0.2s;
         }
+
         .descendant-card:hover {
             background: rgba(0, 255, 255, 0.2);
         }
 
-        /* General Modal List Popup */
+        /* 2D Overlay Container for Bloodline Tree */
+        #tree-2d-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(10, 15, 25, 0.95);
+            z-index: 500;
+            overflow: auto;
+            padding: 60px 20px 20px 20px;
+            box-sizing: border-box;
+            backdrop-filter: blur(10px);
+        }
+
+        .tree-2d-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px;
+            min-width: max-content;
+            margin: 0 auto;
+        }
+
+        .gen-2d-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .gen-2d-label {
+            font-size: 13px;
+            font-weight: bold;
+            color: #ffda79;
+            background: rgba(255, 218, 121, 0.1);
+            padding: 4px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 218, 121, 0.4);
+            margin-bottom: 12px;
+        }
+
+        .nodes-2d-row {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .node-2d-card {
+            background: rgba(20, 30, 48, 0.9);
+            border: 1px solid #00ffff;
+            border-radius: 8px;
+            padding: 8px 12px;
+            text-align: center;
+            min-width: 110px;
+            box-shadow: 0 4px 10px rgba(0, 255, 255, 0.15);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .node-2d-card:hover {
+            transform: translateY(-3px);
+            background: rgba(0, 255, 255, 0.25);
+        }
+
+        .node-2d-card.root-card {
+            border-color: #ffda79;
+            box-shadow: 0 0 12px rgba(255, 218, 121, 0.4);
+        }
+
+        .node-2d-card.spouse-card {
+            border-color: #ff1493;
+        }
+
+        .card-2d-name {
+            font-weight: bold;
+            font-size: 13px;
+            color: #fff;
+        }
+
+        .card-2d-nick {
+            font-size: 11px;
+            color: #38bdf8;
+        }
+
+        /* Modal Lists */
         #list-modal {
             display: none;
             position: fixed;
@@ -552,7 +640,7 @@
         <div class="drawer-header">
             <h2>পারিবারিক প্যানেল</h2>
             <div class="header-actions">
-                <button class="btn-min" onclick="toggleDrawer()" title="প্যানেল লুকান">🗕 মিনিমাইজ</button>
+                <button class="btn-min" onclick="toggleDrawer()" title="মিনিমাইজ করুন">−</button>
                 <button class="btn-close" onclick="toggleDrawer()">✕</button>
             </div>
         </div>
@@ -620,10 +708,15 @@
                     <select id="bloodline-person" onchange="calculateBloodline()"></select>
                 </div>
                 <div id="bloodline-result">
-                    ব্যক্তি নির্বাচন করলে তার ৩ডি ব্লাডলাইন মডেল ও বংশধরদের তালিকা দেখা যাবে।
+                    ব্যক্তি নির্বাচন করলে তার ২ডি জেনারেশন ট্রি স্ক্রিনে দেখা যাবে।
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- 2D Bloodline Tree View Overlay -->
+    <div id="tree-2d-overlay">
+        <div id="tree-2d-view" class="tree-2d-wrapper"></div>
     </div>
 
     <div id="list-modal">
@@ -728,6 +821,12 @@
             document.querySelectorAll('.tab-btn').forEach(tb => tb.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
             btn.classList.add('active');
+
+            if (tabId !== 'bloodline-tab') {
+                document.getElementById('tree-2d-overlay').style.display = 'none';
+            } else {
+                calculateBloodline();
+            }
         }
 
         const scene = new THREE.Scene();
@@ -926,7 +1025,7 @@
             { uid: "FT-090", bnName: "অভিমুন্য রায় অভি", enName: "Abhimanyu Roy Avi", nick: "অভিমুন্য", gender: "Male", color: 0x00ccff, spouse: null, father: "FT-089", mother: "FT-088", children: [], description: "" }
         ];
 
-        // ------------------ DUAL GENERATION CALCULATION ALGORITHM ------------------
+        // DUAL GENERATION CALCULATION ALGORITHM
         function calculateGenerations() {
             const memberDict = {};
             membersData.forEach(m => { memberDict[m.uid] = m; });
@@ -1047,7 +1146,6 @@
             return line;
         }
 
-        // ------------------ CONNECTIONS ------------------
         const connectionsData = [
             ["FT-016", "FT-017"],
             ["FT-100", "FT-101"],
@@ -1232,95 +1330,94 @@
         animate();
         initializeStatsAndOptions();
 
-        // ------------------ EXCLUSIVE 3D BLOODLINE CALCULATOR TOOL ------------------
+        // ------------------ RELATIVE 2D BLOODLINE CALCULATOR TOOL ------------------
         function calculateBloodline() {
             const rootUid = document.getElementById('bloodline-person').value;
             const resDiv = document.getElementById('bloodline-result');
+            const overlay2D = document.getElementById('tree-2d-overlay');
+            const container2D = document.getElementById('tree-2d-view');
+
             if (!rootUid) return;
 
-            const rootPerson = marbleMap[rootUid].userData;
-            const descendants = [];
-            const descendantSet = new Set();
+            const rootPerson = membersData.find(m => m.uid === rootUid);
+            const relativeGenMap = {};
+            const visited = new Set([rootUid]);
+            const queue = [{ uid: rootUid, relGen: 0 }];
 
-            function getChildren(uid) {
-                const p = membersData.find(m => m.uid === uid);
-                if (p && p.children) {
-                    p.children.forEach(childUid => {
-                        if (!descendantSet.has(childUid)) {
-                            descendantSet.add(childUid);
-                            const childObj = membersData.find(m => m.uid === childUid);
-                            if (childObj) {
-                                descendants.push(childObj);
-                                getChildren(childUid);
+            // BFS algorithm for relative generation mapping
+            while (queue.length > 0) {
+                const current = queue.shift();
+                if (!relativeGenMap[current.relGen]) relativeGenMap[current.relGen] = [];
+
+                const personObj = membersData.find(m => m.uid === current.uid);
+                if (personObj) {
+                    relativeGenMap[current.relGen].push(personObj);
+
+                    if (personObj.children) {
+                        personObj.children.forEach(childUid => {
+                            if (!visited.has(childUid)) {
+                                visited.add(childUid);
+                                queue.push({ uid: childUid, relGen: current.relGen + 1 });
                             }
+                        });
+                    }
+                }
+            }
+
+            // Render 2D Canvas View
+            overlay2D.style.display = 'block';
+            container2D.innerHTML = '';
+
+            const sortedGens = Object.keys(relativeGenMap).sort((a,b) => a - b);
+            sortedGens.forEach(genLevel => {
+                const block = document.createElement('div');
+                block.className = 'gen-2d-block';
+
+                const labelText = genLevel == 0 
+                    ? `মূল ব্যক্তি: ${rootPerson.bnName} (জেনারেশন 0)` 
+                    : `${rootPerson.bnName}-এর সাপেক্ষে জেনারেশন +${genLevel}`;
+                
+                block.innerHTML = `<div class="gen-2d-label">${labelText}</div>`;
+
+                const row = document.createElement('div');
+                row.className = 'nodes-2d-row';
+
+                relativeGenMap[genLevel].forEach(p => {
+                    const card = document.createElement('div');
+                    card.className = `node-2d-card ${p.uid === rootUid ? 'root-card' : ''}`;
+                    card.onclick = () => focusByUid(p.uid);
+                    card.innerHTML = `
+                        <div class="card-2d-name">${p.bnName}</div>
+                        <div class="card-2d-nick">(${p.nick})</div>
+                    `;
+                    row.appendChild(card);
+
+                    // Render spouse if present
+                    if (p.spouse) {
+                        const spouseObj = membersData.find(m => m.uid === p.spouse);
+                        if (spouseObj) {
+                            const spouseCard = document.createElement('div');
+                            spouseCard.className = 'node-2d-card spouse-card';
+                            spouseCard.onclick = () => focusByUid(spouseObj.uid);
+                            spouseCard.innerHTML = `
+                                <div class="card-2d-name">${spouseObj.bnName}</div>
+                                <div class="card-2d-nick">সঙ্গী (${spouseObj.nick})</div>
+                            `;
+                            row.appendChild(spouseCard);
                         }
-                    });
-                }
-            }
+                    }
+                });
 
-            getChildren(rootUid);
-
-            // Active list: Selected Person + Spouse (if exists) + Descendants
-            const activeSet = new Set([rootUid, ...descendantSet]);
-            if (rootPerson.spouse) {
-                activeSet.add(rootPerson.spouse);
-            }
-
-            // Hide non-bloodline marbles completely (visible = false)
-            clickableMarbles.forEach(m => {
-                if (activeSet.has(m.userData.uid)) {
-                    m.visible = true;
-                    new TWEEN.Tween(m.material).to({ opacity: 1 }, 500).start();
-                    if (m.children[0]) m.children[0].visible = true;
-                } else {
-                    new TWEEN.Tween(m.material)
-                        .to({ opacity: 0 }, 500)
-                        .onComplete(() => { m.visible = false; })
-                        .start();
-                    if (m.children[0]) m.children[0].visible = false;
-                }
+                block.appendChild(row);
+                container2D.appendChild(block);
             });
 
-            // Update threads visibility for active bloodline members
-            threads.forEach((thread, index) => {
-                const pair = connections[index];
-                const isPairActive = activeSet.has(pair[0].userData.uid) && activeSet.has(pair[1].userData.uid);
-                if (isPairActive) {
-                    thread.visible = true;
-                    new TWEEN.Tween(thread.material).to({ opacity: 0.8 }, 500).start();
-                } else {
-                    new TWEEN.Tween(thread.material)
-                        .to({ opacity: 0 }, 500)
-                        .onComplete(() => { thread.visible = false; })
-                        .start();
-                }
-            });
-
-            if (descendants.length === 0) {
+            // Summary text update
+            const totalDescendants = visited.size - 1;
+            if (totalDescendants === 0) {
                 resDiv.innerHTML = `<b>${rootPerson.bnName}</b>-এর ব্লাডলাইনে কোনো পরবর্তী বংশধর নেই।`;
             } else {
-                const genGroups = {};
-                descendants.forEach(d => {
-                    const relativeGen = d.patrilinealGen;
-                    if (!genGroups[relativeGen]) genGroups[relativeGen] = [];
-                    genGroups[relativeGen].push(d);
-                });
-
-                let html = `<strong style="color:#00ffff;">${rootPerson.bnName}</strong>-এর মোট <b>${descendants.length} জন</b> বংশধর পাওয়া গেছে:<br>`;
-                
-                const sortedGens = Object.keys(genGroups).sort((a,b) => a - b);
-                sortedGens.forEach(g => {
-                    html += `<div class="bloodline-gen-header">🧬 জেনারেশন ${g} (${genGroups[g].length} জন)</div>`;
-                    genGroups[g].forEach((d, idx) => {
-                        html += `
-                            <div class="descendant-card" onclick="focusByUid('${d.uid}')">
-                                ${idx + 1}. <b>${d.bnName}</b> (${d.nick})<br>
-                                <small style="color:#aaa;">UID: ${d.uid} • Pitri: Gen ${d.patrilinealGen} | Matri: Gen ${d.matrilinealGen}</small>
-                            </div>
-                        `;
-                    });
-                });
-                resDiv.innerHTML = html;
+                resDiv.innerHTML = `<strong style="color:#00ffff;">${rootPerson.bnName}</strong>-এর সাপেক্ষে পরবর্তী মোট <b>${totalDescendants} জন</b> বংশধর পাওয়া গেছে।`;
             }
         }
 
@@ -1497,7 +1594,7 @@
         });
 
         window.addEventListener('pointerup', (event) => {
-            if (event.target.closest('#popup-modal') || event.target.closest('#nav-drawer') || event.target.closest('#menu-toggle-btn') || event.target.closest('#list-modal') || event.target.closest('#image-lightbox')) return;
+            if (event.target.closest('#popup-modal') || event.target.closest('#nav-drawer') || event.target.closest('#menu-toggle-btn') || event.target.closest('#list-modal') || event.target.closest('#image-lightbox') || event.target.closest('#tree-2d-overlay')) return;
 
             const deltaX = Math.abs(event.clientX - touchStartX);
             const deltaY = Math.abs(event.clientY - touchStartY);
@@ -1628,6 +1725,7 @@
             if (drawer.classList.contains('open')) {
                 toggleDrawer();
             }
+            document.getElementById('tree-2d-overlay').style.display = 'none';
             if (marbleMap[uid]) selectMarble(marbleMap[uid]);
         }
 
