@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Marbles - Interactive Family Tree</title>
+    <title>3D Marbles - Dual Generation Family Tree</title>
     <style>
         body {
             margin: 0;
@@ -565,7 +565,7 @@
                     </div>
                 </div>
 
-                <h3 style="margin-top:20px; font-size:14px; color:#00ffff;">🧬 জেনারেশন (বংশপরম্পরা)</h3>
+                <h3 style="margin-top:20px; font-size:14px; color:#00ffff;">🧬 পিতৃকুল জেনারেশন তালিকা</h3>
                 <div id="generation-container"></div>
             </div>
 
@@ -628,6 +628,10 @@
             <div class="profile-field">
                 <span class="field-label">লিঙ্গ:</span>
                 <span class="field-value" id="m-gender"></span>
+            </div>
+            <div class="profile-field">
+                <span class="field-label">দ্বৈত জেনারেশন ইনডেক্স:</span>
+                <span class="field-value" id="m-dual-gen" style="color: #00ffff; font-weight: bold;"></span>
             </div>
             <div class="profile-field">
                 <span class="field-label">দাম্পত্য সঙ্গী:</span>
@@ -760,7 +764,7 @@
         const membersData = [
             // Gen 1
             { uid: "FT-259", bnName: "কানাই চন্দ্র রায়", enName: "Kanai Chandra Roy", nick: "কানাই", gender: "Male", color: 0x0055ff, spouse: "FT-260", father: null, mother: null, children: ["FT-261", "FT-262"], description: "" },
-            { uid: "FT-260", bnName: "ঋতুময়ী রানী রায়", enName: "Ritumayee Rani Roy", nick: "ঋতুময়ী", gender: "Female", color: 0xff1493, spouse: "FT-259", father: null, mother: null, children: ["FT-261", "FT-262"], description: "" },
+            { uid: "FT-260", bnName: "ঋতুমাযী রানী রায়", enName: "Ritumayee Rani Roy", nick: "ঋতুমাযী", gender: "Female", color: 0xff1493, spouse: "FT-259", father: null, mother: null, children: ["FT-261", "FT-262"], description: "" },
             { uid: "FT-070", bnName: "সুরেশ দেউ দেব সিংহ", enName: "Suresh Deu Dev Singh", nick: "সুরেশ", gender: "Male", color: 0x0055ff, spouse: "FT-071", father: null, mother: null, children: ["FT-073", "FT-079", "FT-081", "FT-085"], description: "" },
             { uid: "FT-071", bnName: "সিতোময়ী রায় দেব সিংহ", enName: "Sitomoyi Roy Dev Singh", nick: "সিতোময়ী", gender: "Female", color: 0xff1493, spouse: "FT-070", father: null, mother: null, children: ["FT-073", "FT-079", "FT-081", "FT-085"], description: "" },
             { uid: "FT-143", bnName: "ননীগোপাল", enName: "Noni Gopal", nick: "ননীগোপাল", gender: "Male", color: 0x0055ff, spouse: "FT-144", father: null, mother: null, children: ["FT-145", "FT-001"], description: "" },
@@ -898,37 +902,48 @@
             { uid: "FT-090", bnName: "অভিমুন্য রায় অভি", enName: "Abhimanyu Roy Avi", nick: "অভিমুন্য", gender: "Male", color: 0x00ccff, spouse: null, father: "FT-089", mother: "FT-088", children: [], description: "" }
         ];
 
-        const generationMap = {};
-
+        // ------------------ DUAL GENERATION CALCULATION ALGORITHM ------------------
         function calculateGenerations() {
             const memberDict = {};
             membersData.forEach(m => { memberDict[m.uid] = m; });
 
-            function getMemberGen(uid, visited = new Set()) {
+            // Calculate Patrilineal Generation Index (Paternal Side)
+            function getPaternalGen(uid, visited = new Set()) {
                 if (visited.has(uid)) return 1;
                 visited.add(uid);
                 const m = memberDict[uid];
                 if (!m) return 1;
 
-                if (!m.father && !m.mother) {
-                    if (m.spouse && memberDict[m.spouse]) {
-                        const s = memberDict[m.spouse];
-                        if (s.father || s.mother) {
-                            return getMemberGen(m.spouse, visited);
-                        }
-                    }
-                    return 1;
+                if (m.father) {
+                    return getPaternalGen(m.father, new Set(visited)) + 1;
                 }
+                if (m.spouse && memberDict[m.spouse] && memberDict[m.spouse].father) {
+                    return getPaternalGen(m.spouse, new Set(visited));
+                }
+                return 1;
+            }
 
-                let fGen = m.father ? getMemberGen(m.father, new Set(visited)) : 0;
-                let mGen = m.mother ? getMemberGen(m.mother, new Set(visited)) : 0;
-                return Math.max(fGen, mGen) + 1;
+            // Calculate Matrilineal Generation Index (Maternal Side)
+            function getMaternalGen(uid, visited = new Set()) {
+                if (visited.has(uid)) return 1;
+                visited.add(uid);
+                const m = memberDict[uid];
+                if (!m) return 1;
+
+                if (m.mother) {
+                    return getMaternalGen(m.mother, new Set(visited)) + 1;
+                }
+                if (m.spouse && memberDict[m.spouse] && memberDict[m.spouse].mother) {
+                    return getMaternalGen(m.spouse, new Set(visited));
+                }
+                return 1;
             }
 
             membersData.forEach(m => {
-                let gen = getMemberGen(m.uid);
-                generationMap[m.uid] = gen;
-                m.generation = gen;
+                m.patrilinealGen = getPaternalGen(m.uid);
+                m.matrilinealGen = getMaternalGen(m.uid);
+                // Default Primary Generation Index (for 3D layout spacing)
+                m.generation = Math.max(m.patrilinealGen, m.matrilinealGen);
             });
         }
 
@@ -958,7 +973,7 @@
                     marriedCouples.add(pair);
                 }
 
-                let gen = m.generation;
+                let gen = m.patrilinealGen; // Default display based on Patrilineal Gen
                 genCounts[gen] = (genCounts[gen] || 0) + 1;
 
                 const optA = new Option(`${m.bnName} (${m.nick})`, m.uid);
@@ -985,9 +1000,9 @@
             genKeys.forEach(g => {
                 const div = document.createElement('div');
                 div.className = 'gen-item';
-                div.onclick = () => showFilteredMemberList('gen-' + g, `জেনারেশন ${g} এর সদস্যগণ`);
+                div.onclick = () => showFilteredMemberList('gen-' + g, `পিতৃকুল জেনারেশন ${g} এর সদস্যগণ`);
                 div.innerHTML = `
-                    <span class="gen-title">প্রজন্ম / জেনারেশন ${g}</span>
+                    <span class="gen-title">পিতৃকুল জেনারেশন ${g}</span>
                     <span class="gen-count">${genCounts[g]} জন</span>
                 `;
                 genContainer.appendChild(div);
@@ -1159,8 +1174,8 @@
 
                 const genGroups = {};
                 membersData.forEach(m => {
-                    if (!genGroups[m.generation]) genGroups[m.generation] = [];
-                    genGroups[m.generation].push(m.uid);
+                    if (!genGroups[m.patrilinealGen]) genGroups[m.patrilinealGen] = [];
+                    genGroups[m.patrilinealGen].push(m.uid);
                 });
 
                 Object.keys(genGroups).forEach(genStr => {
@@ -1196,7 +1211,7 @@
         animate();
         initializeStatsAndOptions();
 
-        // ------------------ UPDATED BLOODLINE CALCULATOR (SORTED BY GENERATION) ------------------
+        // ------------------ BLOODLINE CALCULATOR TOOL ------------------
         function calculateBloodline() {
             const rootUid = document.getElementById('bloodline-person').value;
             const resDiv = document.getElementById('bloodline-result');
@@ -1238,23 +1253,24 @@
             if (descendants.length === 0) {
                 resDiv.innerHTML = `<b>${rootPerson.bnName}</b>-এর ব্লাডলাইনে কোনো পরবর্তী বংশধর নেই।`;
             } else {
-                // Group descendants by Generation
+                // Group descendants by Patrilineal Gen relative to selected root
                 const genGroups = {};
                 descendants.forEach(d => {
-                    if (!genGroups[d.generation]) genGroups[d.generation] = [];
-                    genGroups[d.generation].push(d);
+                    const relativeGen = d.patrilinealGen;
+                    if (!genGroups[relativeGen]) genGroups[relativeGen] = [];
+                    genGroups[relativeGen].push(d);
                 });
 
                 let html = `<strong style="color:#00ffff;">${rootPerson.bnName}</strong>-এর মোট <b>${descendants.length} জন</b> বংশধর পাওয়া গেছে:<br>`;
                 
                 const sortedGens = Object.keys(genGroups).sort((a,b) => a - b);
                 sortedGens.forEach(g => {
-                    html += `<div class="bloodline-gen-header">🧬 জেনারেশন ${g} (${genGroups[g].length} জন)</div>`;
+                    html += `<div class="bloodline-gen-header">🧬 পিতৃকুল জেনারেশন ${g} (${genGroups[g].length} জন)</div>`;
                     genGroups[g].forEach((d, idx) => {
                         html += `
                             <div class="descendant-card" onclick="focusByUid('${d.uid}')">
                                 ${idx + 1}. <b>${d.bnName}</b> (${d.nick})<br>
-                                <small style="color:#aaa;">UID: ${d.uid} • ${d.gender}</small>
+                                <small style="color:#aaa;">UID: ${d.uid} • Pitri: Gen ${d.patrilinealGen} | Matri: Gen ${d.matrilinealGen}</small>
                             </div>
                         `;
                     });
@@ -1277,7 +1293,7 @@
                 list = membersData.filter(m => m.gender.includes('Female') || m.gender.includes('মহিলা') || m.gender === 'F');
             } else if (filterType.startsWith('gen-')) {
                 const genNum = parseInt(filterType.split('-')[1]);
-                list = membersData.filter(m => m.generation === genNum);
+                list = membersData.filter(m => m.patrilinealGen === genNum);
             }
 
             if (list.length === 0) {
@@ -1286,7 +1302,7 @@
                 list.forEach(m => {
                     const div = document.createElement('div');
                     div.className = 'modal-member-card';
-                    div.innerHTML = `<strong>${m.bnName}</strong> (${m.nick})<br><small style="color:#00ffff">${m.uid} • Gen ${m.generation}</small>`;
+                    div.innerHTML = `<strong>${m.bnName}</strong> (${m.nick})<br><small style="color:#00ffff">${m.uid} • Pitri: Gen ${m.patrilinealGen} | Matri: Gen ${m.matrilinealGen}</small>`;
                     div.onclick = () => {
                         focusByUid(m.uid);
                         closeListModal();
@@ -1581,7 +1597,8 @@
             document.getElementById('m-bname').innerText = data.bnName;
             document.getElementById('m-ename').innerText = data.enName;
             document.getElementById('m-gender').innerText = data.gender;
-            document.getElementById('m-gen').innerText = "জেনারেশন " + data.generation;
+            document.getElementById('m-gen').innerText = "পিতৃকুল Gen " + data.patrilinealGen;
+            document.getElementById('m-dual-gen').innerText = `পিতৃকুল: Gen ${data.patrilinealGen} | মাতৃকুল: Gen ${data.matrilinealGen}`;
             
             document.getElementById('m-spouse').innerHTML = renderRelationLink(data.spouse);
             document.getElementById('m-father').innerHTML = renderRelationLink(data.father);
