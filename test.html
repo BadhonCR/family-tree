@@ -259,6 +259,16 @@
             box-shadow: inset 0 0 10px rgba(0,255,255,0.1);
         }
 
+        .bloodline-gen-header {
+            font-size: 12px;
+            font-weight: bold;
+            color: #ffda79;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            border-bottom: 1px dashed rgba(255, 218, 121, 0.3);
+            padding-bottom: 3px;
+        }
+
         .descendant-card {
             padding: 6px 10px;
             background: rgba(255,255,255,0.04);
@@ -266,6 +276,7 @@
             margin-bottom: 5px;
             border-radius: 4px;
             cursor: pointer;
+            transition: 0.2s;
         }
         .descendant-card:hover {
             background: rgba(0, 255, 255, 0.2);
@@ -579,14 +590,13 @@
                 </div>
             </div>
 
-            <!-- NEW BLOODLINE TAB -->
             <div id="bloodline-tab" class="tab-content">
                 <div class="select-group">
                     <label>মূল ব্যক্তি নির্বাচন করুন:</label>
                     <select id="bloodline-person" onchange="calculateBloodline()"></select>
                 </div>
                 <div id="bloodline-result">
-                    ব্যক্তি নির্বাচন করলে তার বংশধরদের তালিকা এখানে দেখা যাবে।
+                    ব্যক্তি নির্বাচন করলে তার বংশধরদের তালিকা জেনারেশন অনুযায়ী দেখা যাবে।
                 </div>
             </div>
         </div>
@@ -1186,7 +1196,7 @@
         animate();
         initializeStatsAndOptions();
 
-        // ------------------ BLOODLINE CALCULATOR TOOL ------------------
+        // ------------------ UPDATED BLOODLINE CALCULATOR (SORTED BY GENERATION) ------------------
         function calculateBloodline() {
             const rootUid = document.getElementById('bloodline-person').value;
             const resDiv = document.getElementById('bloodline-result');
@@ -1214,7 +1224,7 @@
 
             getChildren(rootUid);
 
-            // Highlight on 3D View
+            // Highlight in 3D scene
             const activeSet = new Set([rootUid, ...descendantSet]);
             clickableMarbles.forEach(m => {
                 if (activeSet.has(m.userData.uid)) {
@@ -1228,14 +1238,26 @@
             if (descendants.length === 0) {
                 resDiv.innerHTML = `<b>${rootPerson.bnName}</b>-এর ব্লাডলাইনে কোনো পরবর্তী বংশধর নেই।`;
             } else {
-                let html = `<strong style="color:#00ffff;">${rootPerson.bnName}</strong>-এর মোট <b>${descendants.length} জন</b> বংশধর পাওয়া গেছে:<br><br>`;
-                descendants.forEach((d, idx) => {
-                    html += `
-                        <div class="descendant-card" onclick="focusByUid('${d.uid}')">
-                            ${idx + 1}. <b>${d.bnName}</b> (${d.nick})<br>
-                            <small style="color:#aaa;">UID: ${d.uid} • Gen ${d.generation}</small>
-                        </div>
-                    `;
+                // Group descendants by Generation
+                const genGroups = {};
+                descendants.forEach(d => {
+                    if (!genGroups[d.generation]) genGroups[d.generation] = [];
+                    genGroups[d.generation].push(d);
+                });
+
+                let html = `<strong style="color:#00ffff;">${rootPerson.bnName}</strong>-এর মোট <b>${descendants.length} জন</b> বংশধর পাওয়া গেছে:<br>`;
+                
+                const sortedGens = Object.keys(genGroups).sort((a,b) => a - b);
+                sortedGens.forEach(g => {
+                    html += `<div class="bloodline-gen-header">🧬 জেনারেশন ${g} (${genGroups[g].length} জন)</div>`;
+                    genGroups[g].forEach((d, idx) => {
+                        html += `
+                            <div class="descendant-card" onclick="focusByUid('${d.uid}')">
+                                ${idx + 1}. <b>${d.bnName}</b> (${d.nick})<br>
+                                <small style="color:#aaa;">UID: ${d.uid} • ${d.gender}</small>
+                            </div>
+                        `;
+                    });
                 });
                 resDiv.innerHTML = html;
             }
