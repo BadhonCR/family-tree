@@ -59,7 +59,7 @@
         }
 
         .drawer-header {
-            padding: 15px 20px;
+            padding: 12px 15px;
             background: rgba(0, 255, 255, 0.1);
             border-bottom: 1px solid #00ffff44;
             display: flex;
@@ -70,7 +70,28 @@
         .drawer-header h2 {
             margin: 0;
             color: #00ffff;
-            font-size: 18px;
+            font-size: 16px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .btn-min {
+            background: rgba(0, 255, 255, 0.2);
+            color: #00ffff;
+            border: 1px solid #00ffff66;
+            padding: 4px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 12px;
+            transition: 0.2s;
+        }
+
+        .btn-min:hover {
+            background: rgba(0, 255, 255, 0.4);
         }
 
         .drawer-body {
@@ -463,7 +484,7 @@
             background: linear-gradient(135deg, #ff4757, #ff6b81);
             color: white;
             border: none;
-            padding: 6px 12px;
+            padding: 4px 10px;
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
@@ -530,7 +551,10 @@
     <div id="nav-drawer">
         <div class="drawer-header">
             <h2>পারিবারিক প্যানেল</h2>
-            <button class="btn-close" onclick="toggleDrawer()">✕</button>
+            <div class="header-actions">
+                <button class="btn-min" onclick="toggleDrawer()" title="প্যানেল লুকান">🗕 মিনিমাইজ</button>
+                <button class="btn-close" onclick="toggleDrawer()">✕</button>
+            </div>
         </div>
         
         <div class="drawer-body">
@@ -596,7 +620,7 @@
                     <select id="bloodline-person" onchange="calculateBloodline()"></select>
                 </div>
                 <div id="bloodline-result">
-                    ব্যক্তি নির্বাচন করলে তার বংশধরদের তালিকা জেনারেশন অনুযায়ী দেখা যাবে।
+                    ব্যক্তি নির্বাচন করলে তার ৩ডি ব্লাডলাইন মডেল ও বংশধরদের তালিকা দেখা যাবে।
                 </div>
             </div>
         </div>
@@ -907,7 +931,6 @@
             const memberDict = {};
             membersData.forEach(m => { memberDict[m.uid] = m; });
 
-            // Calculate Patrilineal Generation Index (Paternal Side)
             function getPaternalGen(uid, visited = new Set()) {
                 if (visited.has(uid)) return 1;
                 visited.add(uid);
@@ -923,7 +946,6 @@
                 return 1;
             }
 
-            // Calculate Matrilineal Generation Index (Maternal Side)
             function getMaternalGen(uid, visited = new Set()) {
                 if (visited.has(uid)) return 1;
                 visited.add(uid);
@@ -942,7 +964,6 @@
             membersData.forEach(m => {
                 m.patrilinealGen = getPaternalGen(m.uid);
                 m.matrilinealGen = getMaternalGen(m.uid);
-                // Default Primary Generation Index (for 3D layout spacing)
                 m.generation = Math.max(m.patrilinealGen, m.matrilinealGen);
             });
         }
@@ -973,7 +994,7 @@
                     marriedCouples.add(pair);
                 }
 
-                let gen = m.patrilinealGen; // Default display based on Patrilineal Gen
+                let gen = m.patrilinealGen;
                 genCounts[gen] = (genCounts[gen] || 0) + 1;
 
                 const optA = new Option(`${m.bnName} (${m.nick})`, m.uid);
@@ -1211,7 +1232,7 @@
         animate();
         initializeStatsAndOptions();
 
-        // ------------------ BLOODLINE CALCULATOR TOOL ------------------
+        // ------------------ EXCLUSIVE 3D BLOODLINE CALCULATOR TOOL ------------------
         function calculateBloodline() {
             const rootUid = document.getElementById('bloodline-person').value;
             const resDiv = document.getElementById('bloodline-result');
@@ -1239,21 +1260,45 @@
 
             getChildren(rootUid);
 
-            // Highlight in 3D scene
+            // Active list: Selected Person + Spouse (if exists) + Descendants
             const activeSet = new Set([rootUid, ...descendantSet]);
+            if (rootPerson.spouse) {
+                activeSet.add(rootPerson.spouse);
+            }
+
+            // Hide non-bloodline marbles completely (visible = false)
             clickableMarbles.forEach(m => {
                 if (activeSet.has(m.userData.uid)) {
                     m.visible = true;
                     new TWEEN.Tween(m.material).to({ opacity: 1 }, 500).start();
+                    if (m.children[0]) m.children[0].visible = true;
                 } else {
-                    new TWEEN.Tween(m.material).to({ opacity: 0.1 }, 500).start();
+                    new TWEEN.Tween(m.material)
+                        .to({ opacity: 0 }, 500)
+                        .onComplete(() => { m.visible = false; })
+                        .start();
+                    if (m.children[0]) m.children[0].visible = false;
+                }
+            });
+
+            // Update threads visibility for active bloodline members
+            threads.forEach((thread, index) => {
+                const pair = connections[index];
+                const isPairActive = activeSet.has(pair[0].userData.uid) && activeSet.has(pair[1].userData.uid);
+                if (isPairActive) {
+                    thread.visible = true;
+                    new TWEEN.Tween(thread.material).to({ opacity: 0.8 }, 500).start();
+                } else {
+                    new TWEEN.Tween(thread.material)
+                        .to({ opacity: 0 }, 500)
+                        .onComplete(() => { thread.visible = false; })
+                        .start();
                 }
             });
 
             if (descendants.length === 0) {
                 resDiv.innerHTML = `<b>${rootPerson.bnName}</b>-এর ব্লাডলাইনে কোনো পরবর্তী বংশধর নেই।`;
             } else {
-                // Group descendants by Patrilineal Gen relative to selected root
                 const genGroups = {};
                 descendants.forEach(d => {
                     const relativeGen = d.patrilinealGen;
@@ -1265,7 +1310,7 @@
                 
                 const sortedGens = Object.keys(genGroups).sort((a,b) => a - b);
                 sortedGens.forEach(g => {
-                    html += `<div class="bloodline-gen-header">🧬 পিতৃকুল জেনারেশন ${g} (${genGroups[g].length} জন)</div>`;
+                    html += `<div class="bloodline-gen-header">🧬 জেনারেশন ${g} (${genGroups[g].length} জন)</div>`;
                     genGroups[g].forEach((d, idx) => {
                         html += `
                             <div class="descendant-card" onclick="focusByUid('${d.uid}')">
@@ -1633,6 +1678,7 @@
                 m.visible = true;
                 new TWEEN.Tween(m.material).to({ opacity: 1 }, 800).start();
                 if (m.children[0]) {
+                    m.children[0].visible = true;
                     new TWEEN.Tween(m.children[0].material).to({ opacity: 1 }, 800).start();
                 }
             });
