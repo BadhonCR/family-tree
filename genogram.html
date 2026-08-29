@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Marbles & Advanced 2D Bloodline Tree</title>
+    <title>3D Marbles & Clean 2D Bloodline Tree</title>
     <style>
         body {
             margin: 0;
@@ -308,7 +308,7 @@
             line-height: 1.6;
         }
 
-        /* ------------------ 2D BLOODLINE OVERLAY ------------------ */
+        /* ------------------ CLEAN 2D BLOODLINE OVERLAY ------------------ */
         #tree-2d-overlay {
             display: none;
             position: fixed;
@@ -386,7 +386,7 @@
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            padding: 100px 50px;
+            padding: 80px 40px;
             box-sizing: border-box;
         }
 
@@ -395,12 +395,13 @@
         }
 
         .tree-2d-wrapper {
+            position: relative;
             transform-origin: center top;
             transition: transform 0.15s ease-out;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 50px;
+            gap: 60px;
             min-width: max-content;
         }
 
@@ -412,18 +413,6 @@
             position: relative;
         }
 
-        .gen-2d-label {
-            font-size: 13px;
-            font-weight: bold;
-            color: #ffda79;
-            background: rgba(255, 218, 121, 0.1);
-            padding: 6px 18px;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 218, 121, 0.4);
-            margin-bottom: 25px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-        }
-
         .nodes-2d-row {
             display: flex;
             gap: 40px;
@@ -431,29 +420,30 @@
             position: relative;
         }
 
+        /* Couple Node Card (Clean Look - Bangla Name Only) */
         .couple-node-card {
             background: linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.95));
             border: 2px solid #00ffff;
-            border-radius: 16px;
-            padding: 12px 18px;
+            border-radius: 12px;
+            padding: 10px 18px;
             display: flex;
             align-items: center;
-            gap: 15px;
-            box-shadow: 0 8px 25px rgba(0, 255, 255, 0.2);
+            gap: 12px;
+            box-shadow: 0 6px 20px rgba(0, 255, 255, 0.2);
             position: relative;
             z-index: 2;
             transition: all 0.25s ease;
         }
 
         .couple-node-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 30px rgba(0, 255, 255, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 255, 255, 0.4);
             border-color: #ffffff;
         }
 
         .couple-node-card.root-card {
             border-color: #ffda79;
-            box-shadow: 0 0 25px rgba(255, 218, 121, 0.4);
+            box-shadow: 0 0 20px rgba(255, 218, 121, 0.4);
         }
 
         .person-unit {
@@ -469,8 +459,8 @@
 
         .spouse-divider {
             width: 1px;
-            height: 35px;
-            background: linear-gradient(to bottom, transparent, rgba(0, 255, 255, 0.5), transparent);
+            height: 22px;
+            background: rgba(0, 255, 255, 0.4);
         }
 
         .card-2d-name {
@@ -478,21 +468,7 @@
             font-size: 14px;
             color: #f8fafc;
             transition: color 0.2s;
-        }
-
-        .card-2d-nick {
-            font-size: 11px;
-            color: #38bdf8;
-            margin-top: 2px;
-        }
-
-        .card-role-tag {
-            font-size: 9px;
-            padding: 2px 6px;
-            border-radius: 4px;
-            background: rgba(255, 255, 255, 0.1);
-            color: #cbd5e1;
-            margin-top: 4px;
+            white-space: nowrap;
         }
 
         #tree-svg-canvas {
@@ -505,7 +481,7 @@
             z-index: 1;
         }
 
-        /* Modal Lists & Lightbox */
+        /* Modals & Lightbox */
         #list-modal {
             display: none;
             position: fixed;
@@ -704,7 +680,7 @@
             border: 2px solid #00ffff;
         }
 
-        /* ------------------ ADVANCED FIT-TO-PAGE PRINT STYLES ------------------ */
+        /* ------------------ PERFECT FIT-TO-PAGE PRINT STYLES ------------------ */
         @page {
             size: A4 landscape;
             margin: 0;
@@ -732,7 +708,7 @@
                 height: 100vh !important;
                 background: white !important;
                 box-sizing: border-box !important;
-                padding: 15px !important;
+                padding: 10px !important;
                 overflow: hidden !important;
             }
 
@@ -748,25 +724,23 @@
 
             .tree-2d-wrapper {
                 transform-origin: center center !important;
-                gap: 25px !important;
+                gap: 40px !important;
             }
 
             .couple-node-card {
-                border: 1.5px solid #1e293b !important;
+                border: 1.5px solid #000 !important;
                 background: #ffffff !important;
                 box-shadow: none !important;
                 color: black !important;
-                padding: 6px 12px !important;
+                padding: 6px 14px !important;
             }
 
-            .card-2d-name { color: #0f172a !important; font-size: 12px !important; }
-            .card-2d-nick { color: #475569 !important; font-size: 10px !important; }
-            .card-role-tag { background: #e2e8f0 !important; color: #334155 !important; font-size: 8px !important; }
-            .gen-2d-label { color: #0f172a !important; border-color: #64748b !important; background: #f1f5f9 !important; font-size: 11px !important; padding: 3px 12px !important; margin-bottom: 12px !important; }
+            .card-2d-name { color: #000 !important; font-size: 12px !important; }
+            .spouse-divider { background: #666 !important; }
 
             svg path {
                 stroke: #0284c7 !important;
-                stroke-width: 1.5px !important;
+                stroke-width: 2px !important;
             }
         }
 
@@ -876,8 +850,9 @@
         </div>
 
         <div id="tree-viewport">
-            <svg id="tree-svg-canvas"></svg>
-            <div id="tree-2d-view" class="tree-2d-wrapper"></div>
+            <div id="tree-2d-view" class="tree-2d-wrapper">
+                <svg id="tree-svg-canvas"></svg>
+            </div>
         </div>
     </div>
 
@@ -1402,7 +1377,7 @@
         animate();
         initializeStatsAndOptions();
 
-        // ZOOM & FIT-TO-PAGE PRINT LOGIC
+        // ACCURATE SVG LINE CONNECTIONS & PRINT LOGIC
         let currentZoom = 1;
         function zoomTree(delta) {
             currentZoom = Math.max(0.4, Math.min(2.2, currentZoom + delta));
@@ -1419,12 +1394,11 @@
         function printTree() {
             const wrapper = document.getElementById('tree-2d-view');
             
-            // Auto calculate scale to fit exact single print page
             const containerWidth = wrapper.offsetWidth;
             const containerHeight = wrapper.offsetHeight;
 
-            const printPageWidth = 1050; 
-            const printPageHeight = 700;
+            const printPageWidth = 1000; 
+            const printPageHeight = 650;
 
             const scaleX = printPageWidth / containerWidth;
             const scaleY = printPageHeight / containerHeight;
@@ -1435,7 +1409,6 @@
 
             setTimeout(() => {
                 window.print();
-                // Restore user view scale after printing
                 wrapper.style.transform = `scale(${currentZoom})`;
                 drawSvgConnections();
             }, 300);
@@ -1443,11 +1416,11 @@
 
         function drawSvgConnections() {
             const svg = document.getElementById('tree-svg-canvas');
-            const overlay = document.getElementById('tree-2d-overlay');
+            const wrapper = document.getElementById('tree-2d-view');
             svg.innerHTML = '';
             
-            svg.setAttribute('width', overlay.scrollWidth);
-            svg.setAttribute('height', overlay.scrollHeight);
+            svg.setAttribute('width', wrapper.scrollWidth);
+            svg.setAttribute('height', wrapper.scrollHeight);
 
             const cards = document.querySelectorAll('.couple-node-card');
             cards.forEach(parentCard => {
@@ -1455,26 +1428,22 @@
                 const childrenCards = document.querySelectorAll(`.couple-node-card[data-parent-id="${parentId}"]`);
 
                 if (childrenCards.length > 0) {
-                    const pRect = parentCard.getBoundingClientRect();
-                    const oRect = overlay.getBoundingClientRect();
-
-                    const startX = pRect.left + pRect.width / 2 - oRect.left + overlay.scrollLeft;
-                    const startY = pRect.top + pRect.height - oRect.top + overlay.scrollTop;
+                    const parentX = parentCard.offsetLeft + parentCard.offsetWidth / 2;
+                    const parentY = parentCard.offsetTop + parentCard.offsetHeight;
 
                     childrenCards.forEach(childCard => {
-                        const cRect = childCard.getBoundingClientRect();
-                        const endX = cRect.left + cRect.width / 2 - oRect.left + overlay.scrollLeft;
-                        const endY = cRect.top - oRect.top + overlay.scrollTop;
+                        const childX = childCard.offsetLeft + childCard.offsetWidth / 2;
+                        const childY = childCard.offsetTop;
 
-                        const midY = startY + (endY - startY) / 2;
+                        const midY = parentY + (childY - parentY) / 2;
 
                         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                        const d = `M ${startX} ${startY} C ${startX} ${midY}, ${endX} ${midY}, ${endX} ${endY}`;
+                        const d = `M ${parentX} ${parentY} C ${parentX} ${midY}, ${childX} ${midY}, ${childX} ${childY}`;
                         path.setAttribute('d', d);
                         path.setAttribute('stroke', '#00ffff');
                         path.setAttribute('stroke-width', '2');
                         path.setAttribute('fill', 'none');
-                        path.setAttribute('opacity', '0.7');
+                        path.setAttribute('opacity', '0.8');
                         svg.appendChild(path);
                     });
                 }
@@ -1518,18 +1487,16 @@
             }
 
             overlay2D.style.display = 'block';
+
+            // Clear previous cards, keeping SVG canvas
+            const existingCanvas = document.getElementById('tree-svg-canvas');
             container2D.innerHTML = '';
+            container2D.appendChild(existingCanvas);
 
             const sortedGens = Object.keys(relativeGenMap).sort((a,b) => a - b);
             sortedGens.forEach(genLevel => {
                 const block = document.createElement('div');
                 block.className = 'gen-2d-block';
-
-                const labelText = genLevel == 0 
-                    ? `মূল ব্যক্তি: ${rootPerson.bnName} (জেনারেশন 0)` 
-                    : `${rootPerson.bnName}-এর সাপেক্ষে জেনারেশন +${genLevel}`;
-                
-                block.innerHTML = `<div class="gen-2d-label">${labelText}</div>`;
 
                 const row = document.createElement('div');
                 row.className = 'nodes-2d-row';
@@ -1543,8 +1510,6 @@
                     let cardHtml = `
                         <div class="person-unit" onclick="focusByUid('${p.uid}')">
                             <div class="card-2d-name">${p.bnName}</div>
-                            <div class="card-2d-nick">(${p.nick})</div>
-                            <div class="card-role-tag">${p.gender === 'Female' ? 'কন্যা/মাতা' : 'মূল/পুত্র'}</div>
                         </div>
                     `;
 
@@ -1555,8 +1520,6 @@
                                 <div class="spouse-divider"></div>
                                 <div class="person-unit" onclick="focusByUid('${spouseObj.uid}')">
                                     <div class="card-2d-name">${spouseObj.bnName}</div>
-                                    <div class="card-2d-nick">(${spouseObj.nick})</div>
-                                    <div class="card-role-tag">দাম্পত্য সঙ্গী</div>
                                 </div>
                             `;
                         }
