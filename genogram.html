@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Marbles & Clean 2D Bloodline Tree</title>
+    <title>3D Marbles & Perfect 2D Bloodline Tree</title>
     <style>
         body {
             margin: 0;
@@ -386,7 +386,7 @@
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            padding: 80px 40px;
+            padding: 60px 40px;
             box-sizing: border-box;
         }
 
@@ -401,9 +401,9 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 60px;
+            gap: 75px;
             min-width: max-content;
-            padding: 20px;
+            padding: 40px;
         }
 
         .gen-2d-block {
@@ -416,16 +416,17 @@
 
         .nodes-2d-row {
             display: flex;
-            gap: 40px;
+            gap: 45px;
             justify-content: center;
             position: relative;
         }
 
+        /* Couple Node Card Structure */
         .couple-node-card {
             background: linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.95));
             border: 2px solid #00ffff;
             border-radius: 12px;
-            padding: 10px 18px;
+            padding: 8px 16px;
             display: flex;
             align-items: center;
             gap: 12px;
@@ -448,8 +449,8 @@
 
         .person-unit {
             display: flex;
-            flex-direction: column;
             align-items: center;
+            gap: 6px;
             cursor: pointer;
         }
 
@@ -457,10 +458,18 @@
             color: #00ffff;
         }
 
+        .spouse-unit {
+            color: #ff79c6;
+        }
+
         .spouse-divider {
-            width: 1px;
-            height: 22px;
-            background: rgba(0, 255, 255, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ff79c6;
+            font-size: 13px;
+            font-weight: bold;
+            padding: 0 2px;
         }
 
         .card-2d-name {
@@ -469,6 +478,10 @@
             color: #f8fafc;
             transition: color 0.2s;
             white-space: nowrap;
+        }
+
+        .person-icon {
+            font-size: 12px;
         }
 
         #tree-svg-canvas {
@@ -724,7 +737,7 @@
 
             .tree-2d-wrapper {
                 transform-origin: center center !important;
-                gap: 40px !important;
+                gap: 50px !important;
             }
 
             .couple-node-card {
@@ -736,7 +749,7 @@
             }
 
             .card-2d-name { color: #000 !important; font-size: 12px !important; }
-            .spouse-divider { background: #666 !important; }
+            .spouse-divider { color: #666 !important; }
 
             svg path {
                 stroke: #0284c7 !important;
@@ -1377,7 +1390,7 @@
         animate();
         initializeStatsAndOptions();
 
-        // ABSOLUTE DOM POSITION CALCULATOR FOR SVG THREADS
+        // ACCURATE RELATIVE DOM SVG DRAWING ALGORITHM
         let currentZoom = 1;
         function zoomTree(delta) {
             currentZoom = Math.max(0.4, Math.min(2.2, currentZoom + delta));
@@ -1421,13 +1434,11 @@
             if (!svg || !wrapper) return;
             svg.innerHTML = '';
             
-            // Adjust SVG dimensions matching relative wrapper size
-            const wWidth = wrapper.offsetWidth;
-            const wHeight = wrapper.offsetHeight;
+            // Sync SVG dimensions to scroll container size
+            const wWidth = wrapper.scrollWidth || wrapper.offsetWidth;
+            const wHeight = wrapper.scrollHeight || wrapper.offsetHeight;
             svg.setAttribute('width', wWidth);
             svg.setAttribute('height', wHeight);
-
-            const wrapperRect = wrapper.getBoundingClientRect();
 
             const cards = document.querySelectorAll('.couple-node-card');
             cards.forEach(parentCard => {
@@ -1435,17 +1446,13 @@
                 const childrenCards = document.querySelectorAll(`.couple-node-card[data-parent-id="${parentId}"]`);
 
                 if (childrenCards.length > 0) {
-                    const pRect = parentCard.getBoundingClientRect();
-
-                    // Relative scale independent matrix calculations
-                    const startX = (pRect.left + pRect.width / 2 - wrapperRect.left) / currentZoom;
-                    const startY = (pRect.bottom - wrapperRect.top) / currentZoom;
+                    // Calculate exact offset positions relative to tree-2d-view wrapper
+                    const startX = parentCard.offsetLeft + (parentCard.offsetWidth / 2);
+                    const startY = parentCard.offsetTop + parentCard.offsetHeight;
 
                     childrenCards.forEach(childCard => {
-                        const cRect = childCard.getBoundingClientRect();
-
-                        const endX = (cRect.left + cRect.width / 2 - wrapperRect.left) / currentZoom;
-                        const endY = (cRect.top - wrapperRect.top) / currentZoom;
+                        const endX = childCard.offsetLeft + (childCard.offsetWidth / 2);
+                        const endY = childCard.offsetTop;
 
                         const midY = startY + (endY - startY) / 2;
 
@@ -1453,7 +1460,7 @@
                         const d = `M ${startX} ${startY} C ${startX} ${midY}, ${endX} ${midY}, ${endX} ${endY}`;
                         path.setAttribute('d', d);
                         path.setAttribute('stroke', '#00ffff');
-                        path.setAttribute('stroke-width', '2');
+                        path.setAttribute('stroke-width', '2.5');
                         path.setAttribute('fill', 'none');
                         path.setAttribute('opacity', '0.85');
                         svg.appendChild(path);
@@ -1500,7 +1507,7 @@
 
             overlay2D.style.display = 'block';
 
-            // Clean DOM structure
+            // Reset DOM structure
             container2D.innerHTML = '<svg id="tree-svg-canvas"></svg>';
 
             const sortedGens = Object.keys(relativeGenMap).sort((a,b) => a - b);
@@ -1519,7 +1526,8 @@
 
                     let cardHtml = `
                         <div class="person-unit" onclick="focusByUid('${p.uid}')">
-                            <div class="card-2d-name">${p.bnName}</div>
+                            <span class="person-icon">👤</span>
+                            <span class="card-2d-name">${p.bnName}</span>
                         </div>
                     `;
 
@@ -1527,9 +1535,9 @@
                         const spouseObj = membersData.find(m => m.uid === p.spouse);
                         if (spouseObj) {
                             cardHtml += `
-                                <div class="spouse-divider"></div>
-                                <div class="person-unit" onclick="focusByUid('${spouseObj.uid}')">
-                                    <div class="card-2d-name">${spouseObj.bnName}</div>
+                                <div class="spouse-divider">💍</div>
+                                <div class="person-unit spouse-unit" onclick="focusByUid('${spouseObj.uid}')">
+                                    <span class="card-2d-name">${spouseObj.bnName}</span>
                                 </div>
                             `;
                         }
