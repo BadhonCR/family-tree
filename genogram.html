@@ -308,7 +308,7 @@
             line-height: 1.6;
         }
 
-        /* ------------------ ACCURATE 2D BLOODLINE OVERLAY ------------------ */
+        /* ------------------ PERFECT 2D BLOODLINE OVERLAY ------------------ */
         #tree-2d-overlay {
             display: none;
             position: fixed;
@@ -401,7 +401,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 75px;
+            gap: 70px;
             min-width: max-content;
             padding: 40px;
         }
@@ -416,7 +416,7 @@
 
         .nodes-2d-row {
             display: flex;
-            gap: 45px;
+            gap: 40px;
             justify-content: center;
             position: relative;
         }
@@ -1390,18 +1390,18 @@
         animate();
         initializeStatsAndOptions();
 
-        // ACCURATE RELATIVE DOM SVG DRAWING ALGORITHM
+        // FIXED SVG CONNECTIONS ALGORITHM USING ABSOLUTE SCREEN COORDINATES
         let currentZoom = 1;
         function zoomTree(delta) {
             currentZoom = Math.max(0.4, Math.min(2.2, currentZoom + delta));
             document.getElementById('tree-2d-view').style.transform = `scale(${currentZoom})`;
-            setTimeout(drawSvgConnections, 160);
+            setTimeout(drawSvgConnections, 100);
         }
 
         function resetZoom() {
             currentZoom = 1;
             document.getElementById('tree-2d-view').style.transform = `scale(1)`;
-            setTimeout(drawSvgConnections, 160);
+            setTimeout(drawSvgConnections, 100);
         }
 
         function printTree() {
@@ -1434,11 +1434,10 @@
             if (!svg || !wrapper) return;
             svg.innerHTML = '';
             
-            // Sync SVG dimensions to scroll container size
-            const wWidth = wrapper.scrollWidth || wrapper.offsetWidth;
-            const wHeight = wrapper.scrollHeight || wrapper.offsetHeight;
-            svg.setAttribute('width', wWidth);
-            svg.setAttribute('height', wHeight);
+            const wRect = wrapper.getBoundingClientRect();
+            
+            svg.setAttribute('width', wrapper.scrollWidth || wrapper.offsetWidth);
+            svg.setAttribute('height', wrapper.scrollHeight || wrapper.offsetHeight);
 
             const cards = document.querySelectorAll('.couple-node-card');
             cards.forEach(parentCard => {
@@ -1446,13 +1445,17 @@
                 const childrenCards = document.querySelectorAll(`.couple-node-card[data-parent-id="${parentId}"]`);
 
                 if (childrenCards.length > 0) {
-                    // Calculate exact offset positions relative to tree-2d-view wrapper
-                    const startX = parentCard.offsetLeft + (parentCard.offsetWidth / 2);
-                    const startY = parentCard.offsetTop + parentCard.offsetHeight;
+                    const pRect = parentCard.getBoundingClientRect();
+                    
+                    // Exact calculation compensating for currentZoom CSS scale
+                    const startX = (pRect.left + pRect.width / 2 - wRect.left) / currentZoom;
+                    const startY = (pRect.bottom - wRect.top) / currentZoom;
 
                     childrenCards.forEach(childCard => {
-                        const endX = childCard.offsetLeft + (childCard.offsetWidth / 2);
-                        const endY = childCard.offsetTop;
+                        const cRect = childCard.getBoundingClientRect();
+                        
+                        const endX = (cRect.left + cRect.width / 2 - wRect.left) / currentZoom;
+                        const endY = (cRect.top - wRect.top) / currentZoom;
 
                         const midY = startY + (endY - startY) / 2;
 
@@ -1462,12 +1465,15 @@
                         path.setAttribute('stroke', '#00ffff');
                         path.setAttribute('stroke-width', '2.5');
                         path.setAttribute('fill', 'none');
-                        path.setAttribute('opacity', '0.85');
+                        path.setAttribute('opacity', '0.9');
                         svg.appendChild(path);
                     });
                 }
             });
         }
+
+        // Add event listener to redraw SVG paths when scrolling the viewport
+        document.getElementById('tree-viewport').addEventListener('scroll', drawSvgConnections);
 
         function calculateBloodline() {
             const rootUid = document.getElementById('bloodline-person').value;
@@ -1507,7 +1513,7 @@
 
             overlay2D.style.display = 'block';
 
-            // Reset DOM structure
+            // Clean DOM element
             container2D.innerHTML = '<svg id="tree-svg-canvas"></svg>';
 
             const sortedGens = Object.keys(relativeGenMap).sort((a,b) => a - b);
@@ -1551,7 +1557,7 @@
                 container2D.appendChild(block);
             });
 
-            setTimeout(drawSvgConnections, 120);
+            setTimeout(drawSvgConnections, 150);
 
             const totalDescendants = visited.size - 1;
             resDiv.innerHTML = `<strong style="color:#00ffff;">${rootPerson.bnName}</strong>-এর সাপেক্ষে পরবর্তী মোট <b>${totalDescendants} জন</b> বংশধর পাওয়া গেছে।`;
