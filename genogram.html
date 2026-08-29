@@ -308,7 +308,7 @@
             line-height: 1.6;
         }
 
-        /* ------------------ CLEAN 2D BLOODLINE OVERLAY ------------------ */
+        /* ------------------ ACCURATE 2D BLOODLINE OVERLAY ------------------ */
         #tree-2d-overlay {
             display: none;
             position: fixed;
@@ -403,6 +403,7 @@
             align-items: center;
             gap: 60px;
             min-width: max-content;
+            padding: 20px;
         }
 
         .gen-2d-block {
@@ -420,7 +421,6 @@
             position: relative;
         }
 
-        /* Couple Node Card (Clean Look - Bangla Name Only) */
         .couple-node-card {
             background: linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.95));
             border: 2px solid #00ffff;
@@ -1377,7 +1377,7 @@
         animate();
         initializeStatsAndOptions();
 
-        // ACCURATE SVG LINE CONNECTIONS & PRINT LOGIC
+        // ABSOLUTE DOM POSITION CALCULATOR FOR SVG THREADS
         let currentZoom = 1;
         function zoomTree(delta) {
             currentZoom = Math.max(0.4, Math.min(2.2, currentZoom + delta));
@@ -1417,10 +1417,17 @@
         function drawSvgConnections() {
             const svg = document.getElementById('tree-svg-canvas');
             const wrapper = document.getElementById('tree-2d-view');
+            
+            if (!svg || !wrapper) return;
             svg.innerHTML = '';
             
-            svg.setAttribute('width', wrapper.scrollWidth);
-            svg.setAttribute('height', wrapper.scrollHeight);
+            // Adjust SVG dimensions matching relative wrapper size
+            const wWidth = wrapper.offsetWidth;
+            const wHeight = wrapper.offsetHeight;
+            svg.setAttribute('width', wWidth);
+            svg.setAttribute('height', wHeight);
+
+            const wrapperRect = wrapper.getBoundingClientRect();
 
             const cards = document.querySelectorAll('.couple-node-card');
             cards.forEach(parentCard => {
@@ -1428,22 +1435,27 @@
                 const childrenCards = document.querySelectorAll(`.couple-node-card[data-parent-id="${parentId}"]`);
 
                 if (childrenCards.length > 0) {
-                    const parentX = parentCard.offsetLeft + parentCard.offsetWidth / 2;
-                    const parentY = parentCard.offsetTop + parentCard.offsetHeight;
+                    const pRect = parentCard.getBoundingClientRect();
+
+                    // Relative scale independent matrix calculations
+                    const startX = (pRect.left + pRect.width / 2 - wrapperRect.left) / currentZoom;
+                    const startY = (pRect.bottom - wrapperRect.top) / currentZoom;
 
                     childrenCards.forEach(childCard => {
-                        const childX = childCard.offsetLeft + childCard.offsetWidth / 2;
-                        const childY = childCard.offsetTop;
+                        const cRect = childCard.getBoundingClientRect();
 
-                        const midY = parentY + (childY - parentY) / 2;
+                        const endX = (cRect.left + cRect.width / 2 - wrapperRect.left) / currentZoom;
+                        const endY = (cRect.top - wrapperRect.top) / currentZoom;
+
+                        const midY = startY + (endY - startY) / 2;
 
                         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                        const d = `M ${parentX} ${parentY} C ${parentX} ${midY}, ${childX} ${midY}, ${childX} ${childY}`;
+                        const d = `M ${startX} ${startY} C ${startX} ${midY}, ${endX} ${midY}, ${endX} ${endY}`;
                         path.setAttribute('d', d);
                         path.setAttribute('stroke', '#00ffff');
                         path.setAttribute('stroke-width', '2');
                         path.setAttribute('fill', 'none');
-                        path.setAttribute('opacity', '0.8');
+                        path.setAttribute('opacity', '0.85');
                         svg.appendChild(path);
                     });
                 }
@@ -1458,7 +1470,7 @@
 
             if (!rootUid) {
                 overlay2D.style.display = 'none';
-                resDiv.innerHTML = 'ব্যক্তি নির্বাচন করলে তার ২ডি জেনারেশন ট্রি স্ক্রিনে দেখা যাবে।';
+                resDiv.innerHTML = 'ব্যক্তি নির্বাচন করলে তার ২ডি বংশবৃক্ষ স্ক্রিনে ভেসে উঠবে।';
                 return;
             }
 
@@ -1488,10 +1500,8 @@
 
             overlay2D.style.display = 'block';
 
-            // Clear previous cards, keeping SVG canvas
-            const existingCanvas = document.getElementById('tree-svg-canvas');
-            container2D.innerHTML = '';
-            container2D.appendChild(existingCanvas);
+            // Clean DOM structure
+            container2D.innerHTML = '<svg id="tree-svg-canvas"></svg>';
 
             const sortedGens = Object.keys(relativeGenMap).sort((a,b) => a - b);
             sortedGens.forEach(genLevel => {
@@ -1533,7 +1543,7 @@
                 container2D.appendChild(block);
             });
 
-            setTimeout(drawSvgConnections, 100);
+            setTimeout(drawSvgConnections, 120);
 
             const totalDescendants = visited.size - 1;
             resDiv.innerHTML = `<strong style="color:#00ffff;">${rootPerson.bnName}</strong>-এর সাপেক্ষে পরবর্তী মোট <b>${totalDescendants} জন</b> বংশধর পাওয়া গেছে।`;
