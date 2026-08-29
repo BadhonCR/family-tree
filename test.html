@@ -1037,7 +1037,7 @@
             return sprite;
         }
 
-        // ALL MEMBERS DATA (UPDATED WITH NEW MEMBERS)
+        // ALL MEMBERS DATA (UPDATED RELATIONS FOR FT-149 AND FT-138/139/140)
         const membersData = [
             // Ancestors / Root Generation
             { uid: "FT-120", bnName: "রাজমোহন", enName: "Rajmohon", nick: "রাজমোহন", gender: "Male", color: 0x0055ff, spouse: null, father: null, mother: null, children: ["FT-122", "FT-124", "FT-126", "FT-128", "FT-130", "FT-132"], description: "" },
@@ -1074,7 +1074,8 @@
             { uid: "FT-134", bnName: "কালিপদ", enName: "Kalipada", nick: "কালিপদ", gender: "Male", color: 0x0055ff, spouse: null, father: "FT-122", mother: null, children: [], description: "" },
             { uid: "FT-136", bnName: "খুকি", enName: "Khuki", nick: "খুকি", gender: "Female", color: 0xff1493, spouse: null, father: "FT-122", mother: null, children: [], description: "তার সম্পূর্ণ পরিবার ভারতে অবস্থান করছে।" },
             
-            { uid: "FT-138", bnName: "বিজয় চন্দ্র রায়", enName: "Bijoy Chandra Roy", nick: "বিজয়", gender: "Male", color: 0x0055ff, spouse: "FT-140", father: "FT-124", mother: null, children: ["FT-141"], description: "" },
+            // FT-138 updated with both wives: FT-139 and FT-140
+            { uid: "FT-138", bnName: "বিজয় চন্দ্র রায়", enName: "Bijoy Chandra Roy", nick: "বিজয়", gender: "Male", color: 0x0055ff, spouse: ["FT-139", "FT-140"], father: "FT-124", mother: null, children: ["FT-141"], description: "" },
             { uid: "FT-139", bnName: "সিন্দু রানী রায়", enName: "Shindu Rani Roy", nick: "সিন্দু", gender: "Female", color: 0xff1493, spouse: "FT-138", father: null, mother: null, children: [], description: "১ম স্ত্রী" },
             { uid: "FT-140", bnName: "মালতী রানী রায়", enName: "Malati Rani Roy", nick: "মালতী", gender: "Female", color: 0xff1493, spouse: "FT-138", father: null, mother: null, children: ["FT-141"], description: "২য় স্ত্রী" },
 
@@ -1093,11 +1094,11 @@
             { uid: "FT-147", bnName: "রত্না রাণী রায়", enName: "Ratna Rani Roy", nick: "রত্না", gender: "Female", color: 0xff1493, spouse: "FT-150", father: "FT-145", mother: "FT-146", children: ["FT-151", "FT-152"], description: "" },
             { uid: "FT-150", bnName: "রতন চন্দ্র রায়", enName: "Raton Chandra Roy", nick: "রতন", gender: "Male", color: 0x0055ff, spouse: "FT-147", father: null, mother: null, children: ["FT-151", "FT-152"], description: "" },
             
-            // FT-148 details updated with FT-153 as spouse & children FT-154, FT-155
             { uid: "FT-148", bnName: "স্বপ্না রাণী রায়", enName: "Sopna Rani Roy", nick: "স্বপ্না", gender: "Female", color: 0xff1493, spouse: "FT-153", father: "FT-145", mother: "FT-146", children: ["FT-154", "FT-155"], description: "" },
             { uid: "FT-153", bnName: "সুরেশ চন্দ্র রায়", enName: "Suresh Chandra Roy", nick: "সুরেশ", gender: "Male", color: 0x0055ff, spouse: "FT-148", father: null, mother: null, children: ["FT-154", "FT-155"], description: "" },
             
-            { uid: "FT-149", bnName: "মৈত্রী রাণী রায়", enName: "Maitri Rani Roy", nick: "মৈত্রী", gender: "Female", color: 0xff1493, spouse: null, father: "FT-145", mother: "FT-146", children: [], description: "" },
+            // FT-149 updated with child FT-157
+            { uid: "FT-149", bnName: "মৈত্রী রাণী রায়", enName: "Maitri Rani Roy", nick: "মৈত্রী", gender: "Female", color: 0xff1493, spouse: null, father: "FT-145", mother: "FT-146", children: ["FT-157"], description: "" },
 
             // Gen 4
             { uid: "FT-141", bnName: "একান্ত চন্দ্র রায়", enName: "Akanto Chandra Roy", nick: "একান্ত", gender: "Male", color: 0x00ccff, spouse: null, father: "FT-138", mother: "FT-140", children: [], description: "" },
@@ -1110,7 +1111,8 @@
             { uid: "FT-154", bnName: "শুরঞ্জনা রানী রায়", enName: "Suranjana Rani Roy", nick: "শুরঞ্জনা", gender: "Female", color: 0xff1493, spouse: null, father: "FT-153", mother: "FT-148", children: [], description: "" },
             { uid: "FT-155", bnName: "স্বপ্নার ছেলে", enName: "Son of Sapna", nick: "স্বপ্নার ছেলে", gender: "Male", color: 0x00ccff, spouse: null, father: "FT-153", mother: "FT-148", children: [], description: "" },
 
-            { uid: "FT-157", bnName: "অর্ঘ রায়", enName: "Argho Roy", nick: "অর্ঘ", gender: "Male", color: 0x00ccff, spouse: null, father: null, mother: null, children: [], description: "" },
+            // FT-157 updated with mother FT-149
+            { uid: "FT-157", bnName: "অর্ঘ রায়", enName: "Argho Roy", nick: "অর্ঘ", gender: "Male", color: 0x00ccff, spouse: null, father: null, mother: "FT-149", children: [], description: "" },
 
             { uid: "FT-018", bnName: "জয়ন্তী রাণী রায়", enName: "Joyonti Rani Roy", nick: "জয়ন্তী", gender: "Female", color: 0xff1493, spouse: null, father: "FT-016", mother: "FT-017", children: [], description: "" },
             { uid: "FT-019", bnName: "বাসন্তী রাণী রায়", enName: "Basonti Rani Roy", nick: "বাসন্তী", gender: "Female", color: 0xff1493, spouse: null, father: "FT-016", mother: "FT-017", children: [], description: "" },
@@ -1211,7 +1213,7 @@
             { uid: "FT-008", bnName: "ওম চন্দ্র রায়", enName: "Om Chandra Roy", nick: "ওম", gender: "Male", color: 0x00ccff, spouse: null, father: "FT-006", mother: "FT-007", children: [], description: "" },
             { uid: "FT-009", bnName: "বেদ চন্দ্র রায়", enName: "Veda Chandra Roy", nick: "বেদ", gender: "Male", color: 0x3366ff, spouse: null, father: "FT-006", mother: "FT-007", children: [], description: "" },
             { uid: "FT-058", bnName: "কৃত্তিকা ঘোষ তনয়া", enName: "Krittika Ghosh Tanoya", nick: "কৃত্তিকা", gender: "Female", color: 0xff69b4, spouse: null, father: "FT-057", mother: "FT-056", children: [], description: "" },
-            { uid: "FT-077", bnName: "দিতিপ্রিয়া রায় শুদ্ধি", enName: "Ditipriya Roy Shuddhi", nick: "দিতিপ্রিয়া", gender: "Female", color: 0xff69b4, spouse: null, father: "FT-075", mother: "FT-076", children: [], description: "" },
+            { uid: "FT-077", bnName: "দিতিপ্রিয়া রায় (শুদ্ধি)", enName: "Ditipriya Roy", nick: "দিতিপ্রিয়া", gender: "Female", color: 0xff69b4, spouse: null, father: "FT-075", mother: "FT-076", children: [], description: "" },
             { uid: "FT-090", bnName: "অভিমুন্য রায় অভি", enName: "Abhimanyu Roy Avi", nick: "অভিমুন্য", gender: "Male", color: 0x00ccff, spouse: null, father: "FT-089", mother: "FT-088", children: [], description: "" }
         ];
 
@@ -1227,7 +1229,10 @@
                 if (!m) return 1;
 
                 if (m.father) return getPaternalGen(m.father, new Set(visited)) + 1;
-                if (m.spouse && memberDict[m.spouse] && memberDict[m.spouse].father) return getPaternalGen(m.spouse, new Set(visited));
+                if (m.spouse) {
+                    const spouseUid = Array.isArray(m.spouse) ? m.spouse[0] : m.spouse;
+                    if (memberDict[spouseUid] && memberDict[spouseUid].father) return getPaternalGen(spouseUid, new Set(visited));
+                }
                 return 1;
             }
 
@@ -1238,7 +1243,10 @@
                 if (!m) return 1;
 
                 if (m.mother) return getMaternalGen(m.mother, new Set(visited)) + 1;
-                if (m.spouse && memberDict[m.spouse] && memberDict[m.spouse].mother) return getMaternalGen(m.spouse, new Set(visited));
+                if (m.spouse) {
+                    const spouseUid = Array.isArray(m.spouse) ? m.spouse[0] : m.spouse;
+                    if (memberDict[spouseUid] && memberDict[spouseUid].mother) return getMaternalGen(spouseUid, new Set(visited));
+                }
                 return 1;
             }
 
@@ -1271,8 +1279,11 @@
                 else if (m.gender.includes('Female') || m.gender.includes('মহিলা') || m.gender === 'F') females++;
 
                 if (m.spouse) {
-                    const pair = [m.uid, m.spouse].sort().join('-');
-                    marriedCouples.add(pair);
+                    const spouses = Array.isArray(m.spouse) ? m.spouse : [m.spouse];
+                    spouses.forEach(sUid => {
+                        const pair = [m.uid, sUid].sort().join('-');
+                        marriedCouples.add(pair);
+                    });
                 }
 
                 let gen = m.patrilinealGen;
@@ -1327,8 +1338,11 @@
         // DYNAMIC 3D CONNECTIONS GENERATOR BASED ON DATA
         const connectionsData = [];
         membersData.forEach(m => {
-            if (m.spouse && marbleMap[m.spouse]) {
-                connectionsData.push([m.uid, m.spouse]);
+            if (m.spouse) {
+                const spouses = Array.isArray(m.spouse) ? m.spouse : [m.spouse];
+                spouses.forEach(sUid => {
+                    if (marbleMap[sUid]) connectionsData.push([m.uid, sUid]);
+                });
             }
             if (m.father && marbleMap[m.father]) {
                 connectionsData.push([m.uid, m.father]);
@@ -1538,15 +1552,18 @@
                     `;
 
                     if (p.spouse) {
-                        const spouseObj = membersData.find(m => m.uid === p.spouse);
-                        if (spouseObj) {
-                            cardHtml += `
-                                <div class="spouse-divider">💍</div>
-                                <div class="person-unit spouse-unit" onclick="focusByUid('${spouseObj.uid}')">
-                                    <span class="card-2d-name">${spouseObj.bnName}</span>
-                                </div>
-                            `;
-                        }
+                        const spouses = Array.isArray(p.spouse) ? p.spouse : [p.spouse];
+                        spouses.forEach(sUid => {
+                            const spouseObj = membersData.find(m => m.uid === sUid);
+                            if (spouseObj) {
+                                cardHtml += `
+                                    <div class="spouse-divider">💍</div>
+                                    <div class="person-unit spouse-unit" onclick="focusByUid('${spouseObj.uid}')">
+                                        <span class="card-2d-name">${spouseObj.bnName}</span>
+                                    </div>
+                                `;
+                            }
+                        });
                     }
 
                     coupleCard.innerHTML = cardHtml;
@@ -1605,20 +1622,25 @@
 
             const addedPairs = new Set();
             membersData.forEach(m => {
-                if (m.spouse && marbleMap[m.spouse]) {
-                    const pairKey = [m.uid, m.spouse].sort().join('-');
-                    if (!addedPairs.has(pairKey)) {
-                        addedPairs.add(pairKey);
-                        const spouseObj = marbleMap[m.spouse].userData;
-                        const div = document.createElement('div');
-                        div.className = 'modal-member-card';
-                        div.innerHTML = `<strong>${m.bnName}</strong> & <strong>${spouseObj.bnName}</strong><br><small style="color:#00ffff">${m.uid} & ${spouseObj.uid}</small>`;
-                        div.onclick = () => {
-                            focusByUid(m.uid);
-                            closeListModal();
-                        };
-                        body.appendChild(div);
-                    }
+                if (m.spouse) {
+                    const spouses = Array.isArray(m.spouse) ? m.spouse : [m.spouse];
+                    spouses.forEach(sUid => {
+                        if (marbleMap[sUid]) {
+                            const pairKey = [m.uid, sUid].sort().join('-');
+                            if (!addedPairs.has(pairKey)) {
+                                addedPairs.add(pairKey);
+                                const spouseObj = marbleMap[sUid].userData;
+                                const div = document.createElement('div');
+                                div.className = 'modal-member-card';
+                                div.innerHTML = `<strong>${m.bnName}</strong> & <strong>${spouseObj.bnName}</strong><br><small style="color:#00ffff">${m.uid} & ${spouseObj.uid}</small>`;
+                                div.onclick = () => {
+                                    focusByUid(m.uid);
+                                    closeListModal();
+                                };
+                                body.appendChild(div);
+                            }
+                        }
+                    });
                 }
             });
 
@@ -1648,7 +1670,12 @@
             membersData.forEach(m => { graph[m.uid] = []; });
 
             membersData.forEach(m => {
-                if (m.spouse) graph[m.uid].push({ target: m.spouse, relation: "স্বামী/স্ত্রী" });
+                if (m.spouse) {
+                    const spouses = Array.isArray(m.spouse) ? m.spouse : [m.spouse];
+                    spouses.forEach(sUid => {
+                        graph[m.uid].push({ target: sUid, relation: "স্বামী/স্ত্রী" });
+                    });
+                }
                 if (m.father) {
                     graph[m.uid].push({ target: m.father, relation: "পিতা" });
                     const isMale = m.gender.includes("Male") || m.gender.includes("পুরুষ") || m.gender === "M";
@@ -1798,14 +1825,22 @@
             const data = selectedMarble.userData;
             const activeUids = new Set([data.uid]);
 
-            if (data.spouse) activeUids.add(data.spouse);
+            if (data.spouse) {
+                const spouses = Array.isArray(data.spouse) ? data.spouse : [data.spouse];
+                spouses.forEach(sUid => activeUids.add(sUid));
+            }
             if (data.father) activeUids.add(data.father);
             if (data.mother) activeUids.add(data.mother);
             if (data.children) data.children.forEach(uid => activeUids.add(uid));
 
             animateMarbleTo(selectedMarble, { x: 0, y: 0, z: 0 });
 
-            if (data.spouse && marbleMap[data.spouse]) animateMarbleTo(marbleMap[data.spouse], { x: 3.5, y: 0, z: 0 });
+            if (data.spouse) {
+                const spouses = Array.isArray(data.spouse) ? data.spouse : [data.spouse];
+                spouses.forEach((sUid, idx) => {
+                    if (marbleMap[sUid]) animateMarbleTo(marbleMap[sUid], { x: 3.5 + (idx * 3), y: 0, z: 0 });
+                });
+            }
             if (data.father && marbleMap[data.father]) animateMarbleTo(marbleMap[data.father], { x: -1.8, y: 3.5, z: 0 });
             if (data.mother && marbleMap[data.mother]) animateMarbleTo(marbleMap[data.mother], { x: 1.8, y: 3.5, z: 0 });
 
@@ -1852,9 +1887,14 @@
         }
 
         function renderRelationLink(uid) {
-            if (!uid || !marbleMap[uid]) return "N/A";
-            const data = marbleMap[uid].userData;
-            return `<span class="relation-link" onclick="focusByUid('${data.uid}')">${data.bnName}</span>`;
+            if (!uid) return "N/A";
+            const uids = Array.isArray(uid) ? uid : [uid];
+            const links = uids.map(u => {
+                if (!marbleMap[u]) return "N/A";
+                const data = marbleMap[u].userData;
+                return `<span class="relation-link" onclick="focusByUid('${data.uid}')">${data.bnName}</span>`;
+            });
+            return links.join(', ');
         }
 
         function showPopup(data) {
