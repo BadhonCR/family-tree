@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Marbles - Interactive Family Tree</title>
+    <title>3D Marbles & Perfect 2D Bloodline Tree</title>
     <style>
         body {
             margin: 0;
@@ -16,65 +16,71 @@
         /* Top Menu Button */
         #menu-toggle-btn {
             position: absolute;
-            top: 15px;
-            left: 15px;
+            top: 20px;
+            left: 20px;
             z-index: 100;
-            background: rgba(0, 255, 255, 0.25);
+            background: rgba(12, 18, 28, 0.75);
             color: #00ffff;
-            border: 1px solid #00ffff;
-            padding: 10px 18px;
-            border-radius: 8px;
+            border: 1px solid rgba(0, 255, 255, 0.4);
+            padding: 12px 22px;
+            border-radius: 30px;
             cursor: pointer;
-            font-weight: bold;
-            backdrop-filter: blur(8px);
-            font-size: 15px;
-            box-shadow: 0 4px 12px rgba(0,255,255,0.2);
-            transition: all 0.2s ease;
+            font-weight: 600;
+            backdrop-filter: blur(12px);
+            font-size: 14px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         #menu-toggle-btn:hover {
-            background: rgba(0, 255, 255, 0.45);
-            transform: scale(1.03);
+            background: rgba(0, 255, 255, 0.2);
+            border-color: #00ffff;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 255, 255, 0.3);
         }
 
         /* Floating Restore / Un-minimize Button */
         #restore-btn {
             display: none;
             position: fixed;
-            bottom: 20px;
-            left: 20px;
+            bottom: 25px;
+            left: 25px;
             z-index: 1001;
-            background: rgba(0, 255, 255, 0.35);
+            background: rgba(12, 25, 40, 0.85);
             color: #00ffff;
-            border: 1px solid #00ffff;
-            padding: 10px 16px;
+            border: 1px solid rgba(0, 255, 255, 0.5);
+            padding: 12px 24px;
             border-radius: 30px;
             cursor: pointer;
-            font-weight: bold;
+            font-weight: 600;
             font-size: 14px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 15px rgba(0, 255, 255, 0.4);
-            transition: all 0.2s ease;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 255, 255, 0.25);
+            transition: all 0.3s ease;
         }
 
         #restore-btn:hover {
-            background: rgba(0, 255, 255, 0.6);
-            transform: scale(1.05);
+            background: rgba(0, 255, 255, 0.25);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 12px 35px rgba(0, 255, 255, 0.4);
         }
 
-        /* Main Sliding Navigation Menu Drawer */
+        /* Main Navigation Menu Drawer */
         #nav-drawer {
             position: fixed;
             top: 0;
-            left: -340px;
-            width: 320px;
+            left: -360px;
+            width: 340px;
             height: 100%;
-            background: rgba(12, 18, 28, 0.96);
-            border-right: 1px solid #00ffff55;
+            background: rgba(10, 15, 25, 0.95);
+            border-right: 1px solid rgba(0, 255, 255, 0.25);
             z-index: 1000;
-            transition: left 0.3s ease;
-            box-shadow: 5px 0 25px rgba(0,0,0,0.8);
-            backdrop-filter: blur(12px);
+            transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 10px 0 35px rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(16px);
             display: flex;
             flex-direction: column;
         }
@@ -84,9 +90,9 @@
         }
 
         .drawer-header {
-            padding: 12px 15px;
-            background: rgba(0, 255, 255, 0.1);
-            border-bottom: 1px solid #00ffff44;
+            padding: 16px 20px;
+            background: rgba(0, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(0, 255, 255, 0.15);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -95,64 +101,65 @@
         .drawer-header h2 {
             margin: 0;
             color: #00ffff;
-            font-size: 16px;
+            font-size: 17px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
         }
 
         .header-actions {
             display: flex;
-            gap: 6px;
+            gap: 8px;
         }
 
         .btn-min {
-            background: rgba(0, 255, 255, 0.2);
+            background: rgba(0, 255, 255, 0.15);
             color: #00ffff;
-            border: 1px solid #00ffff66;
-            padding: 2px 10px;
-            border-radius: 6px;
+            border: 1px solid rgba(0, 255, 255, 0.4);
+            padding: 3px 12px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
             font-size: 16px;
-            line-height: 1.2;
-            transition: 0.2s;
+            transition: 0.2s ease;
         }
 
         .btn-min:hover {
-            background: rgba(0, 255, 255, 0.4);
+            background: rgba(0, 255, 255, 0.35);
         }
 
         .drawer-body {
-            padding: 15px;
+            padding: 18px;
             overflow-y: auto;
             flex-grow: 1;
         }
 
-        /* Tabs inside Menu */
         .tab-buttons {
             display: flex;
-            gap: 5px;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #333;
-            padding-bottom: 8px;
+            gap: 6px;
+            margin-bottom: 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
         }
 
         .tab-btn {
             flex: 1;
-            background: rgba(255,255,255,0.05);
-            color: #aaa;
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 8px 4px;
-            border-radius: 6px;
-            font-size: 10px;
+            background: rgba(255,255,255,0.03);
+            color: #94a3b8;
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 9px 4px;
+            border-radius: 8px;
+            font-size: 11px;
             cursor: pointer;
             text-align: center;
-            font-weight: bold;
-            transition: 0.2s;
+            font-weight: 600;
+            transition: 0.2s ease;
         }
 
         .tab-btn.active {
-            background: rgba(0, 255, 255, 0.25);
+            background: rgba(0, 255, 255, 0.2);
             color: #00ffff;
             border-color: #00ffff;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
         }
 
         .tab-content {
@@ -163,18 +170,17 @@
             display: block;
         }
 
-        /* Search Box Styles inside Menu */
         #search-input {
             width: 100%;
-            padding: 10px;
+            padding: 11px;
             border-radius: 8px;
-            border: 1px solid #00ffff;
-            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(0, 255, 255, 0.4);
+            background: rgba(0, 0, 0, 0.6);
             color: #fff;
             font-size: 13px;
             box-sizing: border-box;
             outline: none;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
 
         #search-results-list {
@@ -189,7 +195,7 @@
             cursor: pointer;
             font-size: 13px;
             background: rgba(255,255,255,0.03);
-            margin-bottom: 5px;
+            margin-bottom: 6px;
             border-radius: 6px;
             border: 1px solid rgba(255,255,255,0.05);
             transition: 0.2s;
@@ -200,7 +206,6 @@
             color: #00ffff;
         }
 
-        /* Stats Grid & Clickable Cards */
         .stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -209,13 +214,13 @@
         }
 
         .stat-box {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 12px 8px;
-            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 14px 10px;
+            border-radius: 10px;
             text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             cursor: pointer;
-            transition: transform 0.2s, background 0.2s;
+            transition: all 0.2s ease;
         }
 
         .stat-box:hover {
@@ -225,7 +230,7 @@
         }
 
         .stat-number {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: bold;
             color: #00ffff;
             margin-bottom: 2px;
@@ -233,15 +238,14 @@
 
         .stat-label {
             font-size: 11px;
-            color: #ccc;
+            color: #94a3b8;
         }
 
-        /* Generation List Styling */
         .gen-item {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(0, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(0, 255, 255, 0.15);
             border-radius: 8px;
-            padding: 10px;
+            padding: 11px 14px;
             margin-top: 8px;
             cursor: pointer;
             display: flex;
@@ -251,62 +255,60 @@
         }
 
         .gen-item:hover {
-            background: rgba(0, 255, 255, 0.2);
+            background: rgba(0, 255, 255, 0.18);
             border-color: #00ffff;
         }
 
         .gen-title {
             font-size: 13px;
-            font-weight: bold;
+            font-weight: 600;
             color: #fff;
         }
 
         .gen-count {
             font-size: 11px;
-            background: #00ffff22;
+            background: rgba(0, 255, 255, 0.15);
             color: #00ffff;
-            padding: 3px 8px;
+            padding: 3px 10px;
             border-radius: 12px;
-            border: 1px solid #00ffff66;
+            border: 1px solid rgba(0, 255, 255, 0.4);
         }
 
-        /* Relationship & Bloodline Finder Elements */
         .select-group {
-            margin-bottom: 12px;
+            margin-bottom: 14px;
         }
 
         .select-group label {
             display: block;
             font-size: 12px;
-            color: #aaa;
-            margin-bottom: 4px;
+            color: #94a3b8;
+            margin-bottom: 6px;
         }
 
         .select-group select {
             width: 100%;
-            padding: 8px;
-            border-radius: 6px;
-            background: #111;
+            padding: 10px;
+            border-radius: 8px;
+            background: #0f172a;
             color: #fff;
-            border: 1px solid #00ffff66;
+            border: 1px solid rgba(0, 255, 255, 0.4);
             outline: none;
             font-size: 13px;
         }
 
         #rel-result, #bloodline-result {
             margin-top: 15px;
-            padding: 12px;
-            background: rgba(10, 30, 45, 0.9);
-            color: #e0f7fa;
-            border-radius: 8px;
-            border: 1px solid #00ffff88;
+            padding: 14px;
+            background: rgba(15, 23, 42, 0.9);
+            color: #e2e8f0;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 255, 255, 0.4);
             border-left: 4px solid #00ffff;
             font-size: 13px;
             line-height: 1.6;
-            box-shadow: inset 0 0 10px rgba(0,255,255,0.1);
         }
 
-        /* 2D Overlay Container for Bloodline Tree */
+        /* ------------------ PERFECT 2D BLOODLINE OVERLAY ------------------ */
         #tree-2d-overlay {
             display: none;
             position: fixed;
@@ -314,21 +316,94 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(10, 15, 25, 0.95);
+            background: radial-gradient(circle, #0f172a 0%, #020617 100%);
             z-index: 500;
-            overflow: auto;
-            padding: 60px 20px 20px 20px;
+            overflow: hidden;
             box-sizing: border-box;
+        }
+
+        .zoom-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 600;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .zoom-btn {
+            background: rgba(15, 23, 42, 0.85);
+            color: #00ffff;
+            border: 1px solid rgba(0, 255, 255, 0.4);
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
             backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            transition: all 0.2s ease;
+        }
+
+        .zoom-btn:hover {
+            background: rgba(0, 255, 255, 0.25);
+            transform: scale(1.08);
+        }
+
+        .print-btn {
+            background: linear-gradient(135deg, #00b4db, #0083b0);
+            color: white;
+            border: none;
+            padding: 0 16px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 180, 219, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .print-btn:hover {
+            opacity: 0.9;
+            transform: scale(1.04);
+        }
+
+        #tree-viewport {
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            position: relative;
+            cursor: grab;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 60px 40px;
+            box-sizing: border-box;
+        }
+
+        #tree-viewport:active {
+            cursor: grabbing;
         }
 
         .tree-2d-wrapper {
+            position: relative;
+            transform-origin: center top;
+            transition: transform 0.15s ease-out;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 25px;
+            gap: 70px;
             min-width: max-content;
-            margin: 0 auto;
+            padding: 40px;
         }
 
         .gen-2d-block {
@@ -336,106 +411,132 @@
             flex-direction: column;
             align-items: center;
             width: 100%;
-        }
-
-        .gen-2d-label {
-            font-size: 13px;
-            font-weight: bold;
-            color: #ffda79;
-            background: rgba(255, 218, 121, 0.1);
-            padding: 4px 14px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 218, 121, 0.4);
-            margin-bottom: 12px;
+            position: relative;
         }
 
         .nodes-2d-row {
             display: flex;
-            gap: 15px;
+            gap: 40px;
             justify-content: center;
+            position: relative;
         }
 
-        .node-2d-card {
-            background: rgba(20, 30, 48, 0.9);
-            border: 1px solid #00ffff;
-            border-radius: 8px;
-            padding: 8px 12px;
-            text-align: center;
-            min-width: 110px;
-            box-shadow: 0 4px 10px rgba(0, 255, 255, 0.15);
-            cursor: pointer;
-            transition: 0.2s;
+        /* Couple Node Card Structure */
+        .couple-node-card {
+            background: linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.95));
+            border: 2px solid #00ffff;
+            border-radius: 12px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 6px 20px rgba(0, 255, 255, 0.2);
+            position: relative;
+            z-index: 2;
+            transition: all 0.25s ease;
         }
 
-        .node-2d-card:hover {
+        .couple-node-card:hover {
             transform: translateY(-3px);
-            background: rgba(0, 255, 255, 0.25);
+            box-shadow: 0 10px 25px rgba(0, 255, 255, 0.4);
+            border-color: #ffffff;
         }
 
-        .node-2d-card.root-card {
+        .couple-node-card.root-card {
             border-color: #ffda79;
-            box-shadow: 0 0 12px rgba(255, 218, 121, 0.4);
+            box-shadow: 0 0 20px rgba(255, 218, 121, 0.4);
         }
 
-        .node-2d-card.spouse-card {
-            border-color: #ff1493;
+        .person-unit {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .person-unit:hover .card-2d-name {
+            color: #00ffff;
+        }
+
+        .spouse-unit {
+            color: #ff79c6;
+        }
+
+        .spouse-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ff79c6;
+            font-size: 13px;
+            font-weight: bold;
+            padding: 0 2px;
         }
 
         .card-2d-name {
-            font-weight: bold;
-            font-size: 13px;
-            color: #fff;
+            font-weight: 700;
+            font-size: 14px;
+            color: #f8fafc;
+            transition: color 0.2s;
+            white-space: nowrap;
         }
 
-        .card-2d-nick {
-            font-size: 11px;
-            color: #38bdf8;
+        .person-icon {
+            font-size: 12px;
         }
 
-        /* Modal Lists */
+        #tree-svg-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Modals & Lightbox */
         #list-modal {
             display: none;
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(15, 20, 30, 0.98);
+            background: rgba(15, 23, 42, 0.98);
             color: #fff;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+            padding: 22px;
+            border-radius: 14px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.9);
             z-index: 2000;
-            width: 340px;
+            width: 350px;
             max-height: 75vh;
             overflow-y: auto;
-            border: 1px solid #00ffff66;
-            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 255, 255, 0.4);
+            backdrop-filter: blur(14px);
         }
 
         #list-modal h3 {
             margin-top: 0;
             color: #00ffff;
             font-size: 16px;
-            border-bottom: 1px solid #333;
-            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
         }
 
         .modal-member-card {
-            padding: 8px 10px;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 6px;
-            margin-bottom: 6px;
+            padding: 10px 12px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 8px;
+            margin-bottom: 8px;
             cursor: pointer;
             transition: 0.2s;
         }
 
         .modal-member-card:hover {
-            background: rgba(0, 255, 255, 0.2);
+            background: rgba(0, 255, 255, 0.18);
             border-color: #00ffff;
         }
 
-        /* Profile Details Popup Modal */
         #popup-modal {
             display: none;
             position: fixed;
@@ -468,8 +569,6 @@
             color: #00ffff;
             font-size: 19px;
             font-weight: 700;
-            letter-spacing: 0.5px;
-            text-shadow: 0 0 8px rgba(0, 255, 255, 0.3);
         }
 
         .uid-gen-wrapper {
@@ -546,14 +645,8 @@
             border: 2px solid #00ffff;
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(0, 255, 255, 0.25);
-            transition: transform 0.2s, border-color 0.2s;
             background-color: #1a2230;
             flex-shrink: 0;
-        }
-
-        .profile-img-thumb:hover {
-            transform: scale(1.06);
-            border-color: #ffffff;
         }
 
         .relation-link {
@@ -561,7 +654,6 @@
             text-decoration: none;
             cursor: pointer;
             font-weight: 600;
-            transition: color 0.2s;
         }
 
         .relation-link:hover {
@@ -573,18 +665,11 @@
             background: linear-gradient(135deg, #ff4757, #ff6b81);
             color: white;
             border: none;
-            padding: 4px 10px;
+            padding: 5px 12px;
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
             font-size: 12px;
-            box-shadow: 0 2px 8px rgba(255, 71, 87, 0.3);
-            transition: all 0.2s ease;
-        }
-
-        .btn-close:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
         }
 
         #image-lightbox {
@@ -605,39 +690,89 @@
             max-width: 85%;
             max-height: 85%;
             border-radius: 12px;
-            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
             border: 2px solid #00ffff;
         }
 
-        @media (max-width: 600px) {
-            #nav-drawer { 
-                width: 85%; 
-                max-width: 320px;
+        /* ------------------ PERFECT FIT-TO-PAGE PRINT STYLES ------------------ */
+        @page {
+            size: A4 landscape;
+            margin: 0;
+        }
+
+        @media print {
+            body, html {
+                width: 100vw !important;
+                height: 100vh !important;
+                overflow: hidden !important;
+                background: white !important;
+                color: black !important;
             }
 
+            canvas, #nav-drawer, #menu-toggle-btn, #restore-btn, .zoom-controls, #popup-modal, #list-modal {
+                display: none !important;
+            }
+
+            #tree-2d-overlay {
+                display: block !important;
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100vw !important;
+                height: 100vh !important;
+                background: white !important;
+                box-sizing: border-box !important;
+                padding: 10px !important;
+                overflow: hidden !important;
+            }
+
+            #tree-viewport {
+                width: 100% !important;
+                height: 100% !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+
+            .tree-2d-wrapper {
+                transform-origin: center center !important;
+                gap: 50px !important;
+            }
+
+            .couple-node-card {
+                border: 1.5px solid #000 !important;
+                background: #ffffff !important;
+                box-shadow: none !important;
+                color: black !important;
+                padding: 6px 14px !important;
+            }
+
+            .card-2d-name { color: #000 !important; font-size: 12px !important; }
+            .spouse-divider { color: #666 !important; }
+
+            svg path {
+                stroke: #0284c7 !important;
+                stroke-width: 2px !important;
+            }
+        }
+
+        @media (max-width: 600px) {
+            #nav-drawer { width: 85%; max-width: 320px; }
             #popup-modal { 
                 width: calc(100% - 32px) !important;
-                left: 16px !important;
-                right: 16px !important;
-                top: 50% !important;
-                transform: translateY(-50%) !important;
-                max-height: 80vh !important;
-                box-sizing: border-box !important;
-                box-shadow: 0 0 40px rgba(0, 0, 0, 0.9);
-            }
-
-            #list-modal { 
-                width: 85% !important;
-                max-height: 70vh !important;
+                left: 16px !important; right: 16px !important;
+                top: 50% !important; transform: translateY(-50%) !important;
             }
         }
     </style>
 </head>
 <body>
 
-    <button id="menu-toggle-btn" onclick="toggleDrawer()">☰ মেনু অপশন</button>
+    <button id="menu-toggle-btn" onclick="toggleDrawer()">
+        <span>☰</span> <span>মেনু অপশন</span>
+    </button>
 
-    <!-- Floating Un-minimize Button -->
     <button id="restore-btn" onclick="toggleDrawer()">📋 প্যানেল খুলুন</button>
 
     <div id="nav-drawer">
@@ -658,7 +793,7 @@
             </div>
 
             <div id="stats-tab" class="tab-content active">
-                <p style="font-size: 11px; color: #aaa; margin-bottom: 10px;">
+                <p style="font-size: 11px; color: #94a3b8; margin-bottom: 12px;">
                     💡 বিস্তারিত তালিকা দেখতে যেকোনো পরিসংখ্যানে ক্লিক করুন:
                 </p>
 
@@ -681,7 +816,7 @@
                     </div>
                 </div>
 
-                <h3 style="margin-top:20px; font-size:14px; color:#00ffff;">🧬 পিতৃকুল জেনারেশন তালিকা</h3>
+                <h3 style="margin-top:22px; font-size:14px; color:#00ffff;">🧬 পিতৃকুল জেনারেশন তালিকা</h3>
                 <div id="generation-container"></div>
             </div>
 
@@ -712,15 +847,26 @@
                     <select id="bloodline-person" onchange="calculateBloodline()"></select>
                 </div>
                 <div id="bloodline-result">
-                    ব্যক্তি নির্বাচন করলে তার ২ডি জেনারেশন ট্রি স্ক্রিনে দেখা যাবে।
+                    ব্যক্তি নির্বাচন করলে তার ২ডি বংশবৃক্ষ স্ক্রিনে ভেসে উঠবে।
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 2D Bloodline Tree View Overlay -->
+    <!-- 2D BLOODLINE OVERLAY -->
     <div id="tree-2d-overlay">
-        <div id="tree-2d-view" class="tree-2d-wrapper"></div>
+        <div class="zoom-controls">
+            <button class="zoom-btn" onclick="zoomTree(0.1)" title="Zoom In">➕</button>
+            <button class="zoom-btn" onclick="zoomTree(-0.1)" title="Zoom Out">➖</button>
+            <button class="zoom-btn" onclick="resetZoom()" title="Reset Zoom">↺</button>
+            <button class="print-btn" onclick="printTree()">🖨️ PDF প্রিন্ট</button>
+        </div>
+
+        <div id="tree-viewport">
+            <div id="tree-2d-view" class="tree-2d-wrapper">
+                <svg id="tree-svg-canvas"></svg>
+            </div>
+        </div>
     </div>
 
     <div id="list-modal">
@@ -891,17 +1037,25 @@
             return sprite;
         }
 
-        // ------------------ ALL MEMBERS DATA ------------------
+        // ALL MEMBERS DATA (UPDATED WITH NEW MEMBERS)
         const membersData = [
-            // Gen 1
+            // Ancestors / Root Generation
+            { uid: "FT-120", bnName: "রাজমোহন", enName: "Rajmohon", nick: "রাজমোহন", gender: "Male", color: 0x0055ff, spouse: null, father: null, mother: null, children: ["FT-122", "FT-124", "FT-126", "FT-128", "FT-130", "FT-132"], description: "" },
             { uid: "FT-259", bnName: "কানাই চন্দ্র রায়", enName: "Kanai Chandra Roy", nick: "কানাই", gender: "Male", color: 0x0055ff, spouse: "FT-260", father: null, mother: null, children: ["FT-261", "FT-262"], description: "" },
             { uid: "FT-260", bnName: "ঋতুমাযী রানী রায়", enName: "Ritumayee Rani Roy", nick: "ঋতুমাযী", gender: "Female", color: 0xff1493, spouse: "FT-259", father: null, mother: null, children: ["FT-261", "FT-262"], description: "" },
             { uid: "FT-070", bnName: "সুরেশ দেউ দেব সিংহ", enName: "Suresh Deu Dev Singh", nick: "সুরেশ", gender: "Male", color: 0x0055ff, spouse: "FT-071", father: null, mother: null, children: ["FT-073", "FT-079", "FT-081", "FT-085"], description: "" },
             { uid: "FT-071", bnName: "সিতোময়ী রায় দেব সিংহ", enName: "Sitomoyi Roy Dev Singh", nick: "সিতোময়ী", gender: "Female", color: 0xff1493, spouse: "FT-070", father: null, mother: null, children: ["FT-073", "FT-079", "FT-081", "FT-085"], description: "" },
-            { uid: "FT-143", bnName: "ননীগোপাল", enName: "Noni Gopal", nick: "ননীগোপাল", gender: "Male", color: 0x0055ff, spouse: "FT-144", father: null, mother: null, children: ["FT-145", "FT-001"], description: "" },
+            { uid: "FT-143", bnName: "ননীগোপাল", enName: "Noni Gopal", nick: "ননীগোপাল", gender: "Male", color: 0x0055ff, spouse: "FT-144", father: "FT-124", mother: null, children: ["FT-145", "FT-001"], description: "" },
             { uid: "FT-144", bnName: "মাধবী রানী রায়", enName: "Madhobi Rani Roy", nick: "মাধবী", gender: "Female", color: 0xff1493, spouse: "FT-143", father: null, mother: null, children: ["FT-145", "FT-001"], description: "" },
 
             // Gen 2
+            { uid: "FT-122", bnName: "দক্ষিণামোহন", enName: "Dakshinamohan", nick: "দক্ষিণামোহন", gender: "Male", color: 0x0055ff, spouse: null, father: "FT-120", mother: null, children: ["FT-134", "FT-136"], description: "" },
+            { uid: "FT-124", bnName: "নবগোপাল", enName: "Nabo Gopal", nick: "নবগোপাল", gender: "Male", color: 0x0055ff, spouse: null, father: "FT-120", mother: null, children: ["FT-138", "FT-143"], description: "" },
+            { uid: "FT-126", bnName: "অন্নদামোহন", enName: "Annadamohan", nick: "অন্নদামোহন", gender: "Male", color: 0x0055ff, spouse: null, father: "FT-120", mother: null, children: [], description: "" },
+            { uid: "FT-128", bnName: "অম্বিকা", enName: "Ambika", nick: "অম্বিকা", gender: "Male", color: 0x0055ff, spouse: null, father: "FT-120", mother: null, children: ["FT-159"], description: "" },
+            { uid: "FT-130", bnName: "মেয়ে ১", enName: "UnKnown Girl 1", nick: "মেয়ে ১", gender: "Female", color: 0xff1493, spouse: null, father: "FT-120", mother: null, children: [], description: "" },
+            { uid: "FT-132", bnName: "মেয়ে ২", enName: "UnKnown Girl 2", nick: "মেয়ে ২", gender: "Female", color: 0xff1493, spouse: null, father: "FT-120", mother: null, children: [], description: "" },
+
             { uid: "FT-261", bnName: "মনাই চন্দ্র রায়", enName: "Monai Chandra Roy", nick: "মনাই", gender: "Male", color: 0x0055ff, spouse: "FT-263", father: "FT-259", mother: "FT-260", children: ["FT-264", "FT-265", "FT-016"], description: "" },
             { uid: "FT-263", bnName: "সুকুময়ী বর্মনী", enName: "Sukumayee Burmani", nick: "সুকুময়ী", gender: "Female", color: 0xff1493, spouse: "FT-261", father: null, mother: null, children: ["FT-264", "FT-265", "FT-016"], description: "" },
             { uid: "FT-262", bnName: "বিষ্ণুর দাদু", enName: "Vishnu's grandfather", nick: "বিষ্ণুর দাদু", gender: "Male", color: 0x0055ff, spouse: null, father: "FT-259", mother: "FT-260", children: [], description: "" },
@@ -917,6 +1071,15 @@
             { uid: "FT-146", bnName: "দিনেশ্বরী রানী", enName: "Dineshwari Rani", nick: "দিনেশ্বরী", gender: "Female", color: 0xff1493, spouse: "FT-145", father: null, mother: null, children: ["FT-147", "FT-148", "FT-149"], description: "" },
 
             // Gen 3
+            { uid: "FT-134", bnName: "কালিপদ", enName: "Kalipada", nick: "কালিপদ", gender: "Male", color: 0x0055ff, spouse: null, father: "FT-122", mother: null, children: [], description: "" },
+            { uid: "FT-136", bnName: "খুকি", enName: "Khuki", nick: "খুকি", gender: "Female", color: 0xff1493, spouse: null, father: "FT-122", mother: null, children: [], description: "তার সম্পূর্ণ পরিবার ভারতে অবস্থান করছে।" },
+            
+            { uid: "FT-138", bnName: "বিজয় চন্দ্র রায়", enName: "Bijoy Chandra Roy", nick: "বিজয়", gender: "Male", color: 0x0055ff, spouse: "FT-140", father: "FT-124", mother: null, children: ["FT-141"], description: "" },
+            { uid: "FT-139", bnName: "সিন্দু রানী রায়", enName: "Shindu Rani Roy", nick: "সিন্দু", gender: "Female", color: 0xff1493, spouse: "FT-138", father: null, mother: null, children: [], description: "১ম স্ত্রী" },
+            { uid: "FT-140", bnName: "মালতী রানী রায়", enName: "Malati Rani Roy", nick: "মালতী", gender: "Female", color: 0xff1493, spouse: "FT-138", father: null, mother: null, children: ["FT-141"], description: "২য় স্ত্রী" },
+
+            { uid: "FT-159", bnName: "হেমেন চন্দ্র রায়", enName: "Heman Chandra Roy", nick: "হেমেন", gender: "Male", color: 0x0055ff, spouse: null, father: "FT-128", mother: null, children: ["FT-161", "FT-163", "FT-165", "FT-166"], description: "" },
+
             { uid: "FT-016", bnName: "দিনোনাথ রায়", enName: "Dinonath Roy", nick: "খোকা সরকার", gender: "Male", color: 0x0055ff, spouse: "FT-017", father: "FT-261", mother: "FT-263", children: ["FT-018", "FT-019", "FT-020", "FT-021", "FT-022", "FT-023", "FT-024", "FT-025"], description: "" },
             { uid: "FT-017", bnName: "দুলালী রাণী রায়", enName: "Dulali Rani Roy", nick: "নলিনী", gender: "Female", color: 0xff1493, spouse: "FT-016", father: null, mother: null, children: ["FT-018", "FT-019", "FT-020", "FT-021", "FT-022", "FT-023", "FT-024", "FT-025"], description: "" },
             { uid: "FT-264", bnName: "মহিম চন্দ্র রায়", enName: "Mahim Chandra Roy", nick: "মহিম", gender: "Male", color: 0x0055ff, spouse: null, father: "FT-261", mother: "FT-263", children: ["FT-268", "FT-269"], description: "" },
@@ -929,10 +1092,26 @@
 
             { uid: "FT-147", bnName: "রত্না রাণী রায়", enName: "Ratna Rani Roy", nick: "রত্না", gender: "Female", color: 0xff1493, spouse: "FT-150", father: "FT-145", mother: "FT-146", children: ["FT-151", "FT-152"], description: "" },
             { uid: "FT-150", bnName: "রতন চন্দ্র রায়", enName: "Raton Chandra Roy", nick: "রতন", gender: "Male", color: 0x0055ff, spouse: "FT-147", father: null, mother: null, children: ["FT-151", "FT-152"], description: "" },
-            { uid: "FT-148", bnName: "স্বপ্না রাণী রায়", enName: "Sopna Rani Roy", nick: "স্বপ্না", gender: "Female", color: 0xff1493, spouse: null, father: "FT-145", mother: "FT-146", children: [], description: "" },
+            
+            // FT-148 details updated with FT-153 as spouse & children FT-154, FT-155
+            { uid: "FT-148", bnName: "স্বপ্না রাণী রায়", enName: "Sopna Rani Roy", nick: "স্বপ্না", gender: "Female", color: 0xff1493, spouse: "FT-153", father: "FT-145", mother: "FT-146", children: ["FT-154", "FT-155"], description: "" },
+            { uid: "FT-153", bnName: "সুরেশ চন্দ্র রায়", enName: "Suresh Chandra Roy", nick: "সুরেশ", gender: "Male", color: 0x0055ff, spouse: "FT-148", father: null, mother: null, children: ["FT-154", "FT-155"], description: "" },
+            
             { uid: "FT-149", bnName: "মৈত্রী রাণী রায়", enName: "Maitri Rani Roy", nick: "মৈত্রী", gender: "Female", color: 0xff1493, spouse: null, father: "FT-145", mother: "FT-146", children: [], description: "" },
 
             // Gen 4
+            { uid: "FT-141", bnName: "একান্ত চন্দ্র রায়", enName: "Akanto Chandra Roy", nick: "একান্ত", gender: "Male", color: 0x00ccff, spouse: null, father: "FT-138", mother: "FT-140", children: [], description: "" },
+
+            { uid: "FT-161", bnName: "উত্তম চন্দ্র রায়", enName: "Uttom Chandra Roy", nick: "উত্তম", gender: "Male", color: 0x0055ff, spouse: null, father: "FT-159", mother: null, children: ["FT-169"], description: "" },
+            { uid: "FT-163", bnName: "সৈত্যান চন্দ্র রায়", enName: "Soityan Chandra Roy", nick: "সৈত্যান", gender: "Male", color: 0x0055ff, spouse: null, father: "FT-159", mother: null, children: [], description: "" },
+            { uid: "FT-165", bnName: "সুচিত্রা রানী রায়", enName: "Suchittra Rani Roy", nick: "সুচিত্রা", gender: "Female", color: 0xff1493, spouse: null, father: "FT-159", mother: null, children: ["FT-170"], description: "" },
+            { uid: "FT-166", bnName: "সুফলা রানী রায়", enName: "Suphala Rani Roy", nick: "সুফলা", gender: "Female", color: 0xff1493, spouse: null, father: "FT-159", mother: null, children: [], description: "" },
+
+            { uid: "FT-154", bnName: "শুরঞ্জনা রানী রায়", enName: "Suranjana Rani Roy", nick: "শুরঞ্জনা", gender: "Female", color: 0xff1493, spouse: null, father: "FT-153", mother: "FT-148", children: [], description: "" },
+            { uid: "FT-155", bnName: "স্বপ্নার ছেলে", enName: "Son of Sapna", nick: "স্বপ্নার ছেলে", gender: "Male", color: 0x00ccff, spouse: null, father: "FT-153", mother: "FT-148", children: [], description: "" },
+
+            { uid: "FT-157", bnName: "অর্ঘ রায়", enName: "Argho Roy", nick: "অর্ঘ", gender: "Male", color: 0x00ccff, spouse: null, father: null, mother: null, children: [], description: "" },
+
             { uid: "FT-018", bnName: "জয়ন্তী রাণী রায়", enName: "Joyonti Rani Roy", nick: "জয়ন্তী", gender: "Female", color: 0xff1493, spouse: null, father: "FT-016", mother: "FT-017", children: [], description: "" },
             { uid: "FT-019", bnName: "বাসন্তী রাণী রায়", enName: "Basonti Rani Roy", nick: "বাসন্তী", gender: "Female", color: 0xff1493, spouse: null, father: "FT-016", mother: "FT-017", children: [], description: "" },
             { uid: "FT-020", bnName: "দিনেশ চন্দ্র রায়", enName: "Dinash Chandra Roy", nick: "দিনেশ", gender: "Male", color: 0x0055ff, spouse: "FT-047", father: "FT-016", mother: "FT-017", children: ["FT-048", "FT-049", "FT-050"], description: "" },
@@ -974,6 +1153,9 @@
             { uid: "FT-107", bnName: "সঞ্জিতা রানী রায়", enName: "Sanjita Rani Roy", nick: "সঞ্জিতা", gender: "Female", color: 0xff1493, spouse: "FT-106", father: null, mother: null, children: [], description: "" },
 
             // Gen 5
+            { uid: "FT-169", bnName: "টুম্পা রানী রায়", enName: "Tumpa Rani Roy", nick: "টুম্পা", gender: "Female", color: 0xff69b4, spouse: null, father: "FT-161", mother: null, children: [], description: "" },
+            { uid: "FT-170", bnName: "মৌ রানী রায়", enName: "Mou Rani Roy", nick: "মৌ", gender: "Female", color: 0xff69b4, spouse: null, father: null, mother: "FT-165", children: [], description: "" },
+
             { uid: "FT-272", bnName: "বাদল চন্দ্র রায়", enName: "Badal Chandra Roy", nick: "বাদল", gender: "Male", color: 0x00ccff, spouse: "FT-275", father: "FT-268", mother: "FT-271", children: ["FT-276", "FT-277"], description: "" },
             { uid: "FT-275", bnName: "গীতা রানী রায়", enName: "Gita Rani Roy", nick: "গীতা", gender: "Female", color: 0xff1493, spouse: "FT-272", father: null, mother: null, children: ["FT-276", "FT-277"], description: "" },
             { uid: "FT-273", bnName: "ভোদল চন্দ্র রায়", enName: "Bhodal Chandra Roy", nick: "ভোদল", gender: "Male", color: 0x00ccff, spouse: "FT-283", father: "FT-268", mother: "FT-271", children: ["FT-284", "FT-285"], description: "" },
@@ -986,7 +1168,7 @@
 
             { uid: "FT-304", bnName: "জাপান চন্দ্র রায়", enName: "Japan Chandra Roy", nick: "জাপান", gender: "Male", color: 0x00ccff, spouse: "FT-305", father: "FT-293", mother: "FT-294", children: ["FT-306"], description: "" },
             { uid: "FT-305", bnName: "রাধিকা রানী রায়", enName: "Radhika Rani Roy", nick: "রাধিকা", gender: "Female", color: 0xff1493, spouse: "FT-304", father: null, mother: null, children: ["FT-306"], description: "" },
-            { uid: "FT-308", bnName: "জার্মান চন্দ্র রায়", enName: "German Chandra Roy", nick: "জার্মান", gender: "Male", color: 0x00ccff, spouse: "FT-309", father: "FT-293", mother: "FT-294", children: ["FT-310"], description: "" },
+            { uid: "FT-308", bnName: "জার্মান চন্দ্র রায়", enName: "German Chandra Roy", nick: "জার্মান", gender: "Male", color: 0x00ccff, spouse: "FT-293", mother: "FT-294", children: ["FT-310"], description: "" },
             { uid: "FT-309", bnName: "কলি রানী রায়", enName: "Koli Rani Roy", nick: "কলি", gender: "Female", color: 0xff1493, spouse: "FT-308", father: null, mother: null, children: ["FT-310"], description: "" },
 
             { uid: "FT-048", bnName: "দিপিকা রানী রায়", enName: "Depika Rani Roy", nick: "দিপিকা", gender: "Female", color: 0xff1493, spouse: "FT-051", father: "FT-020", mother: "FT-047", children: [], description: "" },
@@ -1029,7 +1211,7 @@
             { uid: "FT-008", bnName: "ওম চন্দ্র রায়", enName: "Om Chandra Roy", nick: "ওম", gender: "Male", color: 0x00ccff, spouse: null, father: "FT-006", mother: "FT-007", children: [], description: "" },
             { uid: "FT-009", bnName: "বেদ চন্দ্র রায়", enName: "Veda Chandra Roy", nick: "বেদ", gender: "Male", color: 0x3366ff, spouse: null, father: "FT-006", mother: "FT-007", children: [], description: "" },
             { uid: "FT-058", bnName: "কৃত্তিকা ঘোষ তনয়া", enName: "Krittika Ghosh Tanoya", nick: "কৃত্তিকা", gender: "Female", color: 0xff69b4, spouse: null, father: "FT-057", mother: "FT-056", children: [], description: "" },
-            { uid: "FT-077", bnName: "দিতিপ্রিয়া রায় (শুদ্ধি)", enName: "Ditipriya Roy", nick: "দিতিপ্রিয়া", gender: "Female", color: 0xff69b4, spouse: null, father: "FT-075", mother: "FT-076", children: [], description: "" },
+            { uid: "FT-077", bnName: "দিতিপ্রিয়া রায় শুদ্ধি", enName: "Ditipriya Roy Shuddhi", nick: "দিতিপ্রিয়া", gender: "Female", color: 0xff69b4, spouse: null, father: "FT-075", mother: "FT-076", children: [], description: "" },
             { uid: "FT-090", bnName: "অভিমুন্য রায় অভি", enName: "Abhimanyu Roy Avi", nick: "অভিমুন্য", gender: "Male", color: 0x00ccff, spouse: null, father: "FT-089", mother: "FT-088", children: [], description: "" }
         ];
 
@@ -1044,12 +1226,8 @@
                 const m = memberDict[uid];
                 if (!m) return 1;
 
-                if (m.father) {
-                    return getPaternalGen(m.father, new Set(visited)) + 1;
-                }
-                if (m.spouse && memberDict[m.spouse] && memberDict[m.spouse].father) {
-                    return getPaternalGen(m.spouse, new Set(visited));
-                }
+                if (m.father) return getPaternalGen(m.father, new Set(visited)) + 1;
+                if (m.spouse && memberDict[m.spouse] && memberDict[m.spouse].father) return getPaternalGen(m.spouse, new Set(visited));
                 return 1;
             }
 
@@ -1059,12 +1237,8 @@
                 const m = memberDict[uid];
                 if (!m) return 1;
 
-                if (m.mother) {
-                    return getMaternalGen(m.mother, new Set(visited)) + 1;
-                }
-                if (m.spouse && memberDict[m.spouse] && memberDict[m.spouse].mother) {
-                    return getMaternalGen(m.spouse, new Set(visited));
-                }
+                if (m.mother) return getMaternalGen(m.mother, new Set(visited)) + 1;
+                if (m.spouse && memberDict[m.spouse] && memberDict[m.spouse].mother) return getMaternalGen(m.spouse, new Set(visited));
                 return 1;
             }
 
@@ -1088,7 +1262,6 @@
             const selectB = document.getElementById('rel-person-b');
             const selectBloodline = document.getElementById('bloodline-person');
 
-            // Default empty placeholder options
             selectA.innerHTML = '<option value="">-- ব্যক্তি নির্বাচন করুন --</option>';
             selectB.innerHTML = '<option value="">-- ব্যক্তি নির্বাচন করুন --</option>';
             selectBloodline.innerHTML = '<option value="">-- ব্যক্তি নির্বাচন করুন --</option>';
@@ -1151,133 +1324,19 @@
             return line;
         }
 
-        const connectionsData = [
-            ["FT-016", "FT-017"],
-            ["FT-100", "FT-101"],
-            ["FT-102", "FT-100"], ["FT-102", "FT-101"],
-            ["FT-012", "FT-100"], ["FT-012", "FT-101"],
-            ["FT-106", "FT-100"], ["FT-106", "FT-101"],
-            ["FT-102", "FT-103"],
-            ["FT-104", "FT-102"], ["FT-104", "FT-103"],
-            ["FT-105", "FT-102"], ["FT-105", "FT-103"],
-            ["FT-106", "FT-107"],
-
-            ["FT-143", "FT-144"],
-            ["FT-145", "FT-143"], ["FT-145", "FT-144"],
-            ["FT-001", "FT-143"], ["FT-001", "FT-144"],
-            ["FT-145", "FT-146"],
-            ["FT-147", "FT-145"], ["FT-147", "FT-146"],
-            ["FT-148", "FT-145"], ["FT-148", "FT-146"],
-            ["FT-149", "FT-145"], ["FT-149", "FT-146"],
-            ["FT-147", "FT-150"],
-            ["FT-151", "FT-147"], ["FT-151", "FT-150"],
-            ["FT-152", "FT-147"], ["FT-152", "FT-150"],
-
-            ["FT-018", "FT-016"], ["FT-018", "FT-017"],
-            ["FT-019", "FT-016"], ["FT-019", "FT-017"],
-            ["FT-020", "FT-016"], ["FT-020", "FT-017"],
-            ["FT-021", "FT-016"], ["FT-021", "FT-017"],
-            ["FT-022", "FT-016"], ["FT-022", "FT-017"],
-            ["FT-023", "FT-016"], ["FT-023", "FT-017"],
-            ["FT-024", "FT-016"], ["FT-024", "FT-017"],
-            ["FT-025", "FT-016"], ["FT-025", "FT-017"],
-
-            ["FT-020", "FT-047"],
-            ["FT-048", "FT-020"], ["FT-048", "FT-047"],
-            ["FT-049", "FT-020"], ["FT-049", "FT-047"],
-            ["FT-050", "FT-020"], ["FT-050", "FT-047"],
-            ["FT-048", "FT-051"],
-
-            ["FT-024", "FT-062"],
-            ["FT-025", "FT-066"],
-            ["FT-067", "FT-025"], ["FT-067", "FT-066"],
-            ["FT-068", "FT-025"], ["FT-068", "FT-066"],
-
-            ["FT-023", "FT-055"],
-            ["FT-056", "FT-023"], ["FT-056", "FT-055"],
-            ["FT-059", "FT-023"], ["FT-059", "FT-055"],
-            ["FT-056", "FT-057"],
-            ["FT-058", "FT-056"], ["FT-058", "FT-057"],
-            ["FT-059", "FT-060"],
-
-            ["FT-070", "FT-071"],
-            ["FT-073", "FT-070"], ["FT-073", "FT-071"],
-            ["FT-079", "FT-070"], ["FT-079", "FT-071"],
-            ["FT-081", "FT-070"], ["FT-081", "FT-071"],
-            ["FT-085", "FT-070"], ["FT-085", "FT-071"],
-
-            ["FT-073", "FT-074"],
-            ["FT-075", "FT-073"], ["FT-075", "FT-074"],
-            ["FT-075", "FT-076"],
-            ["FT-077", "FT-075"], ["FT-077", "FT-076"],
-
-            ["FT-081", "FT-082"],
-            ["FT-083", "FT-081"], ["FT-083", "FT-082"],
-
-            ["FT-085", "FT-086"],
-            ["FT-087", "FT-085"], ["FT-087", "FT-086"],
-            ["FT-088", "FT-085"], ["FT-088", "FT-086"],
-            ["FT-088", "FT-089"],
-            ["FT-090", "FT-088"], ["FT-090", "FT-089"],
-
-            ["FT-021", "FT-079"],
-            ["FT-002", "FT-021"], ["FT-002", "FT-079"],
-            ["FT-011", "FT-021"], ["FT-011", "FT-079"],
-            ["FT-007", "FT-021"], ["FT-007", "FT-079"],
-            ["FT-001", "FT-002"],
-            ["FT-003", "FT-001"], ["FT-003", "FT-002"],
-            ["FT-004", "FT-001"], ["FT-004", "FT-002"],
-            ["FT-011", "FT-012"],
-            ["FT-013", "FT-011"], ["FT-013", "FT-012"],
-            ["FT-007", "FT-006"],
-            ["FT-008", "FT-007"], ["FT-008", "FT-006"],
-            ["FT-009", "FT-007"], ["FT-009", "FT-006"],
-
-            ["FT-259", "FT-260"],
-            ["FT-261", "FT-259"], ["FT-261", "FT-260"],
-            ["FT-262", "FT-259"], ["FT-262", "FT-260"],
-
-            ["FT-261", "FT-263"],
-            ["FT-264", "FT-261"], ["FT-264", "FT-263"],
-            ["FT-265", "FT-261"], ["FT-265", "FT-263"],
-            ["FT-016", "FT-261"], ["FT-016", "FT-263"],
-
-            ["FT-268", "FT-264"],
-            ["FT-269", "FT-264"],
-
-            ["FT-268", "FT-271"],
-            ["FT-272", "FT-268"], ["FT-272", "FT-271"],
-            ["FT-273", "FT-268"], ["FT-273", "FT-271"],
-            ["FT-274", "FT-268"], ["FT-274", "FT-271"],
-
-            ["FT-272", "FT-275"],
-            ["FT-276", "FT-272"], ["FT-276", "FT-275"],
-            ["FT-277", "FT-272"], ["FT-277", "FT-275"],
-
-            ["FT-273", "FT-283"],
-            ["FT-284", "FT-273"], ["FT-284", "FT-283"],
-            ["FT-285", "FT-273"], ["FT-285", "FT-283"],
-
-            ["FT-265", "FT-290"],
-            ["FT-291", "FT-265"], ["FT-291", "FT-290"],
-            ["FT-292", "FT-265"], ["FT-292", "FT-290"],
-            ["FT-293", "FT-265"], ["FT-293", "FT-290"],
-
-            ["FT-291", "FT-295"],
-            ["FT-296", "FT-291"], ["FT-296", "FT-295"],
-            ["FT-297", "FT-291"], ["FT-297", "FT-295"],
-            ["FT-298", "FT-291"], ["FT-298", "FT-295"],
-
-            ["FT-293", "FT-294"],
-            ["FT-304", "FT-293"], ["FT-304", "FT-294"],
-            ["FT-308", "FT-293"], ["FT-308", "FT-294"],
-
-            ["FT-304", "FT-305"],
-            ["FT-306", "FT-304"], ["FT-306", "FT-305"],
-
-            ["FT-308", "FT-309"],
-            ["FT-310", "FT-308"], ["FT-310", "FT-309"]
-        ];
+        // DYNAMIC 3D CONNECTIONS GENERATOR BASED ON DATA
+        const connectionsData = [];
+        membersData.forEach(m => {
+            if (m.spouse && marbleMap[m.spouse]) {
+                connectionsData.push([m.uid, m.spouse]);
+            }
+            if (m.father && marbleMap[m.father]) {
+                connectionsData.push([m.uid, m.father]);
+            }
+            if (m.mother && marbleMap[m.mother]) {
+                connectionsData.push([m.uid, m.mother]);
+            }
+        });
 
         const connections = [];
         connectionsData.forEach(pair => {
@@ -1335,7 +1394,89 @@
         animate();
         initializeStatsAndOptions();
 
-        // RELATIVE 2D BLOODLINE CALCULATOR TOOL
+        // FIXED SVG CONNECTIONS ALGORITHM USING ABSOLUTE SCREEN COORDINATES
+        let currentZoom = 1;
+        function zoomTree(delta) {
+            currentZoom = Math.max(0.4, Math.min(2.2, currentZoom + delta));
+            document.getElementById('tree-2d-view').style.transform = `scale(${currentZoom})`;
+            setTimeout(drawSvgConnections, 100);
+        }
+
+        function resetZoom() {
+            currentZoom = 1;
+            document.getElementById('tree-2d-view').style.transform = `scale(1)`;
+            setTimeout(drawSvgConnections, 100);
+        }
+
+        function printTree() {
+            const wrapper = document.getElementById('tree-2d-view');
+            
+            const containerWidth = wrapper.offsetWidth;
+            const containerHeight = wrapper.offsetHeight;
+
+            const printPageWidth = 1000; 
+            const printPageHeight = 650;
+
+            const scaleX = printPageWidth / containerWidth;
+            const scaleY = printPageHeight / containerHeight;
+            let autoScale = Math.min(scaleX, scaleY, 1);
+
+            wrapper.style.transform = `scale(${autoScale})`;
+            drawSvgConnections();
+
+            setTimeout(() => {
+                window.print();
+                wrapper.style.transform = `scale(${currentZoom})`;
+                drawSvgConnections();
+            }, 300);
+        }
+
+        function drawSvgConnections() {
+            const svg = document.getElementById('tree-svg-canvas');
+            const wrapper = document.getElementById('tree-2d-view');
+            
+            if (!svg || !wrapper) return;
+            svg.innerHTML = '';
+            
+            const wRect = wrapper.getBoundingClientRect();
+            
+            svg.setAttribute('width', wrapper.scrollWidth || wrapper.offsetWidth);
+            svg.setAttribute('height', wrapper.scrollHeight || wrapper.offsetHeight);
+
+            const cards = document.querySelectorAll('.couple-node-card');
+            cards.forEach(parentCard => {
+                const parentId = parentCard.getAttribute('data-family-id');
+                const childrenCards = document.querySelectorAll(`.couple-node-card[data-parent-id="${parentId}"]`);
+
+                if (childrenCards.length > 0) {
+                    const pRect = parentCard.getBoundingClientRect();
+                    
+                    const startX = (pRect.left + pRect.width / 2 - wRect.left) / currentZoom;
+                    const startY = (pRect.bottom - wRect.top) / currentZoom;
+
+                    childrenCards.forEach(childCard => {
+                        const cRect = childCard.getBoundingClientRect();
+                        
+                        const endX = (cRect.left + cRect.width / 2 - wRect.left) / currentZoom;
+                        const endY = (cRect.top - wRect.top) / currentZoom;
+
+                        const midY = startY + (endY - startY) / 2;
+
+                        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                        const d = `M ${startX} ${startY} C ${startX} ${midY}, ${endX} ${midY}, ${endX} ${endY}`;
+                        path.setAttribute('d', d);
+                        path.setAttribute('stroke', '#00ffff');
+                        path.setAttribute('stroke-width', '2.5');
+                        path.setAttribute('fill', 'none');
+                        path.setAttribute('opacity', '0.9');
+                        svg.appendChild(path);
+                    });
+                }
+            });
+        }
+
+        document.getElementById('tree-viewport').addEventListener('scroll', drawSvgConnections);
+
         function calculateBloodline() {
             const rootUid = document.getElementById('bloodline-person').value;
             const resDiv = document.getElementById('bloodline-result');
@@ -1344,7 +1485,7 @@
 
             if (!rootUid) {
                 overlay2D.style.display = 'none';
-                resDiv.innerHTML = 'ব্যক্তি নির্বাচন করলে তার ২ডি জেনারেশন ট্রি স্ক্রিনে দেখা যাবে।';
+                resDiv.innerHTML = 'ব্যক্তি নির্বাচন করলে তার ২ডি বংশবৃক্ষ স্ক্রিনে ভেসে উঠবে।';
                 return;
             }
 
@@ -1353,7 +1494,6 @@
             const visited = new Set([rootUid]);
             const queue = [{ uid: rootUid, relGen: 0 }];
 
-            // BFS algorithm for relative generation mapping
             while (queue.length > 0) {
                 const current = queue.shift();
                 if (!relativeGenMap[current.relGen]) relativeGenMap[current.relGen] = [];
@@ -1373,61 +1513,54 @@
                 }
             }
 
-            // Render 2D Canvas View
             overlay2D.style.display = 'block';
-            container2D.innerHTML = '';
+            container2D.innerHTML = '<svg id="tree-svg-canvas"></svg>';
 
             const sortedGens = Object.keys(relativeGenMap).sort((a,b) => a - b);
             sortedGens.forEach(genLevel => {
                 const block = document.createElement('div');
                 block.className = 'gen-2d-block';
 
-                const labelText = genLevel == 0 
-                    ? `মূল ব্যক্তি: ${rootPerson.bnName} (জেনারেশন 0)` 
-                    : `${rootPerson.bnName}-এর সাপেক্ষে জেনারেশন +${genLevel}`;
-                
-                block.innerHTML = `<div class="gen-2d-label">${labelText}</div>`;
-
                 const row = document.createElement('div');
                 row.className = 'nodes-2d-row';
 
                 relativeGenMap[genLevel].forEach(p => {
-                    const card = document.createElement('div');
-                    card.className = `node-2d-card ${p.uid === rootUid ? 'root-card' : ''}`;
-                    card.onclick = () => focusByUid(p.uid);
-                    card.innerHTML = `
-                        <div class="card-2d-name">${p.bnName}</div>
-                        <div class="card-2d-nick">(${p.nick})</div>
-                    `;
-                    row.appendChild(card);
+                    const coupleCard = document.createElement('div');
+                    coupleCard.className = `couple-node-card ${p.uid === rootUid ? 'root-card' : ''}`;
+                    coupleCard.setAttribute('data-family-id', p.uid);
+                    if (p.father) coupleCard.setAttribute('data-parent-id', p.father);
 
-                    // Render spouse if present
+                    let cardHtml = `
+                        <div class="person-unit" onclick="focusByUid('${p.uid}')">
+                            <span class="person-icon">👤</span>
+                            <span class="card-2d-name">${p.bnName}</span>
+                        </div>
+                    `;
+
                     if (p.spouse) {
                         const spouseObj = membersData.find(m => m.uid === p.spouse);
                         if (spouseObj) {
-                            const spouseCard = document.createElement('div');
-                            spouseCard.className = 'node-2d-card spouse-card';
-                            spouseCard.onclick = () => focusByUid(spouseObj.uid);
-                            spouseCard.innerHTML = `
-                                <div class="card-2d-name">${spouseObj.bnName}</div>
-                                <div class="card-2d-nick">সঙ্গী (${spouseObj.nick})</div>
+                            cardHtml += `
+                                <div class="spouse-divider">💍</div>
+                                <div class="person-unit spouse-unit" onclick="focusByUid('${spouseObj.uid}')">
+                                    <span class="card-2d-name">${spouseObj.bnName}</span>
+                                </div>
                             `;
-                            row.appendChild(spouseCard);
                         }
                     }
+
+                    coupleCard.innerHTML = cardHtml;
+                    row.appendChild(coupleCard);
                 });
 
                 block.appendChild(row);
                 container2D.appendChild(block);
             });
 
-            // Summary text update
+            setTimeout(drawSvgConnections, 150);
+
             const totalDescendants = visited.size - 1;
-            if (totalDescendants === 0) {
-                resDiv.innerHTML = `<b>${rootPerson.bnName}</b>-এর ব্লাডলাইনে কোনো পরবর্তী বংশধর নেই।`;
-            } else {
-                resDiv.innerHTML = `<strong style="color:#00ffff;">${rootPerson.bnName}</strong>-এর সাপেক্ষে পরবর্তী মোট <b>${totalDescendants} জন</b> বংশধর পাওয়া গেছে।`;
-            }
+            resDiv.innerHTML = `<strong style="color:#00ffff;">${rootPerson.bnName}</strong>-এর সাপেক্ষে পরবর্তী মোট <b>${totalDescendants} জন</b> বংশধর পাওয়া গেছে।`;
         }
 
         function showFilteredMemberList(filterType, title) {
@@ -1515,9 +1648,7 @@
             membersData.forEach(m => { graph[m.uid] = []; });
 
             membersData.forEach(m => {
-                if (m.spouse) {
-                    graph[m.uid].push({ target: m.spouse, relation: "স্বামী/স্ত্রী" });
-                }
+                if (m.spouse) graph[m.uid].push({ target: m.spouse, relation: "স্বামী/স্ত্রী" });
                 if (m.father) {
                     graph[m.uid].push({ target: m.father, relation: "পিতা" });
                     const isMale = m.gender.includes("Male") || m.gender.includes("পুরুষ") || m.gender === "M";
@@ -1588,9 +1719,7 @@
                     const div = document.createElement('div');
                     div.className = 'search-item';
                     div.innerHTML = `<strong>${item.bnName}</strong> (${item.uid})<br><small style="color:#aaa">${item.enName}</small>`;
-                    div.onclick = () => {
-                        focusByUid(item.uid);
-                    };
+                    div.onclick = () => { focusByUid(item.uid); };
                     resultsContainer.appendChild(div);
                 });
             } else {
@@ -1676,17 +1805,9 @@
 
             animateMarbleTo(selectedMarble, { x: 0, y: 0, z: 0 });
 
-            if (data.spouse && marbleMap[data.spouse]) {
-                animateMarbleTo(marbleMap[data.spouse], { x: 3.5, y: 0, z: 0 });
-            }
-
-            if (data.father && marbleMap[data.father]) {
-                animateMarbleTo(marbleMap[data.father], { x: -1.8, y: 3.5, z: 0 });
-            }
-
-            if (data.mother && marbleMap[data.mother]) {
-                animateMarbleTo(marbleMap[data.mother], { x: 1.8, y: 3.5, z: 0 });
-            }
+            if (data.spouse && marbleMap[data.spouse]) animateMarbleTo(marbleMap[data.spouse], { x: 3.5, y: 0, z: 0 });
+            if (data.father && marbleMap[data.father]) animateMarbleTo(marbleMap[data.father], { x: -1.8, y: 3.5, z: 0 });
+            if (data.mother && marbleMap[data.mother]) animateMarbleTo(marbleMap[data.mother], { x: 1.8, y: 3.5, z: 0 });
 
             if (data.children && data.children.length > 0) {
                 const count = data.children.length;
@@ -1699,9 +1820,7 @@
             }
 
             clickableMarbles.forEach(m => {
-                if (!activeUids.has(m.userData.uid)) {
-                    fadeOutMarble(m);
-                }
+                if (!activeUids.has(m.userData.uid)) fadeOutMarble(m);
             });
 
             threads.forEach((thread, index) => {
@@ -1710,9 +1829,7 @@
 
                 if (isPairActive) {
                     thread.visible = true;
-                    new TWEEN.Tween(thread.material)
-                        .to({ opacity: 0.8 }, 1000)
-                        .start();
+                    new TWEEN.Tween(thread.material).to({ opacity: 0.8 }, 1000).start();
                 } else {
                     new TWEEN.Tween(thread.material)
                         .to({ opacity: 0 }, 600)
@@ -1721,24 +1838,15 @@
                 }
             });
 
-            new TWEEN.Tween(camera.position)
-                .to({ x: 0, y: 0, z: 14 }, 1000)
-                .easing(TWEEN.Easing.Cubic.Out)
-                .start();
-
-            new TWEEN.Tween(controls.target)
-                .to({ x: 0, y: 0, z: 0 }, 1000)
-                .easing(TWEEN.Easing.Cubic.Out)
-                .start();
+            new TWEEN.Tween(camera.position).to({ x: 0, y: 0, z: 14 }, 1000).easing(TWEEN.Easing.Cubic.Out).start();
+            new TWEEN.Tween(controls.target).to({ x: 0, y: 0, z: 0 }, 1000).easing(TWEEN.Easing.Cubic.Out).start();
 
             showPopup(data);
         }
 
         function focusByUid(uid) {
             const drawer = document.getElementById('nav-drawer');
-            if (drawer.classList.contains('open')) {
-                toggleDrawer();
-            }
+            if (drawer.classList.contains('open')) toggleDrawer();
             document.getElementById('tree-2d-overlay').style.display = 'none';
             if (marbleMap[uid]) selectMarble(marbleMap[uid]);
         }
@@ -1800,15 +1908,8 @@
                 new TWEEN.Tween(t.material).to({ opacity: 0.5 }, 800).start();
             });
 
-            new TWEEN.Tween(camera.position)
-                .to(defaultCameraPos, 1000)
-                .easing(TWEEN.Easing.Cubic.Out)
-                .start();
-
-            new TWEEN.Tween(controls.target)
-                .to({ x: 0, y: 0, z: 0 }, 1000)
-                .easing(TWEEN.Easing.Cubic.Out)
-                .start();
+            new TWEEN.Tween(camera.position).to(defaultCameraPos, 1000).easing(TWEEN.Easing.Cubic.Out).start();
+            new TWEEN.Tween(controls.target).to({ x: 0, y: 0, z: 0 }, 1000).easing(TWEEN.Easing.Cubic.Out).start();
 
             isMarbleSelected = false;
             setTimeout(() => { isAnimating = true; }, 500);
@@ -1818,6 +1919,7 @@
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
+            drawSvgConnections();
         });
     </script>
 </body>
