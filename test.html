@@ -1166,7 +1166,7 @@
             return sprite;
         }
 
-        // ALL MEMBERS DATA (INCLUDING NEWLY ADDED MEMBERS & RELATIONS)
+        // ALL MEMBERS DATA (CORRECTED FT-019 & FT-036 CHILDREN RELATIONSHIPS)
         const membersData = [
             // Ancestors / Root Generation
             { uid: "FT-120", bnName: "রাজমোহন", enName: "Rajmohon", nick: "রাজমোহন", gender: "Male", color: 0x0055ff, spouse: null, father: null, mother: null, children: ["FT-122", "FT-124", "FT-126", "FT-128", "FT-130", "FT-132"], description: "" },
@@ -1240,9 +1240,10 @@
 
             { uid: "FT-157", bnName: "অর্ঘ রায়", enName: "Argho Roy", nick: "অর্ঘ", gender: "Male", color: 0x00ccff, spouse: null, father: null, mother: "FT-149", children: [], description: "" },
 
-            // UPDATED MEMBERS (FT-018 & FT-019)
+            // UPDATED MEMBERS (FT-018 & FT-019 CORRECTION)
             { uid: "FT-018", bnName: "জয়ন্তী রাণী রায়", enName: "Joyonti Rani Roy", nick: "জয়ন্তী", gender: "Female", color: 0xff1493, spouse: "FT-028", father: "FT-016", mother: "FT-017", children: ["FT-029", "FT-030", "FT-031", "FT-032", "FT-033"], description: "" },
-            { uid: "FT-019", bnName: "বাসন্তী রাণী রায়", enName: "Basonti Rani Roy", nick: "বাসন্তী", gender: "Female", color: 0xff1493, spouse: "FT-036", father: "FT-016", mother: "FT-017", children: ["FT-037", "FT-042"], description: "" },
+            // FT-019's children updated to FT-037 (1st) and FT-040 (2nd)
+            { uid: "FT-019", bnName: "বাসন্তী রাণী রায়", enName: "Basonti Rani Roy", nick: "বাসন্তী", gender: "Female", color: 0xff1493, spouse: "FT-036", father: "FT-016", mother: "FT-017", children: ["FT-037", "FT-040"], description: "" },
             
             { uid: "FT-020", bnName: "দিনেশ চন্দ্র রায়", enName: "Dinash Chandra Roy", nick: "দিনেশ", gender: "Male", color: 0x0055ff, spouse: "FT-047", father: "FT-016", mother: "FT-017", children: ["FT-048", "FT-049", "FT-050"], description: "" },
             { uid: "FT-047", bnName: "ভদ্রা রাণী রায়", enName: "Bhadra Rani Roy", nick: "ভদ্রা", gender: "Female", color: 0xff1493, spouse: "FT-020", father: null, mother: null, children: ["FT-048", "FT-049", "FT-050"], description: "" },
@@ -1282,15 +1283,17 @@
             { uid: "FT-106", bnName: "মানিক চন্দ্র রায়", enName: "Manik Chandra Roy", nick: "মানিক", gender: "Male", color: 0x0055ff, spouse: "FT-107", father: "FT-100", mother: "FT-101", children: [], description: "" },
             { uid: "FT-107", bnName: "সঞ্জিতা রানী রায়", enName: "Sanjita Rani Roy", nick: "সঞ্জিতা", gender: "Female", color: 0xff1493, spouse: "FT-106", father: null, mother: null, children: [], description: "" },
 
-            // NEWLY ADDED MEMBERS
+            // ADDED & CORRECTED FAMILY MEMBERS
             // --- FT-019 & FT-036 Family ---
-            { uid: "FT-036", bnName: "ভোলা কাজ্জি", enName: "Vola Kagozi", nick: "ভোলা", gender: "Male", color: 0x0055ff, spouse: "FT-019", father: null, mother: null, children: ["FT-037", "FT-042"], description: "" },
+            // FT-036 & FT-019 children set to FT-037 and FT-040
+            { uid: "FT-036", bnName: "ভোলা কাজ্জি", enName: "Vola Kagozi", nick: "ভোলা", gender: "Male", color: 0x0055ff, spouse: "FT-019", father: null, mother: null, children: ["FT-037", "FT-040"], description: "" },
             { uid: "FT-037", bnName: "বিপুল রায়", enName: "Bepul Roy", nick: "বিপুল", gender: "Male", color: 0x00ccff, spouse: "FT-038", father: "FT-036", mother: "FT-019", children: ["FT-039"], description: "" },
             { uid: "FT-038", bnName: "কল্পনা (নয়নি)", enName: "Kalpona (Nayoni)", nick: "কল্পনা", gender: "Female", color: 0xff1493, spouse: "FT-037", father: null, mother: null, children: ["FT-039"], description: "" },
             { uid: "FT-039", bnName: "তোতা রায় ", enName: "Tota Roy", nick: "তোতা", gender: "Male", color: 0x3366ff, spouse: null, father: "FT-037", mother: "FT-038", children: [], description: "" },
 
             // --- FT-040 & FT-041 Family ---
-            { uid: "FT-040", bnName: "বিউটি রানী", enName: "Beauty Rani", nick: "বিউটি", gender: "Female", color: 0xff1493, spouse: "FT-041", father: null, mother: null, children: ["FT-042", "FT-045"], description: "" },
+            // FT-040 updated with parents FT-036 & FT-019
+            { uid: "FT-040", bnName: "বিউটি রানী", enName: "Beauty Rani", nick: "বিউটি", gender: "Female", color: 0xff1493, spouse: "FT-041", father: "FT-036", mother: "FT-019", children: ["FT-042", "FT-045"], description: "" },
             { uid: "FT-041", bnName: "অমূল্য চন্দ্র রায়", enName: "Amullo Chandra Roy", nick: "অমূল্য", gender: "Male", color: 0x0055ff, spouse: "FT-040", father: null, mother: null, children: ["FT-042", "FT-045"], description: "" },
             { uid: "FT-042", bnName: "দিপা রানী", enName: "Depa Rani", nick: "দিপা", gender: "Female", color: 0xff1493, spouse: "FT-043", father: "FT-041", mother: "FT-040", children: [], description: "" },
             { uid: "FT-043", bnName: "মোহন রায়", enName: "Mohon Roy", nick: "মোহন", gender: "Male", color: 0x0055ff, spouse: "FT-042", father: null, mother: null, children: [], description: "" },
@@ -2266,7 +2269,7 @@
             document.getElementById('m-ename').innerText = data.enName;
             document.getElementById('m-gender').innerText = data.gender;
             document.getElementById('m-gen').innerText = "পিতৃকুল Gen " + data.patrilinealGen;
-            document.getElementById('m-dual-gen').innerText = `পিতৃকul: Gen ${data.patrilinealGen} | মাতৃকুল: Gen ${data.matrilinealGen}`;
+            document.getElementById('m-dual-gen').innerText = `পিতৃকুল: Gen ${data.patrilinealGen} | মাতৃকুল: Gen ${data.matrilinealGen}`;
             
             document.getElementById('m-spouse').innerHTML = renderRelationLink(data.spouse);
             document.getElementById('m-father').innerHTML = renderRelationLink(data.father);
