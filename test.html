@@ -13,11 +13,14 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        /* Only the 3D WebGL canvas needs to swallow touch gestures (for OrbitControls drag).
-           Applying touch-action:none on <body> previously blocked scrolling/panning
-           inside the drawer, lists, modals and the 2D tree viewport on mobile. */
         body > canvas {
             touch-action: none;
+            transition: opacity 0.45s ease;
+        }
+
+        body.mode-2d > canvas {
+            opacity: 0;
+            pointer-events: none;
         }
 
         #tree-viewport {
@@ -28,7 +31,6 @@
             -webkit-overflow-scrolling: touch;
         }
 
-        /* Loading overlay shown while 3D libraries / scene initialize */
         #app-loading {
             position: fixed;
             inset: 0;
@@ -58,7 +60,6 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Top Menu Button */
         #menu-toggle-btn {
             position: absolute;
             top: 20px;
@@ -87,7 +88,6 @@
             box-shadow: 0 10px 30px rgba(0, 255, 255, 0.3);
         }
 
-        /* Floating Restore / Un-minimize Button */
         #restore-btn {
             display: none;
             position: fixed;
@@ -113,7 +113,6 @@
             box-shadow: 0 12px 35px rgba(0, 255, 255, 0.4);
         }
 
-        /* Main Navigation Menu Drawer */
         #nav-drawer {
             position: fixed;
             top: 0;
@@ -353,9 +352,8 @@
             line-height: 1.6;
         }
 
-        /* ------------------ PERFECT 2D BLOODLINE OVERLAY ------------------ */
         #tree-2d-overlay {
-            display: none;
+            display: block;
             position: fixed;
             top: 0;
             left: 0;
@@ -365,6 +363,16 @@
             z-index: 500;
             overflow: hidden;
             box-sizing: border-box;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.45s ease;
+        }
+
+        body.mode-2d #tree-2d-overlay {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
         }
 
         .zoom-controls {
@@ -475,7 +483,6 @@
             position: relative;
         }
 
-        /* Couple Node Card Structure */
         .couple-node-card {
             background: linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.95));
             border: 2px solid #00ffff;
@@ -548,7 +555,6 @@
             z-index: 1;
         }
 
-        /* Modals & Lightbox */
         #list-modal {
             display: none;
             position: fixed;
@@ -747,7 +753,6 @@
             border: 2px solid #00ffff;
         }
 
-        /* ------------------ PERFECT FIT-TO-PAGE PRINT STYLES ------------------ */
         @page {
             size: A4 landscape;
             margin: 0;
@@ -768,6 +773,8 @@
 
             #tree-2d-overlay {
                 display: block !important;
+                opacity: 1 !important;
+                visibility: visible !important;
                 position: fixed !important;
                 top: 0 !important;
                 left: 0 !important;
@@ -826,7 +833,6 @@
         }
 
         @media (max-width: 420px) {
-            /* On very narrow screens, show icons only to avoid button overflow */
             .print-btn span.btn-label { display: none; }
         }
     </style>
@@ -1022,9 +1028,6 @@
             img.src = DEFAULT_NO_IMAGE;
         }
 
-        // Tries a short list of likely image paths/extensions for a member's photo
-        // before falling back to the placeholder icon. Add/reorder candidates to
-        // match your actual images/ folder naming convention.
         function loadProfilePhoto(imgEl, uid) {
             const candidates = [
                 `images/${uid}.jpg`,
@@ -1074,6 +1077,26 @@
             }
         }
 
+        function is2DViewActive() {
+            return document.body.classList.contains('mode-2d');
+        }
+
+        function setViewMode(mode) {
+            const hasTreeData = document.querySelectorAll('#tree-2d-view .couple-node-card').length > 0;
+
+            if (mode === '2d' && !hasTreeData) {
+                alert('প্রথমে মেনু খুলে "ব্লাডলাইন" ট্যাব থেকে একজন ব্যক্তি নির্বাচন করুন।');
+                return;
+            }
+
+            document.body.classList.toggle('mode-2d', mode === '2d');
+
+            if (mode === '2d') {
+                clearTimeout(setViewMode._lineTimer);
+                setViewMode._lineTimer = setTimeout(drawSvgConnections, 470);
+            }
+        }
+
         function switchTab(tabId, btn) {
             document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(tb => tb.classList.remove('active'));
@@ -1081,7 +1104,7 @@
             btn.classList.add('active');
 
             if (tabId !== 'bloodline-tab') {
-                document.getElementById('tree-2d-overlay').style.display = 'none';
+                if (is2DViewActive()) setViewMode('3d');
             } else {
                 calculateBloodline();
             }
@@ -1143,7 +1166,7 @@
             return sprite;
         }
 
-        // ALL MEMBERS DATA (UPDATED RELATIONS FOR FT-149 AND FT-138/139/140)
+        // ALL MEMBERS DATA (INCLUDING NEWLY ADDED MEMBERS & RELATIONS)
         const membersData = [
             // Ancestors / Root Generation
             { uid: "FT-120", bnName: "রাজমোহন", enName: "Rajmohon", nick: "রাজমোহন", gender: "Male", color: 0x0055ff, spouse: null, father: null, mother: null, children: ["FT-122", "FT-124", "FT-126", "FT-128", "FT-130", "FT-132"], description: "" },
@@ -1180,7 +1203,6 @@
             { uid: "FT-134", bnName: "কালিপদ", enName: "Kalipada", nick: "কালিপদ", gender: "Male", color: 0x0055ff, spouse: null, father: "FT-122", mother: null, children: [], description: "" },
             { uid: "FT-136", bnName: "খুকি", enName: "Khuki", nick: "খুকি", gender: "Female", color: 0xff1493, spouse: null, father: "FT-122", mother: null, children: [], description: "তার সম্পূর্ণ পরিবার ভারতে অবস্থান করছে।" },
             
-            // FT-138 updated with both wives: FT-139 and FT-140
             { uid: "FT-138", bnName: "বিজয় চন্দ্র রায়", enName: "Bijoy Chandra Roy", nick: "বিজয়", gender: "Male", color: 0x0055ff, spouse: ["FT-139", "FT-140"], father: "FT-124", mother: null, children: ["FT-141"], description: "" },
             { uid: "FT-139", bnName: "সিন্দু রানী রায়", enName: "Shindu Rani Roy", nick: "সিন্দু", gender: "Female", color: 0xff1493, spouse: "FT-138", father: null, mother: null, children: [], description: "১ম স্ত্রী" },
             { uid: "FT-140", bnName: "মালতী রানী রায়", enName: "Malati Rani Roy", nick: "মালতী", gender: "Female", color: 0xff1493, spouse: "FT-138", father: null, mother: null, children: ["FT-141"], description: "২য় স্ত্রী" },
@@ -1203,7 +1225,6 @@
             { uid: "FT-148", bnName: "স্বপ্না রাণী রায়", enName: "Sopna Rani Roy", nick: "স্বপ্না", gender: "Female", color: 0xff1493, spouse: "FT-153", father: "FT-145", mother: "FT-146", children: ["FT-154", "FT-155"], description: "" },
             { uid: "FT-153", bnName: "সুরেশ চন্দ্র রায়", enName: "Suresh Chandra Roy", nick: "সুরেশ", gender: "Male", color: 0x0055ff, spouse: "FT-148", father: null, mother: null, children: ["FT-154", "FT-155"], description: "" },
             
-            // FT-149 updated with child FT-157
             { uid: "FT-149", bnName: "মৈত্রী রাণী রায়", enName: "Maitri Rani Roy", nick: "মৈত্রী", gender: "Female", color: 0xff1493, spouse: null, father: "FT-145", mother: "FT-146", children: ["FT-157"], description: "" },
 
             // Gen 4
@@ -1217,11 +1238,12 @@
             { uid: "FT-154", bnName: "শুরঞ্জনা রানী রায়", enName: "Suranjana Rani Roy", nick: "শুরঞ্জনা", gender: "Female", color: 0xff1493, spouse: null, father: "FT-153", mother: "FT-148", children: [], description: "" },
             { uid: "FT-155", bnName: "স্বপ্নার ছেলে", enName: "Son of Sapna", nick: "স্বপ্নার ছেলে", gender: "Male", color: 0x00ccff, spouse: null, father: "FT-153", mother: "FT-148", children: [], description: "" },
 
-            // FT-157 updated with mother FT-149
             { uid: "FT-157", bnName: "অর্ঘ রায়", enName: "Argho Roy", nick: "অর্ঘ", gender: "Male", color: 0x00ccff, spouse: null, father: null, mother: "FT-149", children: [], description: "" },
 
-            { uid: "FT-018", bnName: "জয়ন্তী রাণী রায়", enName: "Joyonti Rani Roy", nick: "জয়ন্তী", gender: "Female", color: 0xff1493, spouse: null, father: "FT-016", mother: "FT-017", children: [], description: "" },
-            { uid: "FT-019", bnName: "বাসন্তী রাণী রায়", enName: "Basonti Rani Roy", nick: "বাসন্তী", gender: "Female", color: 0xff1493, spouse: null, father: "FT-016", mother: "FT-017", children: [], description: "" },
+            // UPDATED MEMBERS (FT-018 & FT-019)
+            { uid: "FT-018", bnName: "জয়ন্তী রাণী রায়", enName: "Joyonti Rani Roy", nick: "জয়ন্তী", gender: "Female", color: 0xff1493, spouse: "FT-028", father: "FT-016", mother: "FT-017", children: ["FT-029", "FT-030", "FT-031", "FT-032", "FT-033"], description: "" },
+            { uid: "FT-019", bnName: "বাসন্তী রাণী রায়", enName: "Basonti Rani Roy", nick: "বাসন্তী", gender: "Female", color: 0xff1493, spouse: "FT-036", father: "FT-016", mother: "FT-017", children: ["FT-037", "FT-042"], description: "" },
+            
             { uid: "FT-020", bnName: "দিনেশ চন্দ্র রায়", enName: "Dinash Chandra Roy", nick: "দিনেশ", gender: "Male", color: 0x0055ff, spouse: "FT-047", father: "FT-016", mother: "FT-017", children: ["FT-048", "FT-049", "FT-050"], description: "" },
             { uid: "FT-047", bnName: "ভদ্রা রাণী রায়", enName: "Bhadra Rani Roy", nick: "ভদ্রা", gender: "Female", color: 0xff1493, spouse: "FT-020", father: null, mother: null, children: ["FT-048", "FT-049", "FT-050"], description: "" },
 
@@ -1260,7 +1282,29 @@
             { uid: "FT-106", bnName: "মানিক চন্দ্র রায়", enName: "Manik Chandra Roy", nick: "মানিক", gender: "Male", color: 0x0055ff, spouse: "FT-107", father: "FT-100", mother: "FT-101", children: [], description: "" },
             { uid: "FT-107", bnName: "সঞ্জিতা রানী রায়", enName: "Sanjita Rani Roy", nick: "সঞ্জিতা", gender: "Female", color: 0xff1493, spouse: "FT-106", father: null, mother: null, children: [], description: "" },
 
-            // Gen 5
+            // NEWLY ADDED MEMBERS
+            // --- FT-019 & FT-036 Family ---
+            { uid: "FT-036", bnName: "ভোলা কাজ্জি", enName: "Vola Kagozi", nick: "ভোলা", gender: "Male", color: 0x0055ff, spouse: "FT-019", father: null, mother: null, children: ["FT-037", "FT-042"], description: "" },
+            { uid: "FT-037", bnName: "বিপুল রায়", enName: "Bepul Roy", nick: "বিপুল", gender: "Male", color: 0x00ccff, spouse: "FT-038", father: "FT-036", mother: "FT-019", children: ["FT-039"], description: "" },
+            { uid: "FT-038", bnName: "কল্পনা (নয়নি)", enName: "Kalpona (Nayoni)", nick: "কল্পনা", gender: "Female", color: 0xff1493, spouse: "FT-037", father: null, mother: null, children: ["FT-039"], description: "" },
+            { uid: "FT-039", bnName: "তোতা রায় ", enName: "Tota Roy", nick: "তোতা", gender: "Male", color: 0x3366ff, spouse: null, father: "FT-037", mother: "FT-038", children: [], description: "" },
+
+            // --- FT-040 & FT-041 Family ---
+            { uid: "FT-040", bnName: "বিউটি রানী", enName: "Beauty Rani", nick: "বিউটি", gender: "Female", color: 0xff1493, spouse: "FT-041", father: null, mother: null, children: ["FT-042", "FT-045"], description: "" },
+            { uid: "FT-041", bnName: "অমূল্য চন্দ্র রায়", enName: "Amullo Chandra Roy", nick: "অমূল্য", gender: "Male", color: 0x0055ff, spouse: "FT-040", father: null, mother: null, children: ["FT-042", "FT-045"], description: "" },
+            { uid: "FT-042", bnName: "দিপা রানী", enName: "Depa Rani", nick: "দিপা", gender: "Female", color: 0xff1493, spouse: "FT-043", father: "FT-041", mother: "FT-040", children: [], description: "" },
+            { uid: "FT-043", bnName: "মোহন রায়", enName: "Mohon Roy", nick: "মোহন", gender: "Male", color: 0x0055ff, spouse: "FT-042", father: null, mother: null, children: [], description: "" },
+            { uid: "FT-045", bnName: "অর্জুন চন্দ্র রায়", enName: "Arjun Chandra Roy", nick: "অর্জুন", gender: "Male", color: 0x00ccff, spouse: null, father: "FT-041", mother: "FT-040", children: [], description: "" },
+
+            // --- FT-018 & FT-028 Family ---
+            { uid: "FT-028", bnName: "রমেশ চন্দ্র রায়", enName: "Romesh Chandra Roy", nick: "রমেশ", gender: "Male", color: 0x0055ff, spouse: "FT-018", father: null, mother: null, children: ["FT-029", "FT-030", "FT-031", "FT-032", "FT-033"], description: "১৯৭১ থেকে ভারতে." },
+            { uid: "FT-029", bnName: "অনজু রাণী রায়", enName: "Anju Rani Roy", nick: "অনজু", gender: "Female", color: 0xff1493, spouse: null, father: "FT-028", mother: "FT-018", children: [], description: "" },
+            { uid: "FT-030", bnName: "দিলীপ চন্দ্র রায়", enName: "Dilip Chandra Roy", nick: "দিলীপ", gender: "Male", color: 0x00ccff, spouse: null, father: "FT-028", mother: "FT-018", children: [], description: "" },
+            { uid: "FT-031", bnName: "নিত্যা রানী রায়", enName: "Nitta Chandra Roy", nick: "নিত্যা", gender: "Male", color: 0x00ccff, spouse: null, father: "FT-028", mother: "FT-018", children: [], description: "" },
+            { uid: "FT-032", bnName: "মানিক চন্দ্র রায়", enName: "Manik Chandra Roy", nick: "মানিক", gender: "Male", color: 0x00ccff, spouse: null, father: "FT-028", mother: "FT-018", children: [], description: "" },
+            { uid: "FT-033", bnName: "সঞ্জু রানী রায়", enName: "Sanju Rani Roy", nick: "টুকটুকি", gender: "Female", color: 0xff69b4, spouse: null, father: "FT-028", mother: "FT-018", children: [], description: "" },
+
+            // Gen 5 & Gen 6
             { uid: "FT-169", bnName: "টুম্পা রানী রায়", enName: "Tumpa Rani Roy", nick: "টুম্পা", gender: "Female", color: 0xff69b4, spouse: null, father: "FT-161", mother: null, children: [], description: "" },
             { uid: "FT-170", bnName: "মৌ রানী রায়", enName: "Mou Rani Roy", nick: "মৌ", gender: "Female", color: 0xff69b4, spouse: null, father: null, mother: "FT-165", children: [], description: "" },
 
@@ -1302,7 +1346,6 @@
             { uid: "FT-104", bnName: "অভ্র চন্দ্র রায়", enName: "Avro Chandra Roy", nick: "অভ্র", gender: "Male", color: 0x00ccff, spouse: null, father: "FT-102", mother: "FT-103", children: [], description: "" },
             { uid: "FT-105", bnName: "সৃজা মনি রায়", enName: "Srija Moni Roy", nick: "সৃজা", gender: "Female", color: 0xff69b4, spouse: null, father: "FT-102", mother: "FT-103", children: [], description: "" },
 
-            // Gen 6
             { uid: "FT-276", bnName: "ইরান চন্দ্র রায়", enName: "Iran Chandra Roy", nick: "ইরান", gender: "Male", color: 0x3366ff, spouse: null, father: "FT-272", mother: "FT-275", children: [], description: "" },
             { uid: "FT-277", bnName: "আকাশ চন্দ্র রায়", enName: "Akash Chandra Roy", nick: "আকাশ", gender: "Male", color: 0x3366ff, spouse: null, father: "FT-272", mother: "FT-275", children: [], description: "" },
             { uid: "FT-284", bnName: "বিদান চন্দ্র রায়", enName: "Bidan Chandra Roy", nick: "বিদান", gender: "Male", color: 0x3366ff, spouse: null, father: "FT-273", mother: "FT-283", children: [], description: "" },
@@ -1323,7 +1366,6 @@
             { uid: "FT-090", bnName: "অভিমুন্য রায় অভি", enName: "Abhimanyu Roy Avi", nick: "অভিমুন্য", gender: "Male", color: 0x00ccff, spouse: null, father: "FT-089", mother: "FT-088", children: [], description: "" }
         ];
 
-        // DUAL GENERATION CALCULATION ALGORITHM
         function calculateGenerations() {
             const memberDict = {};
             membersData.forEach(m => { memberDict[m.uid] = m; });
@@ -1441,7 +1483,6 @@
             return line;
         }
 
-        // DYNAMIC 3D CONNECTIONS GENERATOR BASED ON DATA
         const connectionsData = [];
         membersData.forEach(m => {
             if (m.spouse) {
@@ -1470,6 +1511,9 @@
         let angle = 0;
         function animate(time) {
             requestAnimationFrame(animate);
+
+            if (is2DViewActive()) return;
+
             TWEEN.update(time);
 
             if (isAnimating) {
@@ -1520,7 +1564,6 @@
             setTimeout(() => { loadingEl.style.display = 'none'; }, 400);
         }
 
-        // FIXED SVG CONNECTIONS ALGORITHM USING ABSOLUTE SCREEN COORDINATES
         let currentZoom = 1;
         function zoomTree(delta) {
             currentZoom = Math.max(0.4, Math.min(2.2, currentZoom + delta));
@@ -1534,12 +1577,6 @@
             setTimeout(drawSvgConnections, 100);
         }
 
-        // If the user still hits Ctrl+P / uses the browser's own print dialog,
-        // the @media print stylesheet changes the tree's layout (fixed position,
-        // different gaps, different transform-origin). The SVG connector lines
-        // must be redrawn AFTER that layout change, not before — that mismatch
-        // was the cause of "সুতা এলোমেলো" lines in printed PDFs. beforeprint
-        // fires once the print stylesheet is already active, so we recompute there.
         window.addEventListener('beforeprint', () => {
             drawSvgConnections();
         });
@@ -1561,18 +1598,12 @@
             return `${label}.${ext}`;
         }
 
-        // Renders the currently visible 2D tree (cards + SVG connector lines) to an
-        // off-DOM canvas at high resolution. Because it rasterizes the tree exactly
-        // as it is laid out on screen at this instant, the connector lines are
-        // guaranteed to line up with the cards — no separate layout pass involved.
         async function renderTreeToCanvas() {
             const wrapper = document.getElementById('tree-2d-view');
             if (typeof html2canvas === 'undefined') {
                 alert('এক্সপোর্ট লাইব্রেরি লোড হয়নি। ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।');
                 return null;
             }
-            // Temporarily reset zoom to 1 so the exported image isn't cropped/scaled oddly,
-            // then redraw connections to match, capture, and restore the user's zoom.
             const savedZoom = currentZoom;
             wrapper.style.transform = 'scale(1)';
             drawSvgConnections();
@@ -1580,7 +1611,7 @@
 
             const naturalW = wrapper.scrollWidth;
             const naturalH = wrapper.scrollHeight;
-            const MAX_DIMENSION = 8000; // stay safely under browser canvas size limits
+            const MAX_DIMENSION = 8000;
             let scale = 2;
             if (Math.max(naturalW, naturalH) * scale > MAX_DIMENSION) {
                 scale = Math.max(1, MAX_DIMENSION / Math.max(naturalW, naturalH));
@@ -1600,7 +1631,7 @@
         }
 
         async function exportTreeAsPNG() {
-            if (getComputedStyle(document.getElementById('tree-2d-overlay')).display === 'none') {
+            if (!is2DViewActive()) {
                 alert('প্রথমে "ব্লাডলাইন" ট্যাব থেকে একজন ব্যক্তি নির্বাচন করুন।');
                 return;
             }
@@ -1621,7 +1652,7 @@
         }
 
         async function exportTreeAsPDF() {
-            if (getComputedStyle(document.getElementById('tree-2d-overlay')).display === 'none') {
+            if (!is2DViewActive()) {
                 alert('প্রথমে "ব্লাডলাইন" ট্যাব থেকে একজন ব্যক্তি নির্বাচন করুন।');
                 return;
             }
@@ -1652,11 +1683,8 @@
             }
         }
 
-        // True SVG export: embeds the live tree HTML (cards + connector <path> lines)
-        // inside an <svg><foreignObject>, so the file stays a real, scalable .svg
-        // that still shows correct card-to-card connections at any zoom level.
         async function exportTreeAsSVG() {
-            if (getComputedStyle(document.getElementById('tree-2d-overlay')).display === 'none') {
+            if (!is2DViewActive()) {
                 alert('প্রথমে "ব্লাডলাইন" ট্যাব থেকে একজন ব্যক্তি নির্বাচন করুন।');
                 return;
             }
@@ -1771,14 +1799,17 @@
 
         document.getElementById('tree-viewport').addEventListener('scroll', drawSvgConnections);
 
-        // Desktop: Ctrl/Cmd + mouse wheel to zoom the 2D tree
+        document.getElementById('tree-2d-overlay').addEventListener('click', (e) => {
+            if (e.target.closest('.couple-node-card') || e.target.closest('.zoom-controls')) return;
+            setViewMode('3d');
+        });
+
         document.getElementById('tree-viewport').addEventListener('wheel', (e) => {
             if (!e.ctrlKey && !e.metaKey) return;
             e.preventDefault();
             zoomTree(e.deltaY < 0 ? 0.1 : -0.1);
         }, { passive: false });
 
-        // Mobile: two-finger pinch to zoom the 2D tree
         (function setupPinchZoom() {
             const viewport = document.getElementById('tree-viewport');
             let pinchStartDist = null;
@@ -1822,7 +1853,8 @@
             const container2D = document.getElementById('tree-2d-view');
 
             if (!rootUid) {
-                overlay2D.style.display = 'none';
+                container2D.innerHTML = '';
+                if (is2DViewActive()) setViewMode('3d');
                 resDiv.innerHTML = 'ব্যক্তি নির্বাচন করলে তার ২ডি বংশবৃক্ষ স্ক্রিনে ভেসে উঠবে।';
                 return;
             }
@@ -1830,13 +1862,6 @@
             const rootPerson = membersData.find(m => m.uid === rootUid);
             const relativeGenMap = {};
             const visited = new Set([rootUid]);
-            // Track the actual BFS parent uid alongside each node — this is the
-            // person whose card this row's children must visually connect to.
-            // (Using child.father/child.mother directly was the bug: when the
-            // traversal reaches a branch through the mother, her children's
-            // 'father' field points to her spouse, not to her — so the old code
-            // looked for a card that was never rendered under that id, and the
-            // connector line silently disappeared.)
             const queue = [{ uid: rootUid, relGen: 0, parentUid: null }];
 
             while (queue.length > 0) {
@@ -1858,7 +1883,6 @@
                 }
             }
 
-            overlay2D.style.display = 'block';
             container2D.innerHTML = '<svg id="tree-svg-canvas"></svg>';
 
             const sortedGens = Object.keys(relativeGenMap).sort((a,b) => a - b);
@@ -1906,6 +1930,7 @@
                 container2D.appendChild(block);
             });
 
+            setViewMode('2d');
             setTimeout(drawSvgConnections, 150);
 
             const totalDescendants = visited.size - 1;
@@ -2220,7 +2245,7 @@
         function focusByUid(uid) {
             const drawer = document.getElementById('nav-drawer');
             if (drawer.classList.contains('open')) toggleDrawer();
-            document.getElementById('tree-2d-overlay').style.display = 'none';
+            if (is2DViewActive()) setViewMode('3d');
             if (marbleMap[uid]) selectMarble(marbleMap[uid]);
         }
 
@@ -2241,7 +2266,7 @@
             document.getElementById('m-ename').innerText = data.enName;
             document.getElementById('m-gender').innerText = data.gender;
             document.getElementById('m-gen').innerText = "পিতৃকুল Gen " + data.patrilinealGen;
-            document.getElementById('m-dual-gen').innerText = `পিতৃকুল: Gen ${data.patrilinealGen} | মাতৃকুল: Gen ${data.matrilinealGen}`;
+            document.getElementById('m-dual-gen').innerText = `পিতৃকul: Gen ${data.patrilinealGen} | মাতৃকুল: Gen ${data.matrilinealGen}`;
             
             document.getElementById('m-spouse').innerHTML = renderRelationLink(data.spouse);
             document.getElementById('m-father').innerHTML = renderRelationLink(data.father);
