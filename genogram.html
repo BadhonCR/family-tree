@@ -2,15 +2,70 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Marbles & Perfect 2D Bloodline Tree</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+    <meta name="description" content="ইন্টারেক্টিভ ৩ডি ও ২ডি পারিবারিক বংশবৃক্ষ — সদস্য অনুসন্ধান, সম্পর্ক নির্ণয়, ব্লাডলাইন ট্রি ও PNG/SVG/PDF এক্সপোর্ট।">
+    <title>পারিবারিক বংশবৃক্ষ — 3D Marbles & Bloodline Tree</title>
     <style>
         body {
             margin: 0;
             overflow: hidden;
             background-color: #0b0b0b;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Only the 3D WebGL canvas needs to swallow touch gestures (for OrbitControls drag).
+           Applying touch-action:none on <body> previously blocked scrolling/panning
+           inside the drawer, lists, modals and the 2D tree viewport on mobile. */
+        body > canvas {
             touch-action: none;
+            transition: opacity 0.45s ease;
+        }
+
+        /* 2D/3D view toggle: fade the 3D canvas out while the 2D overlay fades in,
+           and vice versa, instead of an abrupt display:none/block swap. The WebGL
+           render loop keeps running underneath the whole time, so nothing has to
+           re-initialize when switching back — no pop-in, no frame drop. */
+        body.mode-2d > canvas {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #tree-viewport {
+            touch-action: auto;
+        }
+
+        .drawer-body, #search-results-list, #list-modal-body, .profile-details-list {
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Loading overlay shown while 3D libraries / scene initialize */
+        #app-loading {
+            position: fixed;
+            inset: 0;
+            z-index: 5000;
+            background: #0b0b0b;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            color: #00ffff;
+            font-size: 14px;
+            font-weight: 600;
+            transition: opacity 0.4s ease;
+        }
+
+        #app-loading .spinner {
+            width: 42px;
+            height: 42px;
+            border: 3px solid rgba(0, 255, 255, 0.2);
+            border-top-color: #00ffff;
+            border-radius: 50%;
+            animation: spin 0.9s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
         /* Top Menu Button */
@@ -310,7 +365,7 @@
 
         /* ------------------ PERFECT 2D BLOODLINE OVERLAY ------------------ */
         #tree-2d-overlay {
-            display: none;
+            display: block;
             position: fixed;
             top: 0;
             left: 0;
@@ -320,16 +375,65 @@
             z-index: 500;
             overflow: hidden;
             box-sizing: border-box;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.45s ease;
+        }
+
+        body.mode-2d #tree-2d-overlay {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        /* Floating 2D/3D toggle button — always reachable, top-center */
+        #view-toggle-btn {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 900;
+            background: rgba(15, 23, 42, 0.9);
+            color: #00ffff;
+            border: 1px solid rgba(0, 255, 255, 0.5);
+            padding: 10px 18px;
+            border-radius: 24px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 18px rgba(0,0,0,0.5);
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        #view-toggle-btn:hover {
+            transform: translateX(-50%) scale(1.05);
+            background: rgba(0, 255, 255, 0.15);
+        }
+
+        #view-toggle-btn:active {
+            transform: translateX(-50%) scale(0.97);
+        }
+
+        @media (max-width: 600px) {
+            #view-toggle-btn { top: auto; bottom: 18px; padding: 9px 14px; font-size: 12px; }
         }
 
         .zoom-controls {
             position: absolute;
             top: 20px;
             right: 20px;
+            left: 20px;
             z-index: 600;
             display: flex;
-            gap: 10px;
+            gap: 8px;
             align-items: center;
+            justify-content: flex-end;
+            flex-wrap: wrap;
         }
 
         .zoom-btn {
@@ -375,6 +479,12 @@
         .print-btn:hover {
             opacity: 0.9;
             transform: scale(1.04);
+        }
+
+        .print-btn:disabled {
+            opacity: 0.5;
+            cursor: wait;
+            transform: none;
         }
 
         #tree-viewport {
@@ -708,12 +818,14 @@
                 color: black !important;
             }
 
-            canvas, #nav-drawer, #menu-toggle-btn, #restore-btn, .zoom-controls, #popup-modal, #list-modal {
+            canvas, #nav-drawer, #menu-toggle-btn, #restore-btn, .zoom-controls, #popup-modal, #list-modal, #view-toggle-btn {
                 display: none !important;
             }
 
             #tree-2d-overlay {
                 display: block !important;
+                opacity: 1 !important;
+                visibility: visible !important;
                 position: fixed !important;
                 top: 0 !important;
                 left: 0 !important;
@@ -764,23 +876,43 @@
                 left: 16px !important; right: 16px !important;
                 top: 50% !important; transform: translateY(-50%) !important;
             }
+            .zoom-controls { top: 12px; left: 12px; right: 12px; gap: 6px; }
+            .zoom-btn { width: 36px; height: 36px; font-size: 16px; }
+            .print-btn { padding: 0 10px; height: 36px; font-size: 12px; }
+            #menu-toggle-btn { padding: 10px 16px; font-size: 13px; top: 12px; left: 12px; }
+            #list-modal { width: calc(100% - 32px) !important; left: 16px !important; right: 16px !important; transform: translateY(-50%) !important; }
+        }
+
+        @media (max-width: 420px) {
+            /* On very narrow screens, show icons only to avoid button overflow */
+            .print-btn span.btn-label { display: none; }
         }
     </style>
 </head>
 <body>
 
-    <button id="menu-toggle-btn" onclick="toggleDrawer()">
+    <div id="app-loading" aria-live="polite">
+        <div class="spinner"></div>
+        <div>বংশবৃক্ষ লোড হচ্ছে...</div>
+    </div>
+
+    <button id="menu-toggle-btn" onclick="toggleDrawer()" aria-label="মেনু খুলুন">
         <span>☰</span> <span>মেনু অপশন</span>
     </button>
 
-    <button id="restore-btn" onclick="toggleDrawer()">📋 প্যানেল খুলুন</button>
+    <button id="restore-btn" onclick="toggleDrawer()" aria-label="প্যানেল খুলুন">📋 প্যানেল খুলুন</button>
 
-    <div id="nav-drawer">
+    <button id="view-toggle-btn" onclick="toggleViewMode()" aria-label="২ডি/৩ডি ভিউ পরিবর্তন করুন">
+        <span id="view-toggle-icon">🌳</span>
+        <span id="view-toggle-label">২ডি ভিউ</span>
+    </button>
+
+    <div id="nav-drawer" role="dialog" aria-label="পারিবারিক প্যানেল">
         <div class="drawer-header">
             <h2>পারিবারিক প্যানেল</h2>
             <div class="header-actions">
-                <button class="btn-min" onclick="toggleDrawer()" title="মিনিমাইজ করুন">−</button>
-                <button class="btn-close" onclick="toggleDrawer()">✕</button>
+                <button class="btn-min" onclick="toggleDrawer()" title="মিনিমাইজ করুন" aria-label="মিনিমাইজ করুন">−</button>
+                <button class="btn-close" onclick="toggleDrawer()" aria-label="প্যানেল বন্ধ করুন">✕</button>
             </div>
         </div>
         
@@ -821,7 +953,7 @@
             </div>
 
             <div id="search-tab" class="tab-content">
-                <input type="text" id="search-input" placeholder="🔍 UID, নাম (বাংলা/Eng)..." oninput="handleSearch()">
+                <input type="text" id="search-input" placeholder="🔍 UID, নাম (বাংলা/Eng)..." oninput="debouncedSearch()">
                 <div id="search-results-list"></div>
             </div>
 
@@ -856,10 +988,12 @@
     <!-- 2D BLOODLINE OVERLAY -->
     <div id="tree-2d-overlay">
         <div class="zoom-controls">
-            <button class="zoom-btn" onclick="zoomTree(0.1)" title="Zoom In">➕</button>
-            <button class="zoom-btn" onclick="zoomTree(-0.1)" title="Zoom Out">➖</button>
-            <button class="zoom-btn" onclick="resetZoom()" title="Reset Zoom">↺</button>
-            <button class="print-btn" onclick="printTree()">🖨️ PDF প্রিন্ট</button>
+            <button class="zoom-btn" onclick="zoomTree(0.1)" title="Zoom In" aria-label="জুম ইন">➕</button>
+            <button class="zoom-btn" onclick="zoomTree(-0.1)" title="Zoom Out" aria-label="জুম আউট">➖</button>
+            <button class="zoom-btn" onclick="resetZoom()" title="Reset Zoom" aria-label="জুম রিসেট">↺</button>
+            <button class="print-btn" id="export-png-btn" onclick="exportTreeAsPNG()" title="PNG হিসেবে ডাউনলোড করুন" aria-label="PNG এক্সপোর্ট">🖼️ <span class="btn-label">PNG</span></button>
+            <button class="print-btn" id="export-svg-btn" onclick="exportTreeAsSVG()" title="SVG হিসেবে ডাউনলোড করুন" aria-label="SVG এক্সপোর্ট" style="background: linear-gradient(135deg, #7c3aed, #4c1d95);">🧬 <span class="btn-label">SVG</span></button>
+            <button class="print-btn" id="export-pdf-btn" onclick="exportTreeAsPDF()" title="PDF হিসেবে ডাউনলোড করুন (সুতা/লাইন নিখুঁত থাকবে)" aria-label="PDF এক্সপোর্ট" style="background: linear-gradient(135deg, #dc2626, #7f1d1d);">📄 <span class="btn-label">PDF</span></button>
         </div>
 
         <div id="tree-viewport">
@@ -932,13 +1066,46 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <script>
+        if (typeof THREE === 'undefined') {
+            const el = document.getElementById('app-loading');
+            if (el) {
+                el.innerHTML = '<div style="color:#ff6b6b; text-align:center; padding:0 24px; font-size:14px;">⚠️ প্রয়োজনীয় লাইব্রেরি লোড করা যায়নি।<br>ইন্টারনেট সংযোগ পরীক্ষা করে পেজটি রিফ্রেশ করুন।</div>';
+            }
+            throw new Error('THREE.js failed to load — aborting app init.');
+        }
+
         const DEFAULT_NO_IMAGE = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 24 24' fill='none' stroke='%2000ffff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='3' width='18' height='18' rx='2' ry='2'/><circle cx='8.5' cy='8.5' r='1.5'/><polyline points='21 15 16 10 5 21'/><line x1='3' y1='3' x2='21' y2='21'/></svg>";
 
         function handleImgError(img) {
             img.onerror = null;
             img.src = DEFAULT_NO_IMAGE;
+        }
+
+        // Tries a short list of likely image paths/extensions for a member's photo
+        // before falling back to the placeholder icon. Add/reorder candidates to
+        // match your actual images/ folder naming convention.
+        function loadProfilePhoto(imgEl, uid) {
+            const candidates = [
+                `images/${uid}.jpg`,
+                `images/${uid}.jpeg`,
+                `images/${uid}.png`,
+                `images/${uid} 01.jpg`
+            ];
+            let i = 0;
+            function tryNext() {
+                if (i >= candidates.length) {
+                    imgEl.onerror = null;
+                    imgEl.src = DEFAULT_NO_IMAGE;
+                    return;
+                }
+                imgEl.src = candidates[i++];
+            }
+            imgEl.onerror = tryNext;
+            tryNext();
         }
 
         function openLightbox(src) {
@@ -970,6 +1137,42 @@
             }
         }
 
+        function is2DViewActive() {
+            return document.body.classList.contains('mode-2d');
+        }
+
+        // Switches between the 3D marble scene and the 2D bloodline tree with a
+        // smooth opacity crossfade (see CSS: body.mode-2d rules). The WebGL render
+        // loop is never paused or torn down, so coming back to 3D is instant and
+        // glitch-free — there's no re-initialization, just a fade.
+        function setViewMode(mode) {
+            const hasTreeData = document.querySelectorAll('#tree-2d-view .couple-node-card').length > 0;
+
+            if (mode === '2d' && !hasTreeData) {
+                alert('প্রথমে মেনু খুলে "ব্লাডলাইন" ট্যাব থেকে একজন ব্যক্তি নির্বাচন করুন।');
+                return;
+            }
+
+            document.body.classList.toggle('mode-2d', mode === '2d');
+
+            const icon = document.getElementById('view-toggle-icon');
+            const label = document.getElementById('view-toggle-label');
+            if (mode === '2d') {
+                icon.textContent = '🔮';
+                label.textContent = '৩ডি ভিউ';
+                // Recompute connector lines once the fade-in has settled and layout is final.
+                clearTimeout(setViewMode._lineTimer);
+                setViewMode._lineTimer = setTimeout(drawSvgConnections, 470);
+            } else {
+                icon.textContent = '🌳';
+                label.textContent = '২ডি ভিউ';
+            }
+        }
+
+        function toggleViewMode() {
+            setViewMode(is2DViewActive() ? '3d' : '2d');
+        }
+
         function switchTab(tabId, btn) {
             document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(tb => tb.classList.remove('active'));
@@ -977,17 +1180,19 @@
             btn.classList.add('active');
 
             if (tabId !== 'bloodline-tab') {
-                document.getElementById('tree-2d-overlay').style.display = 'none';
+                if (is2DViewActive()) setViewMode('3d');
             } else {
                 calculateBloodline();
             }
         }
 
+        const isLowPowerDevice = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || window.innerWidth < 768;
+
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, isLowPowerDevice ? 1.5 : 2));
         document.body.appendChild(renderer.domElement);
 
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -1006,7 +1211,7 @@
         pointLight.position.set(5, 5, 5);
         scene.add(pointLight);
 
-        const geometry = new THREE.SphereGeometry(1, 64, 64);
+        const geometry = new THREE.SphereGeometry(1, isLowPowerDevice ? 20 : 48, isLowPowerDevice ? 20 : 48);
         const clickableMarbles = [];
         const marbleMap = {};
 
@@ -1037,17 +1242,25 @@
             return sprite;
         }
 
-        // ALL MEMBERS DATA
+        // ALL MEMBERS DATA (UPDATED RELATIONS FOR FT-149 AND FT-138/139/140)
         const membersData = [
-            // Gen 1
+            // Ancestors / Root Generation
+            { uid: "FT-120", bnName: "রাজমোহন", enName: "Rajmohon", nick: "রাজমোহন", gender: "Male", color: 0x0055ff, spouse: null, father: null, mother: null, children: ["FT-122", "FT-124", "FT-126", "FT-128", "FT-130", "FT-132"], description: "" },
             { uid: "FT-259", bnName: "কানাই চন্দ্র রায়", enName: "Kanai Chandra Roy", nick: "কানাই", gender: "Male", color: 0x0055ff, spouse: "FT-260", father: null, mother: null, children: ["FT-261", "FT-262"], description: "" },
             { uid: "FT-260", bnName: "ঋতুমাযী রানী রায়", enName: "Ritumayee Rani Roy", nick: "ঋতুমাযী", gender: "Female", color: 0xff1493, spouse: "FT-259", father: null, mother: null, children: ["FT-261", "FT-262"], description: "" },
             { uid: "FT-070", bnName: "সুরেশ দেউ দেব সিংহ", enName: "Suresh Deu Dev Singh", nick: "সুরেশ", gender: "Male", color: 0x0055ff, spouse: "FT-071", father: null, mother: null, children: ["FT-073", "FT-079", "FT-081", "FT-085"], description: "" },
             { uid: "FT-071", bnName: "সিতোময়ী রায় দেব সিংহ", enName: "Sitomoyi Roy Dev Singh", nick: "সিতোময়ী", gender: "Female", color: 0xff1493, spouse: "FT-070", father: null, mother: null, children: ["FT-073", "FT-079", "FT-081", "FT-085"], description: "" },
-            { uid: "FT-143", bnName: "ননীগোপাল", enName: "Noni Gopal", nick: "ননীগোপাল", gender: "Male", color: 0x0055ff, spouse: "FT-144", father: null, mother: null, children: ["FT-145", "FT-001"], description: "" },
+            { uid: "FT-143", bnName: "ননীগোপাল", enName: "Noni Gopal", nick: "ননীগোপাল", gender: "Male", color: 0x0055ff, spouse: "FT-144", father: "FT-124", mother: null, children: ["FT-145", "FT-001"], description: "" },
             { uid: "FT-144", bnName: "মাধবী রানী রায়", enName: "Madhobi Rani Roy", nick: "মাধবী", gender: "Female", color: 0xff1493, spouse: "FT-143", father: null, mother: null, children: ["FT-145", "FT-001"], description: "" },
 
             // Gen 2
+            { uid: "FT-122", bnName: "দক্ষিণামোহন", enName: "Dakshinamohan", nick: "দক্ষিণামোহন", gender: "Male", color: 0x0055ff, spouse: null, father: "FT-120", mother: null, children: ["FT-134", "FT-136"], description: "" },
+            { uid: "FT-124", bnName: "নবগোপাল", enName: "Nabo Gopal", nick: "নবগোপাল", gender: "Male", color: 0x0055ff, spouse: null, father: "FT-120", mother: null, children: ["FT-138", "FT-143"], description: "" },
+            { uid: "FT-126", bnName: "অন্নদামোহন", enName: "Annadamohan", nick: "অন্নদামোহন", gender: "Male", color: 0x0055ff, spouse: null, father: "FT-120", mother: null, children: [], description: "" },
+            { uid: "FT-128", bnName: "অম্বিকা", enName: "Ambika", nick: "অম্বিকা", gender: "Male", color: 0x0055ff, spouse: null, father: "FT-120", mother: null, children: ["FT-159"], description: "" },
+            { uid: "FT-130", bnName: "মেয়ে ১", enName: "UnKnown Girl 1", nick: "মেয়ে ১", gender: "Female", color: 0xff1493, spouse: null, father: "FT-120", mother: null, children: [], description: "" },
+            { uid: "FT-132", bnName: "মেয়ে ২", enName: "UnKnown Girl 2", nick: "মেয়ে ২", gender: "Female", color: 0xff1493, spouse: null, father: "FT-120", mother: null, children: [], description: "" },
+
             { uid: "FT-261", bnName: "মনাই চন্দ্র রায়", enName: "Monai Chandra Roy", nick: "মনাই", gender: "Male", color: 0x0055ff, spouse: "FT-263", father: "FT-259", mother: "FT-260", children: ["FT-264", "FT-265", "FT-016"], description: "" },
             { uid: "FT-263", bnName: "সুকুময়ী বর্মনী", enName: "Sukumayee Burmani", nick: "সুকুময়ী", gender: "Female", color: 0xff1493, spouse: "FT-261", father: null, mother: null, children: ["FT-264", "FT-265", "FT-016"], description: "" },
             { uid: "FT-262", bnName: "বিষ্ণুর দাদু", enName: "Vishnu's grandfather", nick: "বিষ্ণুর দাদু", gender: "Male", color: 0x0055ff, spouse: null, father: "FT-259", mother: "FT-260", children: [], description: "" },
@@ -1063,6 +1276,16 @@
             { uid: "FT-146", bnName: "দিনেশ্বরী রানী", enName: "Dineshwari Rani", nick: "দিনেশ্বরী", gender: "Female", color: 0xff1493, spouse: "FT-145", father: null, mother: null, children: ["FT-147", "FT-148", "FT-149"], description: "" },
 
             // Gen 3
+            { uid: "FT-134", bnName: "কালিপদ", enName: "Kalipada", nick: "কালিপদ", gender: "Male", color: 0x0055ff, spouse: null, father: "FT-122", mother: null, children: [], description: "" },
+            { uid: "FT-136", bnName: "খুকি", enName: "Khuki", nick: "খুকি", gender: "Female", color: 0xff1493, spouse: null, father: "FT-122", mother: null, children: [], description: "তার সম্পূর্ণ পরিবার ভারতে অবস্থান করছে।" },
+            
+            // FT-138 updated with both wives: FT-139 and FT-140
+            { uid: "FT-138", bnName: "বিজয় চন্দ্র রায়", enName: "Bijoy Chandra Roy", nick: "বিজয়", gender: "Male", color: 0x0055ff, spouse: ["FT-139", "FT-140"], father: "FT-124", mother: null, children: ["FT-141"], description: "" },
+            { uid: "FT-139", bnName: "সিন্দু রানী রায়", enName: "Shindu Rani Roy", nick: "সিন্দু", gender: "Female", color: 0xff1493, spouse: "FT-138", father: null, mother: null, children: [], description: "১ম স্ত্রী" },
+            { uid: "FT-140", bnName: "মালতী রানী রায়", enName: "Malati Rani Roy", nick: "মালতী", gender: "Female", color: 0xff1493, spouse: "FT-138", father: null, mother: null, children: ["FT-141"], description: "২য় স্ত্রী" },
+
+            { uid: "FT-159", bnName: "হেমেন চন্দ্র রায়", enName: "Heman Chandra Roy", nick: "হেমেন", gender: "Male", color: 0x0055ff, spouse: null, father: "FT-128", mother: null, children: ["FT-161", "FT-163", "FT-165", "FT-166"], description: "" },
+
             { uid: "FT-016", bnName: "দিনোনাথ রায়", enName: "Dinonath Roy", nick: "খোকা সরকার", gender: "Male", color: 0x0055ff, spouse: "FT-017", father: "FT-261", mother: "FT-263", children: ["FT-018", "FT-019", "FT-020", "FT-021", "FT-022", "FT-023", "FT-024", "FT-025"], description: "" },
             { uid: "FT-017", bnName: "দুলালী রাণী রায়", enName: "Dulali Rani Roy", nick: "নলিনী", gender: "Female", color: 0xff1493, spouse: "FT-016", father: null, mother: null, children: ["FT-018", "FT-019", "FT-020", "FT-021", "FT-022", "FT-023", "FT-024", "FT-025"], description: "" },
             { uid: "FT-264", bnName: "মহিম চন্দ্র রায়", enName: "Mahim Chandra Roy", nick: "মহিম", gender: "Male", color: 0x0055ff, spouse: null, father: "FT-261", mother: "FT-263", children: ["FT-268", "FT-269"], description: "" },
@@ -1075,10 +1298,27 @@
 
             { uid: "FT-147", bnName: "রত্না রাণী রায়", enName: "Ratna Rani Roy", nick: "রত্না", gender: "Female", color: 0xff1493, spouse: "FT-150", father: "FT-145", mother: "FT-146", children: ["FT-151", "FT-152"], description: "" },
             { uid: "FT-150", bnName: "রতন চন্দ্র রায়", enName: "Raton Chandra Roy", nick: "রতন", gender: "Male", color: 0x0055ff, spouse: "FT-147", father: null, mother: null, children: ["FT-151", "FT-152"], description: "" },
-            { uid: "FT-148", bnName: "স্বপ্না রাণী রায়", enName: "Sopna Rani Roy", nick: "স্বপ্না", gender: "Female", color: 0xff1493, spouse: null, father: "FT-145", mother: "FT-146", children: [], description: "" },
-            { uid: "FT-149", bnName: "মৈত্রী রাণী রায়", enName: "Maitri Rani Roy", nick: "মৈত্রী", gender: "Female", color: 0xff1493, spouse: null, father: "FT-145", mother: "FT-146", children: [], description: "" },
+            
+            { uid: "FT-148", bnName: "স্বপ্না রাণী রায়", enName: "Sopna Rani Roy", nick: "স্বপ্না", gender: "Female", color: 0xff1493, spouse: "FT-153", father: "FT-145", mother: "FT-146", children: ["FT-154", "FT-155"], description: "" },
+            { uid: "FT-153", bnName: "সুরেশ চন্দ্র রায়", enName: "Suresh Chandra Roy", nick: "সুরেশ", gender: "Male", color: 0x0055ff, spouse: "FT-148", father: null, mother: null, children: ["FT-154", "FT-155"], description: "" },
+            
+            // FT-149 updated with child FT-157
+            { uid: "FT-149", bnName: "মৈত্রী রাণী রায়", enName: "Maitri Rani Roy", nick: "মৈত্রী", gender: "Female", color: 0xff1493, spouse: null, father: "FT-145", mother: "FT-146", children: ["FT-157"], description: "" },
 
             // Gen 4
+            { uid: "FT-141", bnName: "একান্ত চন্দ্র রায়", enName: "Akanto Chandra Roy", nick: "একান্ত", gender: "Male", color: 0x00ccff, spouse: null, father: "FT-138", mother: "FT-140", children: [], description: "" },
+
+            { uid: "FT-161", bnName: "উত্তম চন্দ্র রায়", enName: "Uttom Chandra Roy", nick: "উত্তম", gender: "Male", color: 0x0055ff, spouse: null, father: "FT-159", mother: null, children: ["FT-169"], description: "" },
+            { uid: "FT-163", bnName: "সৈত্যান চন্দ্র রায়", enName: "Soityan Chandra Roy", nick: "সৈত্যান", gender: "Male", color: 0x0055ff, spouse: null, father: "FT-159", mother: null, children: [], description: "" },
+            { uid: "FT-165", bnName: "সুচিত্রা রানী রায়", enName: "Suchittra Rani Roy", nick: "সুচিত্রা", gender: "Female", color: 0xff1493, spouse: null, father: "FT-159", mother: null, children: ["FT-170"], description: "" },
+            { uid: "FT-166", bnName: "সুফলা রানী রায়", enName: "Suphala Rani Roy", nick: "সুফলা", gender: "Female", color: 0xff1493, spouse: null, father: "FT-159", mother: null, children: [], description: "" },
+
+            { uid: "FT-154", bnName: "শুরঞ্জনা রানী রায়", enName: "Suranjana Rani Roy", nick: "শুরঞ্জনা", gender: "Female", color: 0xff1493, spouse: null, father: "FT-153", mother: "FT-148", children: [], description: "" },
+            { uid: "FT-155", bnName: "স্বপ্নার ছেলে", enName: "Son of Sapna", nick: "স্বপ্নার ছেলে", gender: "Male", color: 0x00ccff, spouse: null, father: "FT-153", mother: "FT-148", children: [], description: "" },
+
+            // FT-157 updated with mother FT-149
+            { uid: "FT-157", bnName: "অর্ঘ রায়", enName: "Argho Roy", nick: "অর্ঘ", gender: "Male", color: 0x00ccff, spouse: null, father: null, mother: "FT-149", children: [], description: "" },
+
             { uid: "FT-018", bnName: "জয়ন্তী রাণী রায়", enName: "Joyonti Rani Roy", nick: "জয়ন্তী", gender: "Female", color: 0xff1493, spouse: null, father: "FT-016", mother: "FT-017", children: [], description: "" },
             { uid: "FT-019", bnName: "বাসন্তী রাণী রায়", enName: "Basonti Rani Roy", nick: "বাসন্তী", gender: "Female", color: 0xff1493, spouse: null, father: "FT-016", mother: "FT-017", children: [], description: "" },
             { uid: "FT-020", bnName: "দিনেশ চন্দ্র রায়", enName: "Dinash Chandra Roy", nick: "দিনেশ", gender: "Male", color: 0x0055ff, spouse: "FT-047", father: "FT-016", mother: "FT-017", children: ["FT-048", "FT-049", "FT-050"], description: "" },
@@ -1120,6 +1360,9 @@
             { uid: "FT-107", bnName: "সঞ্জিতা রানী রায়", enName: "Sanjita Rani Roy", nick: "সঞ্জিতা", gender: "Female", color: 0xff1493, spouse: "FT-106", father: null, mother: null, children: [], description: "" },
 
             // Gen 5
+            { uid: "FT-169", bnName: "টুম্পা রানী রায়", enName: "Tumpa Rani Roy", nick: "টুম্পা", gender: "Female", color: 0xff69b4, spouse: null, father: "FT-161", mother: null, children: [], description: "" },
+            { uid: "FT-170", bnName: "মৌ রানী রায়", enName: "Mou Rani Roy", nick: "মৌ", gender: "Female", color: 0xff69b4, spouse: null, father: null, mother: "FT-165", children: [], description: "" },
+
             { uid: "FT-272", bnName: "বাদল চন্দ্র রায়", enName: "Badal Chandra Roy", nick: "বাদল", gender: "Male", color: 0x00ccff, spouse: "FT-275", father: "FT-268", mother: "FT-271", children: ["FT-276", "FT-277"], description: "" },
             { uid: "FT-275", bnName: "গীতা রানী রায়", enName: "Gita Rani Roy", nick: "গীতা", gender: "Female", color: 0xff1493, spouse: "FT-272", father: null, mother: null, children: ["FT-276", "FT-277"], description: "" },
             { uid: "FT-273", bnName: "ভোদল চন্দ্র রায়", enName: "Bhodal Chandra Roy", nick: "ভোদল", gender: "Male", color: 0x00ccff, spouse: "FT-283", father: "FT-268", mother: "FT-271", children: ["FT-284", "FT-285"], description: "" },
@@ -1132,7 +1375,7 @@
 
             { uid: "FT-304", bnName: "জাপান চন্দ্র রায়", enName: "Japan Chandra Roy", nick: "জাপান", gender: "Male", color: 0x00ccff, spouse: "FT-305", father: "FT-293", mother: "FT-294", children: ["FT-306"], description: "" },
             { uid: "FT-305", bnName: "রাধিকা রানী রায়", enName: "Radhika Rani Roy", nick: "রাধিকা", gender: "Female", color: 0xff1493, spouse: "FT-304", father: null, mother: null, children: ["FT-306"], description: "" },
-            { uid: "FT-308", bnName: "জার্মান চন্দ্র রায়", enName: "German Chandra Roy", nick: "জার্মান", gender: "Male", color: 0x00ccff, spouse: "FT-293", mother: "FT-294", children: ["FT-310"], description: "" },
+            { uid: "FT-308", bnName: "জার্মান চন্দ্র রায়", enName: "German Chandra Roy", nick: "জার্মান", gender: "Male", color: 0x00ccff, spouse: "FT-309", father: "FT-293", mother: "FT-294", children: ["FT-310"], description: "" },
             { uid: "FT-309", bnName: "কলি রানী রায়", enName: "Koli Rani Roy", nick: "কলি", gender: "Female", color: 0xff1493, spouse: "FT-308", father: null, mother: null, children: ["FT-310"], description: "" },
 
             { uid: "FT-048", bnName: "দিপিকা রানী রায়", enName: "Depika Rani Roy", nick: "দিপিকা", gender: "Female", color: 0xff1493, spouse: "FT-051", father: "FT-020", mother: "FT-047", children: [], description: "" },
@@ -1191,7 +1434,10 @@
                 if (!m) return 1;
 
                 if (m.father) return getPaternalGen(m.father, new Set(visited)) + 1;
-                if (m.spouse && memberDict[m.spouse] && memberDict[m.spouse].father) return getPaternalGen(m.spouse, new Set(visited));
+                if (m.spouse) {
+                    const spouseUid = Array.isArray(m.spouse) ? m.spouse[0] : m.spouse;
+                    if (memberDict[spouseUid] && memberDict[spouseUid].father) return getPaternalGen(spouseUid, new Set(visited));
+                }
                 return 1;
             }
 
@@ -1202,7 +1448,10 @@
                 if (!m) return 1;
 
                 if (m.mother) return getMaternalGen(m.mother, new Set(visited)) + 1;
-                if (m.spouse && memberDict[m.spouse] && memberDict[m.spouse].mother) return getMaternalGen(m.spouse, new Set(visited));
+                if (m.spouse) {
+                    const spouseUid = Array.isArray(m.spouse) ? m.spouse[0] : m.spouse;
+                    if (memberDict[spouseUid] && memberDict[spouseUid].mother) return getMaternalGen(spouseUid, new Set(visited));
+                }
                 return 1;
             }
 
@@ -1235,8 +1484,11 @@
                 else if (m.gender.includes('Female') || m.gender.includes('মহিলা') || m.gender === 'F') females++;
 
                 if (m.spouse) {
-                    const pair = [m.uid, m.spouse].sort().join('-');
-                    marriedCouples.add(pair);
+                    const spouses = Array.isArray(m.spouse) ? m.spouse : [m.spouse];
+                    spouses.forEach(sUid => {
+                        const pair = [m.uid, sUid].sort().join('-');
+                        marriedCouples.add(pair);
+                    });
                 }
 
                 let gen = m.patrilinealGen;
@@ -1288,51 +1540,22 @@
             return line;
         }
 
-        const connectionsData = [
-            ["FT-016", "FT-017"], ["FT-100", "FT-101"], ["FT-102", "FT-100"], ["FT-102", "FT-101"],
-            ["FT-012", "FT-100"], ["FT-012", "FT-101"], ["FT-106", "FT-100"], ["FT-106", "FT-101"],
-            ["FT-102", "FT-103"], ["FT-104", "FT-102"], ["FT-104", "FT-103"], ["FT-105", "FT-102"],
-            ["FT-105", "FT-103"], ["FT-106", "FT-107"], ["FT-143", "FT-144"], ["FT-145", "FT-143"],
-            ["FT-145", "FT-144"], ["FT-001", "FT-143"], ["FT-001", "FT-144"], ["FT-145", "FT-146"],
-            ["FT-147", "FT-145"], ["FT-147", "FT-146"], ["FT-148", "FT-145"], ["FT-148", "FT-146"],
-            ["FT-149", "FT-145"], ["FT-149", "FT-146"], ["FT-147", "FT-150"], ["FT-151", "FT-147"],
-            ["FT-151", "FT-150"], ["FT-152", "FT-147"], ["FT-152", "FT-150"], ["FT-018", "FT-016"],
-            ["FT-018", "FT-017"], ["FT-019", "FT-016"], ["FT-019", "FT-017"], ["FT-020", "FT-016"],
-            ["FT-020", "FT-017"], ["FT-021", "FT-016"], ["FT-021", "FT-017"], ["FT-022", "FT-016"],
-            ["FT-022", "FT-017"], ["FT-023", "FT-016"], ["FT-023", "FT-017"], ["FT-024", "FT-016"],
-            ["FT-024", "FT-017"], ["FT-025", "FT-016"], ["FT-025", "FT-017"], ["FT-020", "FT-047"],
-            ["FT-048", "FT-020"], ["FT-048", "FT-047"], ["FT-049", "FT-020"], ["FT-049", "FT-047"],
-            ["FT-050", "FT-020"], ["FT-050", "FT-047"], ["FT-048", "FT-051"], ["FT-024", "FT-062"],
-            ["FT-025", "FT-066"], ["FT-067", "FT-025"], ["FT-067", "FT-066"], ["FT-068", "FT-025"],
-            ["FT-068", "FT-066"], ["FT-023", "FT-055"], ["FT-056", "FT-023"], ["FT-056", "FT-055"],
-            ["FT-059", "FT-023"], ["FT-059", "FT-055"], ["FT-056", "FT-057"], ["FT-058", "FT-056"],
-            ["FT-058", "FT-057"], ["FT-059", "FT-060"], ["FT-070", "FT-071"], ["FT-073", "FT-070"],
-            ["FT-073", "FT-071"], ["FT-079", "FT-070"], ["FT-079", "FT-071"], ["FT-081", "FT-070"],
-            ["FT-081", "FT-071"], ["FT-085", "FT-070"], ["FT-085", "FT-071"], ["FT-073", "FT-074"],
-            ["FT-075", "FT-073"], ["FT-075", "FT-074"], ["FT-075", "FT-076"], ["FT-077", "FT-075"],
-            ["FT-077", "FT-076"], ["FT-081", "FT-082"], ["FT-083", "FT-081"], ["FT-083", "FT-082"],
-            ["FT-085", "FT-086"], ["FT-087", "FT-085"], ["FT-087", "FT-086"], ["FT-088", "FT-085"],
-            ["FT-088", "FT-086"], ["FT-088", "FT-089"], ["FT-090", "FT-088"], ["FT-090", "FT-089"],
-            ["FT-021", "FT-079"], ["FT-002", "FT-021"], ["FT-002", "FT-079"], ["FT-011", "FT-021"],
-            ["FT-011", "FT-079"], ["FT-007", "FT-021"], ["FT-007", "FT-079"], ["FT-001", "FT-002"],
-            ["FT-003", "FT-001"], ["FT-003", "FT-002"], ["FT-004", "FT-001"], ["FT-004", "FT-002"],
-            ["FT-011", "FT-012"], ["FT-013", "FT-011"], ["FT-013", "FT-012"], ["FT-007", "FT-006"],
-            ["FT-008", "FT-007"], ["FT-008", "FT-006"], ["FT-009", "FT-007"], ["FT-009", "FT-006"],
-            ["FT-259", "FT-260"], ["FT-261", "FT-259"], ["FT-261", "FT-260"], ["FT-262", "FT-259"],
-            ["FT-262", "FT-260"], ["FT-261", "FT-263"], ["FT-264", "FT-261"], ["FT-264", "FT-263"],
-            ["FT-265", "FT-261"], ["FT-265", "FT-263"], ["FT-016", "FT-261"], ["FT-016", "FT-263"],
-            ["FT-268", "FT-264"], ["FT-269", "FT-264"], ["FT-268", "FT-271"], ["FT-272", "FT-268"],
-            ["FT-272", "FT-271"], ["FT-273", "FT-268"], ["FT-273", "FT-271"], ["FT-274", "FT-268"],
-            ["FT-274", "FT-271"], ["FT-272", "FT-275"], ["FT-276", "FT-272"], ["FT-276", "FT-275"],
-            ["FT-277", "FT-272"], ["FT-277", "FT-275"], ["FT-273", "FT-283"], ["FT-284", "FT-273"],
-            ["FT-284", "FT-283"], ["FT-285", "FT-273"], ["FT-285", "FT-283"], ["FT-265", "FT-290"],
-            ["FT-291", "FT-265"], ["FT-291", "FT-290"], ["FT-292", "FT-265"], ["FT-292", "FT-290"],
-            ["FT-293", "FT-265"], ["FT-293", "FT-290"], ["FT-291", "FT-295"], ["FT-296", "FT-291"],
-            ["FT-296", "FT-295"], ["FT-297", "FT-291"], ["FT-297", "FT-295"], ["FT-298", "FT-291"],
-            ["FT-298", "FT-295"], ["FT-293", "FT-294"], ["FT-304", "FT-293"], ["FT-304", "FT-294"],
-            ["FT-308", "FT-293"], ["FT-308", "FT-294"], ["FT-304", "FT-305"], ["FT-306", "FT-304"],
-            ["FT-306", "FT-305"], ["FT-308", "FT-309"], ["FT-310", "FT-308"], ["FT-310", "FT-309"]
-        ];
+        // DYNAMIC 3D CONNECTIONS GENERATOR BASED ON DATA
+        const connectionsData = [];
+        membersData.forEach(m => {
+            if (m.spouse) {
+                const spouses = Array.isArray(m.spouse) ? m.spouse : [m.spouse];
+                spouses.forEach(sUid => {
+                    if (marbleMap[sUid]) connectionsData.push([m.uid, sUid]);
+                });
+            }
+            if (m.father && marbleMap[m.father]) {
+                connectionsData.push([m.uid, m.father]);
+            }
+            if (m.mother && marbleMap[m.mother]) {
+                connectionsData.push([m.uid, m.mother]);
+            }
+        });
 
         const connections = [];
         connectionsData.forEach(pair => {
@@ -1346,6 +1569,13 @@
         let angle = 0;
         function animate(time) {
             requestAnimationFrame(animate);
+
+            // While the 2D tree overlay is fully shown, the 3D scene is completely
+            // hidden behind it — skip the heavy per-frame work entirely. The loop
+            // itself keeps running (cheap) so switching back to 3D resumes instantly
+            // with no re-initialization and no visual pop.
+            if (is2DViewActive()) return;
+
             TWEEN.update(time);
 
             if (isAnimating) {
@@ -1390,6 +1620,12 @@
         animate();
         initializeStatsAndOptions();
 
+        const loadingEl = document.getElementById('app-loading');
+        if (loadingEl) {
+            loadingEl.style.opacity = '0';
+            setTimeout(() => { loadingEl.style.display = 'none'; }, 400);
+        }
+
         // FIXED SVG CONNECTIONS ALGORITHM USING ABSOLUTE SCREEN COORDINATES
         let currentZoom = 1;
         function zoomTree(delta) {
@@ -1404,27 +1640,195 @@
             setTimeout(drawSvgConnections, 100);
         }
 
-        function printTree() {
+        // If the user still hits Ctrl+P / uses the browser's own print dialog,
+        // the @media print stylesheet changes the tree's layout (fixed position,
+        // different gaps, different transform-origin). The SVG connector lines
+        // must be redrawn AFTER that layout change, not before — that mismatch
+        // was the cause of "সুতা এলোমেলো" lines in printed PDFs. beforeprint
+        // fires once the print stylesheet is already active, so we recompute there.
+        window.addEventListener('beforeprint', () => {
+            drawSvgConnections();
+        });
+        window.addEventListener('afterprint', () => {
+            drawSvgConnections();
+        });
+
+        function setExportButtonsBusy(busy) {
+            ['export-png-btn', 'export-svg-btn', 'export-pdf-btn'].forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) btn.disabled = busy;
+            });
+        }
+
+        function getExportFilename(ext) {
+            const sel = document.getElementById('bloodline-person');
+            const opt = sel && sel.options[sel.selectedIndex];
+            const label = opt && opt.value ? opt.text.replace(/[^\w\u0980-\u09FF]+/g, '_') : 'bloodline-tree';
+            return `${label}.${ext}`;
+        }
+
+        // Renders the currently visible 2D tree (cards + SVG connector lines) to an
+        // off-DOM canvas at high resolution. Because it rasterizes the tree exactly
+        // as it is laid out on screen at this instant, the connector lines are
+        // guaranteed to line up with the cards — no separate layout pass involved.
+        async function renderTreeToCanvas() {
             const wrapper = document.getElementById('tree-2d-view');
-            
-            const containerWidth = wrapper.offsetWidth;
-            const containerHeight = wrapper.offsetHeight;
+            if (typeof html2canvas === 'undefined') {
+                alert('এক্সপোর্ট লাইব্রেরি লোড হয়নি। ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।');
+                return null;
+            }
+            // Temporarily reset zoom to 1 so the exported image isn't cropped/scaled oddly,
+            // then redraw connections to match, capture, and restore the user's zoom.
+            const savedZoom = currentZoom;
+            wrapper.style.transform = 'scale(1)';
+            drawSvgConnections();
+            await new Promise(r => setTimeout(r, 60));
 
-            const printPageWidth = 1000; 
-            const printPageHeight = 650;
+            const naturalW = wrapper.scrollWidth;
+            const naturalH = wrapper.scrollHeight;
+            const MAX_DIMENSION = 8000; // stay safely under browser canvas size limits
+            let scale = 2;
+            if (Math.max(naturalW, naturalH) * scale > MAX_DIMENSION) {
+                scale = Math.max(1, MAX_DIMENSION / Math.max(naturalW, naturalH));
+            }
 
-            const scaleX = printPageWidth / containerWidth;
-            const scaleY = printPageHeight / containerHeight;
-            let autoScale = Math.min(scaleX, scaleY, 1);
+            const canvas = await html2canvas(wrapper, {
+                backgroundColor: '#0f172a',
+                scale: scale,
+                useCORS: true,
+                logging: false
+            });
 
-            wrapper.style.transform = `scale(${autoScale})`;
+            wrapper.style.transform = `scale(${savedZoom})`;
             drawSvgConnections();
 
-            setTimeout(() => {
-                window.print();
-                wrapper.style.transform = `scale(${currentZoom})`;
+            return canvas;
+        }
+
+        async function exportTreeAsPNG() {
+            if (!is2DViewActive()) {
+                alert('প্রথমে "ব্লাডলাইন" ট্যাব থেকে একজন ব্যক্তি নির্বাচন করুন।');
+                return;
+            }
+            setExportButtonsBusy(true);
+            try {
+                const canvas = await renderTreeToCanvas();
+                if (!canvas) return;
+                const link = document.createElement('a');
+                link.download = getExportFilename('png');
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            } catch (err) {
+                console.error(err);
+                alert('PNG এক্সপোর্ট ব্যর্থ হয়েছে। আবার চেষ্টা করুন।');
+            } finally {
+                setExportButtonsBusy(false);
+            }
+        }
+
+        async function exportTreeAsPDF() {
+            if (!is2DViewActive()) {
+                alert('প্রথমে "ব্লাডলাইন" ট্যাব থেকে একজন ব্যক্তি নির্বাচন করুন।');
+                return;
+            }
+            if (typeof window.jspdf === 'undefined') {
+                alert('PDF লাইব্রেরি লোড হয়নি। ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।');
+                return;
+            }
+            setExportButtonsBusy(true);
+            try {
+                const canvas = await renderTreeToCanvas();
+                if (!canvas) return;
+
+                const { jsPDF } = window.jspdf;
+                const imgData = canvas.toDataURL('image/png');
+                const isLandscape = canvas.width >= canvas.height;
+                const pdf = new jsPDF({
+                    orientation: isLandscape ? 'landscape' : 'portrait',
+                    unit: 'px',
+                    format: [canvas.width, canvas.height]
+                });
+                pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+                pdf.save(getExportFilename('pdf'));
+            } catch (err) {
+                console.error(err);
+                alert('PDF এক্সপোর্ট ব্যর্থ হয়েছে। আবার চেষ্টা করুন।');
+            } finally {
+                setExportButtonsBusy(false);
+            }
+        }
+
+        // True SVG export: embeds the live tree HTML (cards + connector <path> lines)
+        // inside an <svg><foreignObject>, so the file stays a real, scalable .svg
+        // that still shows correct card-to-card connections at any zoom level.
+        async function exportTreeAsSVG() {
+            if (!is2DViewActive()) {
+                alert('প্রথমে "ব্লাডলাইন" ট্যাব থেকে একজন ব্যক্তি নির্বাচন করুন।');
+                return;
+            }
+            setExportButtonsBusy(true);
+            try {
+                const wrapper = document.getElementById('tree-2d-view');
+                const savedZoom = currentZoom;
+                wrapper.style.transform = 'scale(1)';
                 drawSvgConnections();
-            }, 300);
+                await new Promise(r => setTimeout(r, 60));
+
+                const width = wrapper.scrollWidth;
+                const height = wrapper.scrollHeight;
+
+                let styleText = '';
+                document.querySelectorAll('style').forEach(s => { styleText += s.textContent + '\n'; });
+
+                const clone = wrapper.cloneNode(true);
+                clone.style.transform = 'none';
+
+                const svgNS = 'http://www.w3.org/2000/svg';
+                const svgRoot = document.createElementNS(svgNS, 'svg');
+                svgRoot.setAttribute('xmlns', svgNS);
+                svgRoot.setAttribute('width', width);
+                svgRoot.setAttribute('height', height);
+                svgRoot.setAttribute('viewBox', `0 0 ${width} ${height}`);
+
+                const bg = document.createElementNS(svgNS, 'rect');
+                bg.setAttribute('width', '100%');
+                bg.setAttribute('height', '100%');
+                bg.setAttribute('fill', '#0f172a');
+                svgRoot.appendChild(bg);
+
+                const styleEl = document.createElementNS(svgNS, 'style');
+                styleEl.textContent = styleText;
+                svgRoot.appendChild(styleEl);
+
+                const fo = document.createElementNS(svgNS, 'foreignObject');
+                fo.setAttribute('x', '0');
+                fo.setAttribute('y', '0');
+                fo.setAttribute('width', width);
+                fo.setAttribute('height', height);
+                const foDiv = document.createElement('div');
+                foDiv.setAttribute('xmlns', 'http://www.w3.org/1999/xhtml');
+                foDiv.appendChild(clone);
+                fo.appendChild(foDiv);
+                svgRoot.appendChild(fo);
+
+                wrapper.style.transform = `scale(${savedZoom})`;
+                drawSvgConnections();
+
+                const serializer = new XMLSerializer();
+                const svgString = '<?xml version="1.0" standalone="no"?>\n' + serializer.serializeToString(svgRoot);
+                const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.download = getExportFilename('svg');
+                link.href = url;
+                link.click();
+                setTimeout(() => URL.revokeObjectURL(url), 2000);
+            } catch (err) {
+                console.error(err);
+                alert('SVG এক্সপোর্ট ব্যর্থ হয়েছে। আবার চেষ্টা করুন।');
+            } finally {
+                setExportButtonsBusy(false);
+            }
         }
 
         function drawSvgConnections() {
@@ -1447,7 +1851,6 @@
                 if (childrenCards.length > 0) {
                     const pRect = parentCard.getBoundingClientRect();
                     
-                    // Exact calculation compensating for currentZoom CSS scale
                     const startX = (pRect.left + pRect.width / 2 - wRect.left) / currentZoom;
                     const startY = (pRect.bottom - wRect.top) / currentZoom;
 
@@ -1472,8 +1875,51 @@
             });
         }
 
-        // Add event listener to redraw SVG paths when scrolling the viewport
         document.getElementById('tree-viewport').addEventListener('scroll', drawSvgConnections);
+
+        // Desktop: Ctrl/Cmd + mouse wheel to zoom the 2D tree
+        document.getElementById('tree-viewport').addEventListener('wheel', (e) => {
+            if (!e.ctrlKey && !e.metaKey) return;
+            e.preventDefault();
+            zoomTree(e.deltaY < 0 ? 0.1 : -0.1);
+        }, { passive: false });
+
+        // Mobile: two-finger pinch to zoom the 2D tree
+        (function setupPinchZoom() {
+            const viewport = document.getElementById('tree-viewport');
+            let pinchStartDist = null;
+            let pinchStartZoom = 1;
+
+            function touchDistance(touches) {
+                const dx = touches[0].clientX - touches[1].clientX;
+                const dy = touches[0].clientY - touches[1].clientY;
+                return Math.hypot(dx, dy);
+            }
+
+            viewport.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 2) {
+                    pinchStartDist = touchDistance(e.touches);
+                    pinchStartZoom = currentZoom;
+                }
+            }, { passive: true });
+
+            viewport.addEventListener('touchmove', (e) => {
+                if (e.touches.length === 2 && pinchStartDist) {
+                    e.preventDefault();
+                    const newDist = touchDistance(e.touches);
+                    const ratio = newDist / pinchStartDist;
+                    currentZoom = Math.max(0.4, Math.min(2.2, pinchStartZoom * ratio));
+                    document.getElementById('tree-2d-view').style.transform = `scale(${currentZoom})`;
+                }
+            }, { passive: false });
+
+            viewport.addEventListener('touchend', (e) => {
+                if (e.touches.length < 2) {
+                    pinchStartDist = null;
+                    drawSvgConnections();
+                }
+            }, { passive: true });
+        })();
 
         function calculateBloodline() {
             const rootUid = document.getElementById('bloodline-person').value;
@@ -1482,7 +1928,8 @@
             const container2D = document.getElementById('tree-2d-view');
 
             if (!rootUid) {
-                overlay2D.style.display = 'none';
+                container2D.innerHTML = '';
+                if (is2DViewActive()) setViewMode('3d');
                 resDiv.innerHTML = 'ব্যক্তি নির্বাচন করলে তার ২ডি বংশবৃক্ষ স্ক্রিনে ভেসে উঠবে।';
                 return;
             }
@@ -1490,7 +1937,14 @@
             const rootPerson = membersData.find(m => m.uid === rootUid);
             const relativeGenMap = {};
             const visited = new Set([rootUid]);
-            const queue = [{ uid: rootUid, relGen: 0 }];
+            // Track the actual BFS parent uid alongside each node — this is the
+            // person whose card this row's children must visually connect to.
+            // (Using child.father/child.mother directly was the bug: when the
+            // traversal reaches a branch through the mother, her children's
+            // 'father' field points to her spouse, not to her — so the old code
+            // looked for a card that was never rendered under that id, and the
+            // connector line silently disappeared.)
+            const queue = [{ uid: rootUid, relGen: 0, parentUid: null }];
 
             while (queue.length > 0) {
                 const current = queue.shift();
@@ -1498,22 +1952,19 @@
 
                 const personObj = membersData.find(m => m.uid === current.uid);
                 if (personObj) {
-                    relativeGenMap[current.relGen].push(personObj);
+                    relativeGenMap[current.relGen].push({ person: personObj, parentUid: current.parentUid });
 
                     if (personObj.children) {
                         personObj.children.forEach(childUid => {
                             if (!visited.has(childUid)) {
                                 visited.add(childUid);
-                                queue.push({ uid: childUid, relGen: current.relGen + 1 });
+                                queue.push({ uid: childUid, relGen: current.relGen + 1, parentUid: current.uid });
                             }
                         });
                     }
                 }
             }
 
-            overlay2D.style.display = 'block';
-
-            // Clean DOM element
             container2D.innerHTML = '<svg id="tree-svg-canvas"></svg>';
 
             const sortedGens = Object.keys(relativeGenMap).sort((a,b) => a - b);
@@ -1524,29 +1975,33 @@
                 const row = document.createElement('div');
                 row.className = 'nodes-2d-row';
 
-                relativeGenMap[genLevel].forEach(p => {
+                relativeGenMap[genLevel].forEach(entry => {
+                    const p = entry.person;
                     const coupleCard = document.createElement('div');
                     coupleCard.className = `couple-node-card ${p.uid === rootUid ? 'root-card' : ''}`;
                     coupleCard.setAttribute('data-family-id', p.uid);
-                    if (p.father) coupleCard.setAttribute('data-parent-id', p.father);
+                    if (entry.parentUid) coupleCard.setAttribute('data-parent-id', entry.parentUid);
 
                     let cardHtml = `
                         <div class="person-unit" onclick="focusByUid('${p.uid}')">
                             <span class="person-icon">👤</span>
-                            <span class="card-2d-name">${p.bnName}</span>
+                            <span class="card-2d-name">${p.nick}</span>
                         </div>
                     `;
 
                     if (p.spouse) {
-                        const spouseObj = membersData.find(m => m.uid === p.spouse);
-                        if (spouseObj) {
-                            cardHtml += `
-                                <div class="spouse-divider">💍</div>
-                                <div class="person-unit spouse-unit" onclick="focusByUid('${spouseObj.uid}')">
-                                    <span class="card-2d-name">${spouseObj.bnName}</span>
-                                </div>
-                            `;
-                        }
+                        const spouses = Array.isArray(p.spouse) ? p.spouse : [p.spouse];
+                        spouses.forEach(sUid => {
+                            const spouseObj = membersData.find(m => m.uid === sUid);
+                            if (spouseObj) {
+                                cardHtml += `
+                                    <div class="spouse-divider">💍</div>
+                                    <div class="person-unit spouse-unit" onclick="focusByUid('${spouseObj.uid}')">
+                                        <span class="card-2d-name">${spouseObj.nick}</span>
+                                    </div>
+                                `;
+                            }
+                        });
                     }
 
                     coupleCard.innerHTML = cardHtml;
@@ -1557,6 +2012,7 @@
                 container2D.appendChild(block);
             });
 
+            setViewMode('2d');
             setTimeout(drawSvgConnections, 150);
 
             const totalDescendants = visited.size - 1;
@@ -1605,20 +2061,25 @@
 
             const addedPairs = new Set();
             membersData.forEach(m => {
-                if (m.spouse && marbleMap[m.spouse]) {
-                    const pairKey = [m.uid, m.spouse].sort().join('-');
-                    if (!addedPairs.has(pairKey)) {
-                        addedPairs.add(pairKey);
-                        const spouseObj = marbleMap[m.spouse].userData;
-                        const div = document.createElement('div');
-                        div.className = 'modal-member-card';
-                        div.innerHTML = `<strong>${m.bnName}</strong> & <strong>${spouseObj.bnName}</strong><br><small style="color:#00ffff">${m.uid} & ${spouseObj.uid}</small>`;
-                        div.onclick = () => {
-                            focusByUid(m.uid);
-                            closeListModal();
-                        };
-                        body.appendChild(div);
-                    }
+                if (m.spouse) {
+                    const spouses = Array.isArray(m.spouse) ? m.spouse : [m.spouse];
+                    spouses.forEach(sUid => {
+                        if (marbleMap[sUid]) {
+                            const pairKey = [m.uid, sUid].sort().join('-');
+                            if (!addedPairs.has(pairKey)) {
+                                addedPairs.add(pairKey);
+                                const spouseObj = marbleMap[sUid].userData;
+                                const div = document.createElement('div');
+                                div.className = 'modal-member-card';
+                                div.innerHTML = `<strong>${m.bnName}</strong> & <strong>${spouseObj.bnName}</strong><br><small style="color:#00ffff">${m.uid} & ${spouseObj.uid}</small>`;
+                                div.onclick = () => {
+                                    focusByUid(m.uid);
+                                    closeListModal();
+                                };
+                                body.appendChild(div);
+                            }
+                        }
+                    });
                 }
             });
 
@@ -1648,7 +2109,12 @@
             membersData.forEach(m => { graph[m.uid] = []; });
 
             membersData.forEach(m => {
-                if (m.spouse) graph[m.uid].push({ target: m.spouse, relation: "স্বামী/স্ত্রী" });
+                if (m.spouse) {
+                    const spouses = Array.isArray(m.spouse) ? m.spouse : [m.spouse];
+                    spouses.forEach(sUid => {
+                        graph[m.uid].push({ target: sUid, relation: "স্বামী/স্ত্রী" });
+                    });
+                }
                 if (m.father) {
                     graph[m.uid].push({ target: m.father, relation: "পিতা" });
                     const isMale = m.gender.includes("Male") || m.gender.includes("পুরুষ") || m.gender === "M";
@@ -1698,6 +2164,12 @@
             } else {
                 resDiv.innerHTML = '❌ কোনো প্রত্যক্ষ বা পরোক্ষ পারিবারিক সম্পর্ক খুঁজে পাওয়া যায়নি।';
             }
+        }
+
+        let searchDebounceTimer = null;
+        function debouncedSearch() {
+            clearTimeout(searchDebounceTimer);
+            searchDebounceTimer = setTimeout(handleSearch, 180);
         }
 
         function handleSearch() {
@@ -1798,14 +2270,22 @@
             const data = selectedMarble.userData;
             const activeUids = new Set([data.uid]);
 
-            if (data.spouse) activeUids.add(data.spouse);
+            if (data.spouse) {
+                const spouses = Array.isArray(data.spouse) ? data.spouse : [data.spouse];
+                spouses.forEach(sUid => activeUids.add(sUid));
+            }
             if (data.father) activeUids.add(data.father);
             if (data.mother) activeUids.add(data.mother);
             if (data.children) data.children.forEach(uid => activeUids.add(uid));
 
             animateMarbleTo(selectedMarble, { x: 0, y: 0, z: 0 });
 
-            if (data.spouse && marbleMap[data.spouse]) animateMarbleTo(marbleMap[data.spouse], { x: 3.5, y: 0, z: 0 });
+            if (data.spouse) {
+                const spouses = Array.isArray(data.spouse) ? data.spouse : [data.spouse];
+                spouses.forEach((sUid, idx) => {
+                    if (marbleMap[sUid]) animateMarbleTo(marbleMap[sUid], { x: 3.5 + (idx * 3), y: 0, z: 0 });
+                });
+            }
             if (data.father && marbleMap[data.father]) animateMarbleTo(marbleMap[data.father], { x: -1.8, y: 3.5, z: 0 });
             if (data.mother && marbleMap[data.mother]) animateMarbleTo(marbleMap[data.mother], { x: 1.8, y: 3.5, z: 0 });
 
@@ -1847,14 +2327,19 @@
         function focusByUid(uid) {
             const drawer = document.getElementById('nav-drawer');
             if (drawer.classList.contains('open')) toggleDrawer();
-            document.getElementById('tree-2d-overlay').style.display = 'none';
+            if (is2DViewActive()) setViewMode('3d');
             if (marbleMap[uid]) selectMarble(marbleMap[uid]);
         }
 
         function renderRelationLink(uid) {
-            if (!uid || !marbleMap[uid]) return "N/A";
-            const data = marbleMap[uid].userData;
-            return `<span class="relation-link" onclick="focusByUid('${data.uid}')">${data.bnName}</span>`;
+            if (!uid) return "N/A";
+            const uids = Array.isArray(uid) ? uid : [uid];
+            const links = uids.map(u => {
+                if (!marbleMap[u]) return "N/A";
+                const data = marbleMap[u].userData;
+                return `<span class="relation-link" onclick="focusByUid('${data.uid}')">${data.bnName}</span>`;
+            });
+            return links.join(', ');
         }
 
         function showPopup(data) {
@@ -1884,9 +2369,7 @@
                 descContainer.style.display = 'none';
             }
 
-            const imgEl = document.getElementById('m-photo');
-            imgEl.onerror = () => handleImgError(imgEl);
-            imgEl.src = `images/${data.uid} 01.jpg`;
+            loadProfilePhoto(document.getElementById('m-photo'), data.uid);
 
             document.getElementById('popup-modal').style.display = 'block';
         }
@@ -1914,6 +2397,17 @@
             isMarbleSelected = false;
             setTimeout(() => { isAnimating = true; }, 500);
         }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key !== 'Escape') return;
+            const lightbox = document.getElementById('image-lightbox');
+            const listModal = document.getElementById('list-modal');
+            const popup = document.getElementById('popup-modal');
+            if (lightbox.style.display === 'flex') { closeLightbox(); return; }
+            if (listModal.style.display === 'block') { closeListModal(); return; }
+            if (popup.style.display === 'block') { closePopup(); return; }
+            if (document.getElementById('nav-drawer').classList.contains('open')) { toggleDrawer(); }
+        });
 
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
