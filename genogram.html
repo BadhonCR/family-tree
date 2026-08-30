@@ -387,42 +387,6 @@
             pointer-events: auto;
         }
 
-        /* Floating 2D/3D toggle button — always reachable, top-center */
-        #view-toggle-btn {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 900;
-            background: rgba(15, 23, 42, 0.9);
-            color: #00ffff;
-            border: 1px solid rgba(0, 255, 255, 0.5);
-            padding: 10px 18px;
-            border-radius: 24px;
-            font-size: 13px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 18px rgba(0,0,0,0.5);
-            transition: transform 0.2s ease, background 0.2s ease;
-        }
-
-        #view-toggle-btn:hover {
-            transform: translateX(-50%) scale(1.05);
-            background: rgba(0, 255, 255, 0.15);
-        }
-
-        #view-toggle-btn:active {
-            transform: translateX(-50%) scale(0.97);
-        }
-
-        @media (max-width: 600px) {
-            #view-toggle-btn { top: auto; bottom: 18px; padding: 9px 14px; font-size: 12px; }
-        }
-
         .zoom-controls {
             position: absolute;
             top: 20px;
@@ -818,7 +782,7 @@
                 color: black !important;
             }
 
-            canvas, #nav-drawer, #menu-toggle-btn, #restore-btn, .zoom-controls, #popup-modal, #list-modal, #view-toggle-btn {
+            canvas, #nav-drawer, #menu-toggle-btn, #restore-btn, .zoom-controls, #popup-modal, #list-modal {
                 display: none !important;
             }
 
@@ -901,11 +865,6 @@
     </button>
 
     <button id="restore-btn" onclick="toggleDrawer()" aria-label="প্যানেল খুলুন">📋 প্যানেল খুলুন</button>
-
-    <button id="view-toggle-btn" onclick="toggleViewMode()" aria-label="২ডি/৩ডি ভিউ পরিবর্তন করুন">
-        <span id="view-toggle-icon">🌳</span>
-        <span id="view-toggle-label">২ডি ভিউ</span>
-    </button>
 
     <div id="nav-drawer" role="dialog" aria-label="পারিবারিক প্যানেল">
         <div class="drawer-header">
@@ -1155,22 +1114,11 @@
 
             document.body.classList.toggle('mode-2d', mode === '2d');
 
-            const icon = document.getElementById('view-toggle-icon');
-            const label = document.getElementById('view-toggle-label');
             if (mode === '2d') {
-                icon.textContent = '🔮';
-                label.textContent = '৩ডি ভিউ';
                 // Recompute connector lines once the fade-in has settled and layout is final.
                 clearTimeout(setViewMode._lineTimer);
                 setViewMode._lineTimer = setTimeout(drawSvgConnections, 470);
-            } else {
-                icon.textContent = '🌳';
-                label.textContent = '২ডি ভিউ';
             }
-        }
-
-        function toggleViewMode() {
-            setViewMode(is2DViewActive() ? '3d' : '2d');
         }
 
         function switchTab(tabId, btn) {
@@ -1876,6 +1824,13 @@
         }
 
         document.getElementById('tree-viewport').addEventListener('scroll', drawSvgConnections);
+
+        // Click on empty background (not a card, not a control) to return to 3D —
+        // a lighter-weight affordance than a dedicated close button.
+        document.getElementById('tree-2d-overlay').addEventListener('click', (e) => {
+            if (e.target.closest('.couple-node-card') || e.target.closest('.zoom-controls')) return;
+            setViewMode('3d');
+        });
 
         // Desktop: Ctrl/Cmd + mouse wheel to zoom the 2D tree
         document.getElementById('tree-viewport').addEventListener('wheel', (e) => {
