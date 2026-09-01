@@ -1,488 +1,839 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
-    <meta name="description" content="পারিবারিক বংশবৃক্ষের ৩ডি মডেল ও জিনোগ্রাম (3D Genogram View)">
-    <title>পারিবারিক ৩ডি জিনোগ্রাম — Genogram View</title>
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            background-color: #0b0b0b;
-            color: #e2e8f0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow: hidden;
-            height: 100vh;
-            width: 100vw;
-        }
-
-        #app-loading {
-            position: fixed;
-            inset: 0;
-            z-index: 5000;
-            background: #0b0b0b;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 14px;
-            color: #00ffff;
-            font-size: 14px;
-            font-weight: 600;
-            transition: opacity 0.4s ease;
-        }
-
-        #app-loading .spinner {
-            width: 42px;
-            height: 42px;
-            border: 3px solid rgba(0, 255, 255, 0.2);
-            border-top-color: #00ffff;
-            border-radius: 50%;
-            animation: spin 0.9s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Top Navbar */
-        .top-navbar {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            background: rgba(10, 15, 25, 0.85);
-            border-bottom: 1px solid rgba(0, 255, 255, 0.25);
-            backdrop-filter: blur(12px);
-            padding: 12px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .nav-logo {
-            color: #00ffff;
-            font-size: 18px;
-            font-weight: 700;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .nav-menu {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .nav-link {
-            color: #94a3b8;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 600;
-            padding: 6px 14px;
-            border-radius: 20px;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .nav-link:hover, .nav-link.active {
-            color: #00ffff;
-            background: rgba(0, 255, 255, 0.12);
-            border: 1px solid rgba(0, 255, 255, 0.3);
-            box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
-        }
-
-        /* Popup Modal */
-        #popup-modal {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 2000;
-            background: rgba(15, 23, 42, 0.95);
-            border: 1px solid rgba(0, 255, 255, 0.4);
-            border-radius: 16px;
-            padding: 24px;
-            width: 320px;
-            max-width: 90vw;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 30px rgba(0, 255, 255, 0.2);
-            backdrop-filter: blur(16px);
-        }
-
-        .popup-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
-            padding-bottom: 12px;
-            margin-bottom: 16px;
-        }
-
-        .popup-title {
-            color: #00ffff;
-            font-size: 18px;
-            font-weight: 700;
-            margin: 0;
-        }
-
-        .close-btn {
-            background: transparent;
-            border: none;
-            color: #94a3b8;
-            font-size: 20px;
-            cursor: pointer;
-        }
-
-        .close-btn:hover {
-            color: #fff;
-        }
-
-        .profile-photo {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid #00ffff;
-            margin: 0 auto 12px auto;
-            display: block;
-            background: #1e293b;
-        }
-
-        .profile-info {
-            font-size: 13px;
-            line-height: 1.6;
-        }
-
-        .relation-link {
-            color: #00ffff;
-            cursor: pointer;
-            text-decoration: underline;
-        }
-
-        /* Lightbox */
-        #image-lightbox {
-            display: none;
-            position: fixed;
-            inset: 0;
-            z-index: 6000;
-            background: rgba(0,0,0,0.9);
-            justify-content: center;
-            align-items: center;
-        }
-
-        #image-lightbox img {
-            max-width: 90%;
-            max-height: 90%;
-            border-radius: 8px;
-            border: 2px solid #00ffff;
-        }
-    </style>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+<meta name="description" content="পারিবারিক বংশবৃক্ষ — ইন্টারেক্টিভ 3D Genogram">
+<meta name="theme-color" content="#07141f">
+<title>Genogram — পারিবারিক বংশবৃক্ষ | Family Archive</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap');
+:root {
+  --bg:#07141f; --cyan:#00ccff; --cyan2:#58e1ff; --muted:#91a9b8;
+  --line:rgba(160,220,255,.13); --glass:rgba(7,20,31,.72);
+}
+*{box-sizing:border-box}
+html,body{width:100%;height:100%;margin:0;overflow:hidden}
+body{background:
+ radial-gradient(circle at 15% 10%,rgba(0,204,255,.10),transparent 30%),
+ linear-gradient(145deg,#07141f,#020a11 75%);
+ color:#edf8ff;font-family:"Noto Sans Bengali",Inter,sans-serif}
+body>canvas{position:fixed;inset:0;width:100%!important;height:100%!important;display:block;touch-action:none}
+.nav{position:fixed;inset:0 0 auto 0;height:76px;z-index:100;background:rgba(5,17,27,.68);
+ backdrop-filter:blur(18px);border-bottom:1px solid var(--line);pointer-events:auto}
+.nav-inner{height:100%;max-width:1180px;margin:auto;padding:0 22px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.brand{display:flex;align-items:center;gap:12px;color:inherit;text-decoration:none}
+.brand-mark{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font-size:22px;
+ background:linear-gradient(145deg,rgba(0,204,255,.18),rgba(57,217,138,.12));border:1px solid rgba(0,204,255,.25)}
+.brand-title{font-weight:800;line-height:1.05;font-size:15px}
+.brand-sub{font:500 10px Inter,sans-serif;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-top:4px}
+.nav-links{display:flex;align-items:center;gap:5px}
+.nav-links a{padding:10px 13px;border-radius:12px;color:#a9bfcb;font-size:14px;text-decoration:none;transition:.2s}
+.nav-links a:hover,.nav-links a.active{background:rgba(0,204,255,.09);color:#e9fbff}
+.nav-links a.active{box-shadow:inset 0 0 0 1px rgba(0,204,255,.12)}
+.menu{display:none;width:42px;height:42px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.03);color:white;font-size:20px}
+.overlay-card{position:fixed;z-index:20;left:22px;bottom:22px;width:min(410px,calc(100vw - 44px));
+ padding:20px;border:1px solid var(--line);border-radius:22px;background:rgba(7,20,31,.58);
+ backdrop-filter:blur(15px);box-shadow:0 20px 60px rgba(0,0,0,.28);pointer-events:none}
+.kicker{font:700 10px Inter,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:var(--cyan2)}
+.overlay-card h1{margin:7px 0 6px;font-size:25px;line-height:1.2}
+.overlay-card p{margin:0;color:#91a9b8;font-size:13px;line-height:1.7}
+.controls{position:fixed;right:22px;bottom:22px;z-index:30;display:flex;gap:8px}
+.control-btn{width:42px;height:42px;border-radius:13px;border:1px solid rgba(0,204,255,.22);
+ background:rgba(7,20,31,.70);color:var(--cyan2);backdrop-filter:blur(12px);cursor:pointer;font-size:17px;
+ box-shadow:0 8px 25px rgba(0,0,0,.25);transition:.2s}
+.control-btn:hover{background:rgba(0,204,255,.12);transform:translateY(-2px)}
+.hint{position:fixed;right:22px;top:96px;z-index:20;padding:9px 12px;border-radius:12px;
+ border:1px solid var(--line);background:rgba(7,20,31,.48);backdrop-filter:blur(10px);
+ color:#7892a1;font:500 10px Inter,sans-serif;pointer-events:none}
+#app-loading{position:fixed;inset:0;z-index:500;display:grid;place-items:center;background:#07141f;
+ color:var(--cyan);font-size:14px;font-weight:600}
+.spinner{width:42px;height:42px;border:3px solid rgba(0,204,255,.15);border-top-color:var(--cyan);
+ border-radius:50%;animation:spin .9s linear infinite;margin:auto auto 14px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:820px){
+ .nav{height:68px} .nav-inner{padding:0 16px} .nav-links{display:none;position:absolute;left:14px;right:14px;top:74px;
+ flex-direction:column;align-items:stretch;padding:10px;background:rgba(7,20,31,.97);border:1px solid var(--line);
+ border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.45)}
+ .nav-links.open{display:flex} .nav-links a{padding:13px 14px} .menu{display:block}
+ .overlay-card{left:14px;bottom:14px;width:calc(100vw - 28px);padding:16px}
+ .overlay-card h1{font-size:21px} .overlay-card p{font-size:12px}
+ .controls{right:14px;bottom:142px} .hint{right:14px;top:82px;font-size:9px}
+}
+@media(max-width:480px){
+ .brand-title{font-size:14px} .brand-sub{font-size:9px} .hint{display:none}
+}
+</style>
 </head>
 <body>
+<header class="nav">
+ <div class="nav-inner">
+  <a class="brand" href="home.html" aria-label="Family Archive Home">
+   <div class="brand-mark">🌳</div>
+   <div><div class="brand-title">পারিবারিক বংশবৃক্ষ</div><div class="brand-sub">Family Archive</div></div>
+  </a>
+  <button class="menu" id="menu" aria-label="মেনু">☰</button>
+  <nav class="nav-links" id="navLinks">
+   <a href="home.html">Home</a>
+   <a href="genogram.html" class="active">Genogram</a>
+   <a href="bloodline.html">Bloodline</a>
+   <a href="about.html">About</a>
+  </nav>
+ </div>
+</header>
 
-    <div id="app-loading">
-        <div class="spinner"></div>
-        <div>৩ডি জিনোগ্রাম প্রস্তুত হচ্ছে...</div>
-    </div>
+<div class="hint">DRAG • ROTATE &nbsp; | &nbsp; SCROLL • ZOOM</div>
+<div class="overlay-card">
+ <div class="kicker">3D GENOGRAM</div>
+ <h1>পরিবারকে দেখুন একটি নতুন মাত্রায়</h1>
+ <p>ইন্টারেক্টিভ ৩ডি বংশবৃক্ষ—মাউস বা স্পর্শে ঘুরিয়ে দেখুন এবং স্ক্রল করে কাছে বা দূরে যান।</p>
+</div>
+<div class="controls">
+ <button class="control-btn" id="resetCamera" title="ক্যামেরা রিসেট">↺</button>
+</div>
 
-    <nav class="top-navbar">
-        <a href="#" class="nav-logo">
-            <span>🌳</span> পারিবারিক ৩ডি জিনোগ্রাম
-        </a>
-        <div class="nav-menu">
-            <a href="#" class="nav-link active" onclick="resetView()">Home</a>
-            <a href="#" class="nav-link" onclick="focusBloodline()">Bloodline</a>
-            <a href="#" class="nav-link" onclick="showAboutInfo()">About</a>
-        </div>
-    </nav>
+<div id="app-loading">
+ <div><div class="spinner"></div><div>৩ডি বংশবৃক্ষ লোড হচ্ছে...</div></div>
+</div>
 
-    <div id="popup-modal">
-        <div class="popup-header">
-            <h3 class="popup-title" id="m-name">সদস্যের নাম</h3>
-            <button class="close-btn" id="close-popup-btn">&times;</button>
-        </div>
-        <img id="m-photo" class="profile-photo" src="" alt="Profile Photo">
-        <div class="profile-info">
-            <p><strong>ইউআইডি (UID):</strong> <span id="m-uid"></span></p>
-            <p><strong>লিঙ্গ:</strong> <span id="m-gender"></span></p>
-            <p><strong>পিতা:</strong> <span id="m-father"></span></p>
-            <p><strong>মাতা:</strong> <span id="m-mother"></span></p>
-            <p><strong>জীবনসঙ্গী:</strong> <span id="m-spouse"></span></p>
-        </div>
-    </div>
+<script type="module">
+import { membersData: importedMembersData } from './js/membersData.js';
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
+<script>
+const importedMembersData = window.__membersData || null;
+</script>
+<script>
+/* The 3D engine below is derived from the supplied test.html model.
+   A small module bridge is installed below so the existing non-module
+   Three.js code can consume membersData.js. */
+</script>
+<script type="module">
+import { membersData } from './js/membersData.js';
+window.__membersData = membersData;
+window.dispatchEvent(new CustomEvent('members-data-ready'));
+</script>
+<script>
+let booted = false;
+function boot3D() {
+ if (booted || !window.__membersData || typeof THREE === 'undefined') return;
+ booted = true;
+ const importedMembersData = window.__membersData;
+ const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, isLowPowerDevice ? 1.5 : 2));
+        document.body.appendChild(renderer.domElement);
 
-    <div id="image-lightbox">
-        <img id="lightbox-img" src="" alt="Enlarged View">
-    </div>
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
 
-    <script type="module">
-        import { rawMembersData } from './membersData.js';
+        let isAnimating = true;
+        let isMarbleSelected = false;
 
-        let scene, camera, renderer, controls;
-        let marbles = [], marbleMap = new Map();
-        let raycaster, mouse;
-        const photoCache = new Map();
+        const defaultCameraPos = new THREE.Vector3(0, 0, 40);
+        camera.position.copy(defaultCameraPos);
 
-        // 1. Create Canvas Texture for Marbles (from test.html logic)
-        function createMarbleTexture(member) {
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+        scene.add(ambientLight);
+        const pointLight = new THREE.PointLight(0xffffff, 1.2);
+        pointLight.position.set(5, 5, 5);
+        scene.add(pointLight);
+
+        const geometry = new THREE.SphereGeometry(1, isLowPowerDevice ? 20 : 48, isLowPowerDevice ? 20 : 48);
+        const clickableMarbles = [];
+        const marbleMap = {};
+
+        function createMarbleMaterial(colorValue) {
+            return new THREE.MeshPhongMaterial({ 
+                color: colorValue, 
+                shininess: 100,
+                transparent: true,
+                opacity: 1
+            });
+        }
+
+        function createTextSprite(text) {
             const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
             canvas.width = 256;
-            canvas.height = 256;
-            const ctx = canvas.getContext('2d');
+            canvas.height = 128;
+            context.font = 'Bold 40px "Segoe UI", sans-serif';
+            context.fillStyle = '#ffffff';
+            context.textAlign = 'center';
+            context.fillText(text, 128, 64);
 
-            const hexColor = '#' + (member.color || 0x0055ff).toString(16).padStart(6, '0');
-
-            // Background Gradient
-            const grad = ctx.createRadialGradient(128, 128, 10, 128, 128, 120);
-            grad.addColorStop(0, '#ffffff');
-            grad.addColorStop(0.2, hexColor);
-            grad.addColorStop(0.8, '#050b14');
-            grad.addColorStop(1, '#000000');
-
-            ctx.fillStyle = grad;
-            ctx.fillRect(0, 0, 256, 256);
-
-            // Ring Outer Border
-            ctx.strokeStyle = hexColor;
-            ctx.lineWidth = 6;
-            ctx.beginPath();
-            ctx.arc(128, 128, 118, 0, Math.PI * 2);
-            ctx.stroke();
-
-            // Text (Nickname / Name)
-            const textToShow = member.nick || member.bnName.split(' ')[0] || member.uid;
-            ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 36px "Segoe UI", Arial, sans-serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.shadowColor = hexColor;
-            ctx.shadowBlur = 12;
-            ctx.fillText(textToShow, 128, 128);
-
-            return new THREE.CanvasTexture(canvas);
+            const texture = new THREE.CanvasTexture(canvas);
+            const spriteMaterial = new THREE.SpriteMaterial({ map: texture, transparent: true });
+            const sprite = new THREE.Sprite(spriteMaterial);
+            sprite.scale.set(2, 1, 1);
+            sprite.position.set(0, 1.4, 0);
+            return sprite;
         }
 
-        // 2. Init Three.js World
-        function init3D() {
-            scene = new THREE.Scene();
-            scene.fog = new THREE.FogExp2(0x0b0b0b, 0.008);
+        // ALL MEMBERS DATA
+        const membersData = importedMembersData;
 
-            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(0, 20, 80);
-
-            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            document.body.appendChild(renderer.domElement);
-
-            controls = new THREE.OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true;
-            controls.dampingFactor = 0.05;
-
-            // Lights
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
-            scene.add(ambientLight);
-
-            const pointLight = new THREE.PointLight(0x00ffff, 1.5, 200);
-            pointLight.position.set(20, 50, 50);
-            scene.add(pointLight);
-
-            const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-            dirLight.position.set(-30, 40, -20);
-            scene.add(dirLight);
-
-            raycaster = new THREE.Raycaster();
-            mouse = new THREE.Vector2();
-
-            buildGenogramTree(rawMembersData);
-
-            window.addEventListener('resize', onWindowResize);
-            window.addEventListener('click', onPointerClick);
-
-            animate();
-        }
-
-        // 3. Process Member Data & Position 3D Marbles
-        function buildGenogramTree(data) {
+        function calculateGenerations() {
             const memberDict = {};
-            data.forEach(m => { memberDict[m.uid] = m; });
+            membersData.forEach(m => { memberDict[m.uid] = m; });
 
-            // Calculate Generation depth
-            function getGenLevel(uid, visited = new Set()) {
+            function getPaternalGen(uid, visited = new Set()) {
                 if (visited.has(uid)) return 1;
                 visited.add(uid);
                 const m = memberDict[uid];
                 if (!m) return 1;
-                if (m.father && memberDict[m.father]) return getGenLevel(m.father, visited) + 1;
+
+                if (m.father) return getPaternalGen(m.father, new Set(visited)) + 1;
+                if (m.spouse) {
+                    const spouseUid = Array.isArray(m.spouse) ? m.spouse[0] : m.spouse;
+                    if (memberDict[spouseUid] && memberDict[spouseUid].father) return getPaternalGen(spouseUid, new Set(visited));
+                }
                 return 1;
             }
 
-            // Grouping members by generation level
-            const genGroups = {};
-            data.forEach(m => {
-                const gen = getGenLevel(m.uid);
-                if (!genGroups[gen]) genGroups[gen] = [];
-                genGroups[gen].push(m);
+            function getMaternalGen(uid, visited = new Set()) {
+                if (visited.has(uid)) return 1;
+                visited.add(uid);
+                const m = memberDict[uid];
+                if (!m) return 1;
+
+                if (m.mother) return getMaternalGen(m.mother, new Set(visited)) + 1;
+                if (m.spouse) {
+                    const spouseUid = Array.isArray(m.spouse) ? m.spouse[0] : m.spouse;
+                    if (memberDict[spouseUid] && memberDict[spouseUid].mother) return getMaternalGen(spouseUid, new Set(visited));
+                }
+                return 1;
+            }
+
+            membersData.forEach(m => {
+                m.patrilinealGen = getPaternalGen(m.uid);
+                m.matrilinealGen = getMaternalGen(m.uid);
+                m.generation = Math.max(m.patrilinealGen, m.matrilinealGen);
             });
+        }
 
-            const sphereGeo = new THREE.SphereGeometry(3.2, 32, 32);
+        calculateGenerations();
 
-            Object.keys(genGroups).forEach(genStr => {
-                const gen = parseInt(genStr);
-                const members = genGroups[gen];
-                const yPos = (gen - 1) * -18 + 20; // Y spacing between generations
-                const total = members.length;
+        function initializeStatsAndOptions() {
+            const total = membersData.length;
+            let males = 0;
+            let females = 0;
+            const marriedCouples = new Set();
+            const genCounts = {};
 
-                members.forEach((m, idx) => {
-                    const xPos = (idx - (total - 1) / 2) * 12; // X spacing
-                    const zPos = (Math.random() - 0.5) * 6;     // Slight Z depth offset
+            membersData.forEach((m) => {
+                if (m.gender.includes('Male') || m.gender.includes('পুরুষ') || m.gender === 'M') males++;
+                else if (m.gender.includes('Female') || m.gender.includes('মহিলা') || m.gender === 'F') females++;
 
-                    const texture = createMarbleTexture(m);
-                    const mat = new THREE.MeshPhongMaterial({
-                        map: texture,
-                        shininess: 90,
-                        reflectivity: 0.9,
-                        transparent: true,
-                        opacity: 0.95
+                if (m.spouse) {
+                    const spouses = Array.isArray(m.spouse) ? m.spouse : [m.spouse];
+                    spouses.forEach(sUid => {
+                        const pair = [m.uid, sUid].sort().join('-');
+                        marriedCouples.add(pair);
                     });
+                }
 
-                    const marbleMesh = new THREE.Mesh(sphereGeo, mat);
-                    marbleMesh.position.set(xPos, yPos, zPos);
-                    marbleMesh.userData = m;
-
-                    scene.add(marbleMesh);
-                    marbles.push(marbleMesh);
-                    marbleMap.set(m.uid, marbleMesh);
-                });
+                let gen = m.patrilinealGen;
+                genCounts[gen] = (genCounts[gen] || 0) + 1;
             });
 
-            // Draw Connection Lines between parents and children
-            const lineMat = new THREE.LineBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 0.4 });
-            data.forEach(m => {
-                const currentMesh = marbleMap.get(m.uid);
-                if (!currentMesh) return;
+            document.getElementById('stat-total').innerText = total;
+            document.getElementById('stat-male').innerText = males;
+            document.getElementById('stat-female').innerText = females;
+            document.getElementById('stat-families').innerText = marriedCouples.size;
 
-                if (m.father && marbleMap.has(m.father)) {
-                    const fatherMesh = marbleMap.get(m.father);
-                    const geo = new THREE.BufferGeometry().setFromPoints([
-                        fatherMesh.position,
-                        currentMesh.position
-                    ]);
-                    const line = new THREE.Line(geo, lineMat);
-                    scene.add(line);
+            const genContainer = document.getElementById('generation-container');
+            genContainer.innerHTML = '';
+
+            const galleryFilter = document.getElementById('gallery-gen-filter');
+            galleryFilter.innerHTML = '<option value="all">সকল জেনারেশন</option>';
+            
+            const genKeys = Object.keys(genCounts).sort((a,b) => a - b);
+            genKeys.forEach(g => {
+                const div = document.createElement('div');
+                div.className = 'gen-item';
+                div.onclick = () => showFilteredMemberList('gen-' + g, `পিতৃকুল জেনারেশন ${g} এর সদস্যগণ`);
+                div.innerHTML = `
+                    <span class="gen-title">পিতৃকুল জেনারেশন ${g}</span>
+                    <span class="gen-count">${genCounts[g]} জন</span>
+                `;
+                genContainer.appendChild(div);
+
+                const opt = document.createElement('option');
+                opt.value = g;
+                opt.innerText = `জেনারেশন ${g}`;
+                galleryFilter.appendChild(opt);
+            });
+        }
+
+        // AUTO-SEARCH DROPDOWN LOGIC FOR RELATIVE & BLOODLINE TABS
+        function autoSearchPerson(targetType) {
+            let inputId, hiddenId, dropdownId;
+            if (targetType === 'a') { inputId = 'rel-input-a'; hiddenId = 'rel-person-a'; dropdownId = 'dropdown-a'; }
+            else if (targetType === 'b') { inputId = 'rel-input-b'; hiddenId = 'rel-person-b'; dropdownId = 'dropdown-b'; }
+            else if (targetType === 'blood') { inputId = 'bloodline-input'; hiddenId = 'bloodline-person'; dropdownId = 'dropdown-blood'; }
+
+            const val = document.getElementById(inputId).value.trim().toLowerCase();
+            const dropdown = document.getElementById(dropdownId);
+
+            if (!val) {
+                dropdown.style.display = 'none';
+                document.getElementById(hiddenId).value = '';
+                return;
+            }
+
+            const matches = membersData.filter(m => 
+                m.bnName.toLowerCase().includes(val) ||
+                m.enName.toLowerCase().includes(val) ||
+                m.nick.toLowerCase().includes(val) ||
+                m.uid.toLowerCase().includes(val)
+            );
+
+            dropdown.innerHTML = '';
+            if (matches.length === 0) {
+                dropdown.style.display = 'none';
+                return;
+            }
+
+            matches.forEach(m => {
+                const div = document.createElement('div');
+                div.className = 'autocomplete-item';
+
+                const img = document.createElement('img');
+                img.className = 'avatar-thumb';
+                img.loading = 'lazy';
+                loadProfilePhoto(img, m.uid);
+
+                const span = document.createElement('span');
+                span.innerHTML = `<b>${m.bnName}</b> (${m.nick}) <small style="color:#00ffff">${m.uid}</small>`;
+
+                div.appendChild(img);
+                div.appendChild(span);
+
+                div.onclick = () => {
+                    document.getElementById(inputId).value = `${m.bnName} (${m.nick})`;
+                    document.getElementById(hiddenId).value = m.uid;
+                    dropdown.style.display = 'none';
+
+                    if (targetType === 'a' || targetType === 'b') calculateRelationship();
+                    else if (targetType === 'blood') calculateBloodline();
+                };
+                dropdown.appendChild(div);
+            });
+
+            dropdown.style.display = 'block';
+        }
+
+        // GALLERY FEATURE
+        function renderGallery() {
+            const filterVal = document.getElementById('gallery-gen-filter').value;
+            const grid = document.getElementById('gallery-grid');
+            grid.innerHTML = '';
+
+            const list = filterVal === 'all' ? membersData : membersData.filter(m => m.patrilinealGen == filterVal);
+
+            list.forEach(m => {
+                const card = document.createElement('div');
+                card.className = 'gallery-card';
+                
+                const img = document.createElement('img');
+                img.className = 'gallery-img';
+                img.loading = 'lazy';
+                
+                let candidates = [
+                    `images/${m.uid}.jpg`,
+                    `images/${m.uid}.jpeg`,
+                    `images/${m.uid}.png`,
+                    `images/${m.uid} 01.jpg`
+                ];
+                let idx = 0;
+
+                function tryNextImage() {
+                    if (idx >= candidates.length) {
+                        card.style.display = 'none';
+                        return;
+                    }
+                    img.src = candidates[idx++];
+                }
+
+                img.onerror = tryNextImage;
+                tryNextImage();
+
+                const name = document.createElement('div');
+                name.className = 'gallery-name';
+                name.innerText = m.bnName;
+
+                card.appendChild(img);
+                card.appendChild(name);
+                card.onclick = () => { focusByUid(m.uid); };
+
+                grid.appendChild(card);
+            });
+        }
+
+        // QUIZ FEATURE
+        let currentQuizAnswer = null;
+        function startNewQuiz() {
+            const quizImg = document.getElementById('quiz-photo');
+            const optionsDiv = document.getElementById('quiz-options');
+            const feedback = document.getElementById('quiz-feedback');
+            feedback.innerText = '';
+            optionsDiv.innerHTML = '';
+
+            let availableMembers = [...membersData].sort(() => Math.random() - 0.5);
+
+            function tryQuizWithMember(index) {
+                if (index >= availableMembers.length) {
+                    feedback.innerText = '⚠️ ছবিযুক্ত কোনো সদস্য পাওয়া যায়নি।';
+                    quizImg.style.display = 'none';
+                    return;
+                }
+
+                const target = availableMembers[index];
+                let candidates = [
+                    `images/${target.uid}.jpg`,
+                    `images/${target.uid}.jpeg`,
+                    `images/${target.uid}.png`,
+                    `images/${target.uid} 01.jpg`
+                ];
+                let imgIdx = 0;
+
+                function checkNextImage() {
+                    if (imgIdx >= candidates.length) {
+                        tryQuizWithMember(index + 1);
+                        return;
+                    }
+                    quizImg.src = candidates[imgIdx++];
+                }
+
+                quizImg.onerror = checkNextImage;
+                quizImg.onload = () => {
+                    quizImg.style.display = 'block';
+                    currentQuizAnswer = target.uid;
+
+                    const choices = [target];
+                    while (choices.length < 4 && choices.length < membersData.length) {
+                        const rand = membersData[Math.floor(Math.random() * membersData.length)];
+                        if (!choices.includes(rand)) choices.push(rand);
+                    }
+                    choices.sort(() => Math.random() - 0.5);
+
+                    optionsDiv.innerHTML = '';
+                    choices.forEach(opt => {
+                        const btn = document.createElement('button');
+                        btn.className = 'quiz-btn';
+                        btn.innerText = `${opt.bnName} (${opt.nick})`;
+                        btn.onclick = () => {
+                            if (opt.uid === currentQuizAnswer) {
+                                feedback.innerText = '✅ সঠিক উত্তর!';
+                                feedback.style.color = '#00ffcc';
+                            } else {
+                                feedback.innerText = `❌ ভুল! সঠিক: ${target.bnName}`;
+                                feedback.style.color = '#ff4757';
+                            }
+                        };
+                        optionsDiv.appendChild(btn);
+                    });
+                };
+
+                checkNextImage();
+            }
+
+            tryQuizWithMember(0);
+        }
+
+        membersData.forEach(data => {
+            const marble = new THREE.Mesh(geometry, createMarbleMaterial(data.color));
+            marble.userData = data;
+            marble.add(createTextSprite(data.nick));
+            scene.add(marble);
+            clickableMarbles.push(marble);
+            marbleMap[data.uid] = marble;
+        });
+
+        const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff, opacity: 0.5, transparent: true });
+        function createThread(p1, p2) {
+            const geom = new THREE.BufferGeometry().setFromPoints([p1, p2]);
+            const line = new THREE.Line(geom, lineMaterial.clone());
+            scene.add(line);
+            return line;
+        }
+
+        const connectionsData = [];
+        membersData.forEach(m => {
+            if (m.spouse) {
+                const spouses = Array.isArray(m.spouse) ? m.spouse : [m.spouse];
+                spouses.forEach(sUid => {
+                    if (marbleMap[sUid]) connectionsData.push([m.uid, sUid]);
+                });
+            }
+            if (m.father && marbleMap[m.father]) {
+                connectionsData.push([m.uid, m.father]);
+            }
+            if (m.mother && marbleMap[m.mother]) {
+                connectionsData.push([m.uid, m.mother]);
+            }
+        });
+
+        const connections = [];
+        connectionsData.forEach(pair => {
+            if (marbleMap[pair[0]] && marbleMap[pair[1]]) {
+                connections.push([marbleMap[pair[0]], marbleMap[pair[1]]]);
+            }
+        });
+
+        const threads = connections.map(pair => createThread(pair[0].position, pair[1].position));
+
+        let angle = 0;
+        function animate(time) {
+            requestAnimationFrame(animate);
+
+            if (is2DViewActive()) return;
+
+            TWEEN.update(time);
+
+            if (isAnimating) {
+                angle += 0.002;
+
+                const genGroups = {};
+                membersData.forEach(m => {
+                    if (!genGroups[m.patrilinealGen]) genGroups[m.patrilinealGen] = [];
+                    genGroups[m.patrilinealGen].push(m.uid);
+                });
+
+                Object.keys(genGroups).forEach(genStr => {
+                    const gen = parseInt(genStr);
+                    const list = genGroups[genStr];
+                    const radius = 8 + (gen * 5);
+                    const height = 22 - (gen * 7);
+
+                    list.forEach((uid, idx) => {
+                        const itemAngle = angle * (1 + gen * 0.08) + (idx * (Math.PI * 2 / list.length));
+                        if (marbleMap[uid]) {
+                            marbleMap[uid].position.set(
+                                Math.cos(itemAngle) * radius,
+                                height,
+                                Math.sin(itemAngle) * radius
+                            );
+                        }
+                    });
+                });
+
+                clickableMarbles.forEach(m => m.rotation.y += 0.01);
+            }
+
+            threads.forEach((thread, index) => {
+                const points = [connections[index][0].position, connections[index][1].position];
+                thread.geometry.setFromPoints(points);
+            });
+
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        animate();
+        initializeStatsAndOptions();
+
+        const loadingEl = document.getElementById('app-loading');
+        if (loadingEl) {
+            loadingEl.style.opacity = '0';
+            setTimeout(() => { loadingEl.style.display = 'none'; }, 400);
+        }
+
+        let currentZoom = 1;
+        function zoomTree(delta) {
+            currentZoom = Math.max(0.4, Math.min(2.2, currentZoom + delta));
+            document.getElementById('tree-2d-view').style.transform = `scale(${currentZoom})`;
+            setTimeout(drawSvgConnections, 100);
+        }
+
+        function resetZoom() {
+            currentZoom = 1;
+            document.getElementById('tree-2d-view').style.transform = `scale(1)`;
+            setTimeout(drawSvgConnections, 100);
+        }
+
+        window.addEventListener('beforeprint', () => {
+            drawSvgConnections();
+        });
+        window.addEventListener('afterprint', () => {
+            drawSvgConnections();
+        });
+
+        function setExportButtonsBusy(busy) {
+            ['export-png-btn', 'export-svg-btn', 'export-pdf-btn'].forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) btn.disabled = busy;
+            });
+        }
+
+        function getExportFilename(ext) {
+            const hiddenInput = document.getElementById('bloodline-person');
+            const uid = hiddenInput ? hiddenInput.value : '';
+            const m = membersData.find(x => x.uid === uid);
+            const label = m ? m.bnName.replace(/[^\w\u0980-\u09FF]+/g, '_') : 'bloodline-tree';
+            return `${label}.${ext}`;
+        }
+
+        async function renderTreeToCanvas() {
+            const wrapper = document.getElementById('tree-2d-view');
+            if (typeof html2canvas === 'undefined') {
+                alert('এক্সপোর্ট লাইব্রেরি লোড হয়নি। ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।');
+                return null;
+            }
+            const savedZoom = currentZoom;
+            wrapper.style.transform = 'scale(1)';
+            drawSvgConnections();
+            await new Promise(r => setTimeout(r, 60));
+
+            const naturalW = wrapper.scrollWidth;
+            const naturalH = wrapper.scrollHeight;
+            const MAX_DIMENSION = 8000;
+            let scale = 2;
+            if (Math.max(naturalW, naturalH) * scale > MAX_DIMENSION) {
+                scale = Math.max(1, MAX_DIMENSION / Math.max(naturalW, naturalH));
+            }
+
+            const canvas = await html2canvas(wrapper, {
+                backgroundColor: '#0f172a',
+                scale: scale,
+                useCORS: true,
+                logging: false
+            });
+
+            wrapper.style.transform = `scale(${savedZoom})`;
+            drawSvgConnections();
+
+            return canvas;
+        }
+
+        async function exportTreeAsPNG() {
+            if (!is2DViewActive()) {
+                alert('প্রথমে "ব্লাডলাইন" ট্যাব থেকে একজন ব্যক্তি নির্বাচন করুন।');
+                return;
+            }
+            setExportButtonsBusy(true);
+            try {
+                const canvas = await renderTreeToCanvas();
+                if (!canvas) return;
+                const link = document.createElement('a');
+                link.download = getExportFilename('png');
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            } catch (err) {
+                console.error(err);
+                alert('PNG এক্সপোর্ট ব্যর্থ হয়েছে। আবার চেষ্টা করুন।');
+            } finally {
+                setExportButtonsBusy(false);
+            }
+        }
+
+        async function exportTreeAsPDF() {
+            if (!is2DViewActive()) {
+                alert('প্রথমে "ব্লাডলাইন" ট্যাব থেকে একজন ব্যক্তি নির্বাচন করুন।');
+                return;
+            }
+            if (typeof window.jspdf === 'undefined') {
+                alert('PDF লাইব্রেরি লোড হয়নি। ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।');
+                return;
+            }
+            setExportButtonsBusy(true);
+            try {
+                const canvas = await renderTreeToCanvas();
+                if (!canvas) return;
+
+                const { jsPDF } = window.jspdf;
+                const imgData = canvas.toDataURL('image/png');
+                const isLandscape = canvas.width >= canvas.height;
+                const pdf = new jsPDF({
+                    orientation: isLandscape ? 'landscape' : 'portrait',
+                    unit: 'px',
+                    format: [canvas.width, canvas.height]
+                });
+                pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+                pdf.save(getExportFilename('pdf'));
+            } catch (err) {
+                console.error(err);
+                alert('PDF এক্সপোর্ট ব্যর্থ হয়েছে। আবার চেষ্টা করুন।');
+            } finally {
+                setExportButtonsBusy(false);
+            }
+        }
+
+        async function exportTreeAsSVG() {
+            if (!is2DViewActive()) {
+                alert('প্রথমে "ব্লাডলাইন" ট্যাব থেকে একজন ব্যক্তি নির্বাচন করুন।');
+                return;
+            }
+            setExportButtonsBusy(true);
+            try {
+                const wrapper = document.getElementById('tree-2d-view');
+                const savedZoom = currentZoom;
+                wrapper.style.transform = 'scale(1)';
+                drawSvgConnections();
+                await new Promise(r => setTimeout(r, 60));
+
+                const width = wrapper.scrollWidth;
+                const height = wrapper.scrollHeight;
+
+                let styleText = '';
+                document.querySelectorAll('style').forEach(s => { styleText += s.textContent + '\n'; });
+
+                const clone = wrapper.cloneNode(true);
+                clone.style.transform = 'none';
+
+                const svgNS = 'http://www.w3.org/2000/svg';
+                const svgRoot = document.createElementNS(svgNS, 'svg');
+                svgRoot.setAttribute('xmlns', svgNS);
+                svgRoot.setAttribute('width', width);
+                svgRoot.setAttribute('height', height);
+                svgRoot.setAttribute('viewBox', `0 0 ${width} ${height}`);
+
+                const bg = document.createElementNS(svgNS, 'rect');
+                bg.setAttribute('width', '100%');
+                bg.setAttribute('height', '100%');
+                bg.setAttribute('fill', '#0f172a');
+                svgRoot.appendChild(bg);
+
+                const styleEl = document.createElementNS(svgNS, 'style');
+                styleEl.textContent = styleText;
+                svgRoot.appendChild(styleEl);
+
+                const fo = document.createElementNS(svgNS, 'foreignObject');
+                fo.setAttribute('x', '0');
+                fo.setAttribute('y', '0');
+                fo.setAttribute('width', width);
+                fo.setAttribute('height', height);
+                const foDiv = document.createElement('div');
+                foDiv.setAttribute('xmlns', 'http://www.w3.org/1999/xhtml');
+                foDiv.appendChild(clone);
+                fo.appendChild(foDiv);
+                svgRoot.appendChild(fo);
+
+                wrapper.style.transform = `scale(${savedZoom})`;
+                drawSvgConnections();
+
+                const serializer = new XMLSerializer();
+                const svgString = '<?xml version="1.0" standalone="no"?>\n' + serializer.serializeToString(svgRoot);
+                const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.download = getExportFilename('svg');
+                link.href = url;
+                link.click();
+                setTimeout(() => URL.revokeObjectURL(url), 2000);
+            } catch (err) {
+                console.error(err);
+                alert('SVG এক্সপোর্ট ব্যর্থ হয়েছে। আবার চেষ্টা করুন।');
+            } finally {
+                setExportButtonsBusy(false);
+            }
+        }
+
+        function drawSvgConnections() {
+            const svg = document.getElementById('tree-svg-canvas');
+            const wrapper = document.getElementById('tree-2d-view');
+            
+            if (!svg || !wrapper) return;
+            svg.innerHTML = '';
+            
+            const wRect = wrapper.getBoundingClientRect();
+            
+            svg.setAttribute('width', wrapper.scrollWidth || wrapper.offsetWidth);
+            svg.setAttribute('height', wrapper.scrollHeight || wrapper.offsetHeight);
+
+            const cards = document.querySelectorAll('.couple-node-card');
+            cards.forEach(parentCard => {
+                const parentId = parentCard.getAttribute('data-family-id');
+                const childrenCards = document.querySelectorAll(`.couple-node-card[data-parent-id="${parentId}"]`);
+
+                if (childrenCards.length > 0) {
+                    const pRect = parentCard.getBoundingClientRect();
+                    
+                    const startX = (pRect.left + pRect.width / 2 - wRect.left) / currentZoom;
+                    const startY = (pRect.bottom - wRect.top) / currentZoom;
+
+                    childrenCards.forEach(childCard => {
+                        const cRect = childCard.getBoundingClientRect();
+                        
+                        const endX = (cRect.left + cRect.width / 2 - wRect.left) / currentZoom;
+                        const endY = (cRect.top - wRect.top) / currentZoom;
+
+                        const midY = startY + (endY - startY) / 2;
+
+                        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                        const d = `M ${startX} ${startY} C ${startX} ${midY}, ${endX} ${midY}, ${endX} ${endY}`;
+                        path.setAttribute('d', d);
+                        path.setAttribute('stroke', '#00ffff');
+                        path.setAttribute('stroke-width', '2.5');
+                        path.setAttribute('fill', 'none');
+                        path.setAttribute('opacity', '0.9');
+                        svg.appendChild(path);
+                    });
                 }
             });
         }
 
-        // 4. Interaction Events
-        function onPointerClick(e) {
-            // Ignore click on Navbar or Modals
-            if (e.target.closest('.top-navbar') || e.target.closest('#popup-modal')) return;
+        document.getElementById('tree-viewport').addEventListener('scroll', drawSvgConnections);
 
-            mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
-
-            raycaster.setFromCamera(mouse, camera);
-            const intersects = raycaster.intersectObjects(marbles);
-
-            if (intersects.length > 0) {
-                const selectedMember = intersects[0].object.userData;
-                showProfileModal(selectedMember);
-                
-                // Tween camera focus to selected marble
-                new TWEEN.Tween(controls.target)
-                    .to(intersects[0].object.position, 800)
-                    .easing(TWEEN.Easing.Cubic.Out)
-                    .start();
-            }
-        }
-
-        function showProfileModal(data) {
-            document.getElementById('m-name').innerText = data.bnName || data.enName;
-            document.getElementById('m-uid').innerText = data.uid;
-            document.getElementById('m-gender').innerText = data.gender === 'Male' ? 'পুরুষ' : 'নারী';
-            document.getElementById('m-father').innerText = data.father || 'N/A';
-            document.getElementById('m-mother').innerText = data.mother || 'N/A';
-            document.getElementById('m-spouse').innerText = Array.isArray(data.spouse) ? data.spouse.join(', ') : (data.spouse || 'N/A');
-
-            // Set placeholder photo
-            document.getElementById('m-photo').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(data.enName || data.uid)}&background=0D8ABC&color=fff`;
-
-            document.getElementById('popup-modal').style.display = 'block';
-        }
-
-        function animate(time) {
-            requestAnimationFrame(animate);
-            TWEEN.update();
-            controls.update();
-
-            // Gentle rotation for marbles
-            marbles.forEach(m => {
-                m.rotation.y += 0.005;
-            });
-
-            renderer.render(scene, camera);
-        }
-
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        }
-
-        // Global Nav Actions
-        window.resetView = function() {
-            new TWEEN.Tween(camera.position).to({ x: 0, y: 20, z: 80 }, 1000).easing(TWEEN.Easing.Cubic.Out).start();
-            new TWEEN.Tween(controls.target).to({ x: 0, y: 0, z: 0 }, 1000).easing(TWEEN.Easing.Cubic.Out).start();
-        };
-
-        window.focusBloodline = function() {
-            alert('Bloodline view: ৩ডি স্পেসে প্রধান ধারার সদস্যদের ফোকাস করা হচ্ছে।');
-            if (marbles.length > 0) {
-                new TWEEN.Tween(controls.target).to(marbles[0].position, 1000).start();
-            }
-        };
-
-        window.showAboutInfo = function() {
-            alert('পারিবারিক ৩ডি জিনোগ্রাম প্রজেক্ট\nডেভেলপড বাই: বাঁধন চন্দ্র রায়');
-        };
-
-        // DOM Ready Initializer
-        document.addEventListener('DOMContentLoaded', () => {
-            init3D();
-
-            document.getElementById('close-popup-btn').onclick = () => {
-                document.getElementById('popup-modal').style.display = 'none';
-            };
-
-            document.getElementById('m-photo').onclick = function() {
-                document.getElementById('lightbox-img').src = this.src;
-                document.getElementById('image-lightbox').style.display = 'flex';
-            };
-
-            document.getElementById('image-lightbox').onclick = function() {
-                this.style.display = 'none';
-            };
-
-            // Remove loading screen
-            const loadingEl = document.getElementById('app-loading');
-            if (loadingEl) {
-                loadingEl.style.opacity = '0';
-                setTimeout(() => { loadingEl.style.display = 'none'; }, 400);
-            }
+        document.getElementById('tree-2d-overlay').addEventListener('click', (e) => {
+            if (e.target.closest('.couple-node-card') || e.target.closest('.zoom-controls')) return;
+            setViewMode('3d');
         });
-    </script>
+
+        document.getElementById('tree-viewport').addEventListener('wheel', (e) => {
+            if (!e.ctrlKey && !e.metaKey) return;
+            e.preventDefault();
+            zoomTree(e.deltaY < 0 ? 0.1 : -0.1);
+        }, { passive: false });
+
+        (function setupPinchZoom() {
+            const viewport = document.getElementById('tree-viewport');
+            let pinchStartDist = null;
+            let pinchStartZoom = 1;
+
+            function touchDistance(touches) {
+                const dx = touches[0].clientX - touches[1].clientX;
+                const dy = touches[0].clientY - touches[1].clientY;
+                return Math.hypot(dx, dy);
+            }
+
+            viewport.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 2) {
+                    pinchStartDist = touchDistance(e.touches);
+                    pinchStartZoom = currentZoom;
+                }
+            }, { passive: true });
+
+            viewport.addEventListener('touchmove', (e) => {
+                if (e.touches.length === 2 && pinchStartDist) {
+                    e.preventDefault();
+                    const newDist = touchDistance(e.touches);
+                    const ratio = newDist / pinchStartDist;
+                    currentZoom = Math.max(0.4, Math.min(2.2, pinchStartZoom * ratio));
+                    document.getElementById('tree-2d-view').style.transform = `scale(${currentZoom})`;
+                }
+            }, { passive: false });
+
+            viewport.addEventListener('touchend', (e) => {
+                if (e.touches.length < 2) {
+                    pinchStartDist = null;
+                    drawSvgConnections();
+                }
+            }, { passive: true });
+        })();
+
+
+}
+window.addEventListener('members-data-ready', boot3D);
+window.addEventListener('load', () => setTimeout(boot3D, 100));
+document.getElementById('menu').addEventListener('click',()=>document.getElementById('navLinks').classList.toggle('open'));
+document.querySelectorAll('#navLinks a').forEach(a=>a.addEventListener('click',()=>document.getElementById('navLinks').classList.remove('open')));
+</script>
 </body>
 </html>
