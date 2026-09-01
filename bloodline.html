@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+    <meta name="description" content="পারিবারিক বংশবৃক্ষ — রক্তের ধারা ও ব্লাডলাইন ট্র্যাকার।">
+    <title>পারিবারিক বংশবৃক্ষ — ব্লাডলাইন ট্র্যাকার</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background-color: #0b0b0b;
+            color: #e2e8f0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+
+        #app-loading {
+            position: fixed;
+            inset: 0;
+            z-index: 5000;
+            background: #0b0b0b;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            color: #00ffff;
+            font-size: 14px;
+            font-weight: 600;
+            transition: opacity 0.4s ease;
+        }
+
+        #app-loading .spinner {
+            width: 42px;
+            height: 42px;
+            border: 3px solid rgba(0, 255, 255, 0.2);
+            border-top-color: #00ffff;
+            border-radius: 50%;
+            animation: spin 0.9s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Top Navbar */
+        .top-navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(10, 15, 25, 0.95);
+            border-bottom: 1px solid rgba(0, 255, 255, 0.25);
+            backdrop-filter: blur(16px);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 25px rgba(0,0,0,0.6);
+        }
+
+        .nav-logo {
+            color: #00ffff;
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, #00b4db, #0083b0);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 15px rgba(0, 180, 219, 0.3);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 255, 255, 0.4);
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        .section-title {
+            color: #00ffff;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+            padding-bottom: 8px;
+        }
+
+        /* Controls Panel */
+        .control-card {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 14px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .select-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+            min-width: 240px;
+        }
+
+        .select-group label {
+            font-size: 13px;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        .custom-select {
+            background: #0f172a;
+            color: #fff;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            width: 100%;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+        }
+
+        .radio-label {
+            font-size: 13px;
+            color: #e2e8f0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Bloodline Tree Visualization */
+        .bloodline-display {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .bloodline-section {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 18px;
+        }
+
+        .bloodline-section h3 {
+            margin-top: 0;
+            font-size: 15px;
+            color: #00ffff;
+            border-bottom: 1px dashed rgba(0, 255, 255, 0.2);
+            padding-bottom: 8px;
+        }
+
+        .bloodline-chain {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .node-box {
+            background: rgba(0, 255, 255, 0.08);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            padding: 10px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .node-box:hover {
+            background: rgba(0, 255, 255, 0.25);
+            border-color: #00ffff;
+            transform: translateY(-2px);
+        }
+
+        .node-box.active-target {
+            background: linear-gradient(135deg, #00b4db, #0083b0);
+            border-color: #fff;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+
+        .node-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .node-info {
+            font-size: 11px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+
+        .arrow-connector {
+            color: #00ffff;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        /* Profile Popup Modal */
+        #popup-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(145deg, rgba(15, 23, 36, 0.96), rgba(8, 14, 24, 0.98));
+            color: #e2e8f0;
+            padding: 22px;
+            border-radius: 16px;
+            box-shadow: 0 10px 32px rgba(0, 0, 0, 0.85), 0 0 15px rgba(0, 255, 255, 0.15);
+            z-index: 3500;
+            width: 340px;
+            max-height: 85vh;
+            overflow-y: auto;
+            border: 1px solid rgba(0, 255, 255, 0.35);
+            backdrop-filter: blur(16px);
+        }
+
+        .popup-header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+            padding-bottom: 12px;
+            margin-bottom: 14px;
+        }
+
+        .popup-header-container h2 {
+            margin: 0 0 6px 0;
+            color: #00ffff;
+            font-size: 19px;
+            font-weight: 700;
+        }
+
+        .uid-gen-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .uid-badge {
+            font-size: 11px;
+            color: #38bdf8;
+            background: rgba(56, 189, 248, 0.12);
+            padding: 3px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            font-weight: 600;
+        }
+
+        .gen-badge {
+            font-size: 11px;
+            color: #00ffff;
+            background: rgba(0, 255, 255, 0.15);
+            padding: 3px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(0, 255, 255, 0.4);
+            font-weight: 600;
+        }
+
+        .profile-details-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .profile-field {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .profile-field.block-field {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+        }
+
+        .field-label {
+            color: #94a3b8;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .field-value {
+            color: #f8fafc;
+            font-weight: 500;
+            text-align: right;
+        }
+
+        .profile-img-thumb {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 2px solid #00ffff;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 255, 255, 0.25);
+            background-color: #1a2230;
+            flex-shrink: 0;
+        }
+
+        .btn-close {
+            background: linear-gradient(135deg, #ff4757, #ff6b81);
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        #image-lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 4000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(8px);
+        }
+
+        #image-lightbox img {
+            max-width: 85%;
+            max-height: 85%;
+            border-radius: 12px;
+            border: 2px solid #00ffff;
+        }
+
+        @media (max-width: 600px) {
+            .nav-btn { padding: 6px 12px; font-size: 12px; }
+            .nav-logo { font-size: 15px; }
+            .top-navbar { padding: 10px 12px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app-loading" aria-live="polite">
+        <div class="spinner"></div>
+        <div>ব্লাডলাইন তথ্য প্রসেস হচ্ছে...</div>
+    </div>
+
+    <!-- TOP NAVBAR -->
+    <header class="top-navbar">
+        <a href="home.html" class="nav-logo">🩸 ব্লাডলাইন ট্র্যাকার</a>
+        <nav class="nav-links">
+            <a href="home.html" class="nav-btn">🏠 হোমপেজ</a>
+            <a href="genogram.html" class="nav-btn">🌐 ৩ডি বংশবৃক্ষ ➔</a>
+        </nav>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="main-container">
+
+        <!-- CONTROL CARD -->
+        <section class="control-card">
+            <div class="select-group">
+                <label for="member-select">সদস্য নির্বাচন করুন:</label>
+                <select id="member-select" class="custom-select">
+                    <option value="">-- সদস্য নির্বাচন করুন --</option>
+                </select>
+            </div>
+
+            <div class="radio-group">
+                <label class="radio-label">
+                    <input type="radio" name="lineage-type" value="paternal" checked> পিতৃকুল (Paternal)
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="lineage-type" value="maternal"> মাতৃকুল (Maternal)
+                </label>
+            </div>
+        </section>
+
+        <!-- BLOODLINE DISPLAY SECTION -->
+        <section class="bloodline-display">
+            <!-- ANCESTOR CHAIN -->
+            <div class="bloodline-section">
+                <h3>⬆️ পূর্বপুরুষের ধারা (Ancestors Chain)</h3>
+                <div id="ancestors-chain" class="bloodline-chain">
+                    <p style="font-size:12px; color:#aaa;">একটি সদস্য সিলেক্ট করুন।</p>
+                </div>
+            </div>
+
+            <!-- DESCENDANTS CHAIN -->
+            <div class="bloodline-section">
+                <h3>⬇️ উত্তরসূরির ধারা (Descendants Chain)</h3>
+                <div id="descendants-chain" class="bloodline-chain">
+                    <p style="font-size:12px; color:#aaa;">একটি সদস্য সিলেক্ট করুন।</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- PROFILE POPUP MODAL -->
+    <div id="popup-modal">
+        <div class="popup-header-container">
+            <div>
+                <h2 id="m-bname">প্রোফাইল বিবরণ</h2>
+                <div class="uid-gen-wrapper">
+                    <span class="uid-badge">UID: <span id="m-uid"></span></span>
+                    <span class="gen-badge" id="m-gen"></span>
+                </div>
+            </div>
+            <img id="m-photo" class="profile-img-thumb" src="" alt="Profile Photo">
+        </div>
+
+        <div class="profile-details-list">
+            <div class="profile-field">
+                <span class="field-label">ইংরেজি নাম:</span>
+                <span class="field-value" id="m-ename"></span>
+            </div>
+            <div class="profile-field">
+                <span class="field-label">লিঙ্গ:</span>
+                <span class="field-value" id="m-gender"></span>
+            </div>
+            <div class="profile-field">
+                <span class="field-label">দ্বৈত জেনারেশন ইনডেক্স:</span>
+                <span class="field-value" id="m-dual-gen" style="color: #00ffff; font-weight: bold;"></span>
+            </div>
+            <div class="profile-field">
+                <span class="field-label">দাম্পত্য সঙ্গী:</span>
+                <span class="field-value" id="m-spouse"></span>
+            </div>
+            <div class="profile-field">
+                <span class="field-label">পিতার নাম:</span>
+                <span class="field-value" id="m-father"></span>
+            </div>
+            <div class="profile-field">
+                <span class="field-label">মাতার নাম:</span>
+                <span class="field-value" id="m-mother"></span>
+            </div>
+            <div class="profile-field block-field">
+                <span class="field-label">সন্তানগণ:</span>
+                <span class="field-value" id="m-children"></span>
+            </div>
+            <div class="profile-field block-field" id="desc-container">
+                <span class="field-label">বিবরণ:</span>
+                <span class="field-value" id="m-desc" style="color: #ffda79;"></span>
+            </div>
+        </div>
+
+        <button id="close-popup-btn" class="btn-close" style="margin-top:16px; width:100%; padding:9px;">বন্ধ করুন</button>
+    </div>
+
+    <!-- LIGHTBOX MODAL -->
+    <div id="image-lightbox">
+        <img id="lightbox-img" src="" alt="Full View">
+    </div>
+
+    <!-- JS MODULE IMPORT & LOGIC -->
+    <script type="module">
+        import { membersData } from './js/membersData.js';
+
+        const DEFAULT_NO_IMAGE = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 24 24' fill='none' stroke='%2000ffff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='3' width='18' height='18' rx='2' ry='2'/><circle cx='8.5' cy='8.5' r='1.5'/><polyline points='21 15 16 10 5 21'/><line x1='3' y1='3' x2='21' y2='21'/></svg>";
+
+        function loadProfilePhoto(imgEl, uid) {
+            const candidates = [
+                `images/${uid}.jpg`,
+                `images/${uid}.jpeg`,
+                `images/${uid}.png`,
+                `images/${uid} 01.jpg`
+            ];
+            let i = 0;
+            function tryNext() {
+                if (i >= candidates.length) {
+                    imgEl.onerror = null;
+                    imgEl.src = DEFAULT_NO_IMAGE;
+                    return;
+                }
+                imgEl.src = candidates[i++];
+            }
+            imgEl.onerror = tryNext;
+            tryNext();
+        }
+
+        function openLightbox(src) {
+            if (!src || src.includes("data:image/svg+xml")) return;
+            document.getElementById('lightbox-img').src = src;
+            document.getElementById('image-lightbox').style.display = 'flex';
+        }
+
+        function closeLightbox() {
+            document.getElementById('image-lightbox').style.display = 'none';
+        }
+
+        // Initialize Select Options
+        function populateSelectOptions() {
+            const selectEl = document.getElementById('member-select');
+            membersData.forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m.uid;
+                opt.innerText = `${m.bnName} (${m.uid})`;
+                selectEl.appendChild(opt);
+            });
+        }
+
+        // Bloodline Tracing Functions
+        function traceAncestors(startUid, isPaternal = true) {
+            const chain = [];
+            let current = membersData.find(m => m.uid === startUid);
+            const visited = new Set();
+
+            while (current && !visited.has(current.uid)) {
+                visited.add(current.uid);
+                chain.unshift(current); // Add to beginning of array to maintain chronological order
+                
+                const parentUid = isPaternal ? current.father : current.mother;
+                current = membersData.find(m => m.uid === parentUid);
+            }
+            return chain;
+        }
+
+        function traceDescendants(startUid) {
+            const descendants = [];
+            const queue = [startUid];
+            const visited = new Set();
+
+            while (queue.length > 0) {
+                const currUid = queue.shift();
+                if (visited.has(currUid)) continue;
+                visited.add(currUid);
+
+                const current = membersData.find(m => m.uid === currUid);
+                if (current && current.children && current.children.length > 0) {
+                    current.children.forEach(cUid => {
+                        const child = membersData.find(m => m.uid === cUid);
+                        if (child) {
+                            descendants.push(child);
+                            queue.push(child.uid);
+                        }
+                    });
+                }
+            }
+            return descendants;
+        }
+
+        function renderBloodline() {
+            const selectEl = document.getElementById('member-select');
+            const targetUid = selectEl.value;
+            const isPaternal = document.querySelector('input[name="lineage-type"]:checked').value === 'paternal';
+
+            const ancestorsContainer = document.getElementById('ancestors-chain');
+            const descendantsContainer = document.getElementById('descendants-chain');
+
+            if (!targetUid) {
+                ancestorsContainer.innerHTML = '<p style="font-size:12px; color:#aaa;">একটি সদস্য সিলেক্ট করুন।</p>';
+                descendantsContainer.innerHTML = '<p style="font-size:12px; color:#aaa;">একটি সদস্য সিলেক্ট করুন।</p>';
+                return;
+            }
+
+            // Render Ancestors
+            const ancestors = traceAncestors(targetUid, isPaternal);
+            ancestorsContainer.innerHTML = '';
+            ancestors.forEach((m, idx) => {
+                const box = document.createElement('div');
+                box.className = `node-box ${m.uid === targetUid ? 'active-target' : ''}`;
+                box.innerHTML = `
+                    <div class="node-name">${m.bnName}</div>
+                    <div class="node-info">${m.uid} • Gen ${isPaternal ? m.patrilinealGen : m.matrilinealGen}</div>
+                `;
+                box.onclick = () => showProfileByUid(m.uid);
+                ancestorsContainer.appendChild(box);
+
+                if (idx < ancestors.length - 1) {
+                    const arrow = document.createElement('div');
+                    arrow.className = 'arrow-connector';
+                    arrow.innerText = '➔';
+                    ancestorsContainer.appendChild(arrow);
+                }
+            });
+
+            // Render Descendants
+            const descendants = traceDescendants(targetUid);
+            descendantsContainer.innerHTML = '';
+            if (descendants.length === 0) {
+                descendantsContainer.innerHTML = '<p style="font-size:12px; color:#aaa;">কোনো তথ্য পাওয়া যায়নি।</p>';
+            } else {
+                descendants.forEach(m => {
+                    const box = document.createElement('div');
+                    box.className = 'node-box';
+                    box.innerHTML = `
+                        <div class="node-name">${m.bnName}</div>
+                        <div class="node-info">${m.uid} • Gen ${m.patrilinealGen}</div>
+                    `;
+                    box.onclick = () => showProfileByUid(m.uid);
+                    descendantsContainer.appendChild(box);
+                });
+            }
+        }
+
+        // Profile Popup UI Functions
+        function renderRelationLink(uid) {
+            if (!uid) return "N/A";
+            const uids = Array.isArray(uid) ? uid : [uid];
+            const links = uids.map(u => {
+                const data = membersData.find(x => x.uid === u);
+                if (!data) return "N/A";
+                return `<span class="relation-link" data-uid="${data.uid}" style="color:#38bdf8; cursor:pointer;">${data.bnName}</span>`;
+            });
+            return links.join(', ');
+        }
+
+        function showProfileByUid(uid) {
+            const data = membersData.find(m => m.uid === uid);
+            if (!data) return;
+
+            document.getElementById('m-uid').innerText = data.uid;
+            document.getElementById('m-bname').innerText = data.bnName;
+            document.getElementById('m-ename').innerText = data.enName;
+            document.getElementById('m-gender').innerText = data.gender;
+            document.getElementById('m-gen').innerText = "পিতৃকুল Gen " + data.patrilinealGen;
+            document.getElementById('m-dual-gen').innerText = `পিতৃকুল: Gen ${data.patrilinealGen} | মাতৃকুল: Gen ${data.matrilinealGen}`;
+            
+            document.getElementById('m-spouse').innerHTML = renderRelationLink(data.spouse);
+            document.getElementById('m-father').innerHTML = renderRelationLink(data.father);
+            document.getElementById('m-mother').innerHTML = renderRelationLink(data.mother);
+
+            if (data.children && data.children.length > 0) {
+                const childLinks = data.children.map(childUid => renderRelationLink(childUid));
+                document.getElementById('m-children').innerHTML = childLinks.join(', ');
+            } else {
+                document.getElementById('m-children').innerText = "N/A";
+            }
+
+            const descContainer = document.getElementById('desc-container');
+            if (data.description && data.description.trim() !== "") {
+                document.getElementById('m-desc').innerText = data.description;
+                descContainer.style.display = 'flex';
+            } else {
+                descContainer.style.display = 'none';
+            }
+
+            loadProfilePhoto(document.getElementById('m-photo'), data.uid);
+
+            document.querySelectorAll('#popup-modal .relation-link').forEach(link => {
+                link.onclick = (e) => {
+                    const targetUid = e.target.getAttribute('data-uid');
+                    showProfileByUid(targetUid);
+                };
+            });
+
+            document.getElementById('popup-modal').style.display = 'block';
+        }
+
+        function closePopup() {
+            document.getElementById('popup-modal').style.display = 'none';
+        }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            populateSelectOptions();
+
+            document.getElementById('member-select').onchange = renderBloodline;
+            document.querySelectorAll('input[name="lineage-type"]').forEach(r => {
+                r.onchange = renderBloodline;
+            });
+
+            document.getElementById('close-popup-btn').onclick = closePopup;
+            document.getElementById('image-lightbox').onclick = closeLightbox;
+            document.getElementById('m-photo').onclick = function() { openLightbox(this.src); };
+
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    closeLightbox();
+                    closePopup();
+                }
+            });
+
+            // Remove Loading Overlay
+            const loadingEl = document.getElementById('app-loading');
+            if (loadingEl) {
+                loadingEl.style.opacity = '0';
+                setTimeout(() => { loadingEl.style.display = 'none'; }, 400);
+            }
+        });
+    </script>
+</body>
+</html>
