@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
-    <meta name="description" content="পারিবারিক বংশবৃক্ষ — রক্তের ধারা ও ব্লাডলাইন ট্র্যাকার (২ডি ও চেইন ভিউ)।">
-    <title>পারিবারিক বংশবৃক্ষ — ব্লাডলাইন ট্র্যাকার</title>
+    <meta name="description" content="পারিবারিক বংশবৃক্ষ — ২ডি ব্লাডলাইন ট্র্যাকার ও এক্সপোর্ট টুল।">
+    <title>পারিবারিক বংশবৃক্ষ — ২ডি ব্লাডলাইন ট্র্যাকার</title>
     <style>
         * { box-sizing: border-box; }
 
@@ -93,7 +93,7 @@
         }
 
         .main-container {
-            max-width: 1100px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 24px 16px;
             display: flex;
@@ -101,11 +101,12 @@
             gap: 20px;
         }
 
+        /* Control Card */
         .control-card {
             background: rgba(15, 23, 42, 0.8);
             border: 1px solid rgba(0, 255, 255, 0.3);
             border-radius: 14px;
-            padding: 20px;
+            padding: 18px 22px;
             backdrop-filter: blur(10px);
             display: flex;
             flex-wrap: wrap;
@@ -119,7 +120,7 @@
             flex-direction: column;
             gap: 6px;
             flex: 1;
-            min-width: 250px;
+            min-width: 260px;
         }
 
         .select-group label { font-size: 13px; color: #94a3b8; font-weight: 600; }
@@ -135,105 +136,74 @@
             width: 100%;
         }
 
-        .mode-selector {
+        /* Export Buttons Toolbar */
+        .export-controls {
             display: flex;
-            gap: 12px;
-            background: rgba(0,0,0,0.4);
-            padding: 6px 12px;
-            border-radius: 10px;
-            border: 1px solid rgba(0, 255, 255, 0.2);
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
         }
 
-        .radio-label {
-            font-size: 13px;
-            color: #e2e8f0;
-            cursor: pointer;
+        .action-btn {
+            background: rgba(15, 23, 42, 0.85);
+            color: #00ffff;
+            border: 1px solid rgba(0, 255, 255, 0.4);
+            padding: 8px 16px;
+            height: 38px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             gap: 6px;
-        }
-
-        /* Mode 1: Chain View Styling */
-        .chain-display {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .bloodline-section {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(0, 255, 255, 0.2);
-            border-radius: 12px;
-            padding: 18px;
-        }
-
-        .bloodline-section h3 {
-            margin-top: 0;
-            font-size: 15px;
-            color: #00ffff;
-            border-bottom: 1px dashed rgba(0, 255, 255, 0.2);
-            padding-bottom: 8px;
-        }
-
-        .bloodline-chain {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 10px;
-            margin-top: 14px;
-        }
-
-        .node-box {
-            background: rgba(0, 255, 255, 0.08);
-            border: 1px solid rgba(0, 255, 255, 0.3);
-            padding: 10px 14px;
-            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
             cursor: pointer;
+            backdrop-filter: blur(10px);
             transition: all 0.2s ease;
-            text-align: center;
         }
 
-        .node-box:hover {
-            background: rgba(0, 255, 255, 0.25);
-            border-color: #00ffff;
+        .action-btn:hover {
+            background: rgba(0, 255, 255, 0.2);
             transform: translateY(-2px);
         }
 
-        .node-box.active-target {
-            background: linear-gradient(135deg, #00b4db, #0083b0);
-            border-color: #fff;
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: wait;
+            transform: none;
         }
 
-        .node-name { font-size: 13px; font-weight: 600; color: #fff; }
-        .node-info { font-size: 11px; color: #94a3b8; margin-top: 2px; }
-        .arrow-connector { color: #00ffff; font-size: 18px; font-weight: bold; }
+        .btn-png { background: linear-gradient(135deg, #00b4db, #0083b0); color: white; border: none; }
+        .btn-svg { background: linear-gradient(135deg, #7c3aed, #4c1d95); color: white; border: none; }
+        .btn-pdf { background: linear-gradient(135deg, #dc2626, #7f1d1d); color: white; border: none; }
 
-        /* Mode 2: 2D Tree View Styling */
-        #tree-2d-container {
-            display: none;
+        /* 2D Tree Canvas View */
+        #tree-2d-viewport {
             width: 100%;
-            min-height: 550px;
+            min-height: 600px;
             background: radial-gradient(circle, #0f172a 0%, #020617 100%);
             border-radius: 14px;
             border: 1px solid rgba(0, 255, 255, 0.3);
             position: relative;
             overflow: auto;
             padding: 40px;
+            box-sizing: border-box;
         }
 
         .tree-2d-wrapper {
             position: relative;
+            transform-origin: center top;
+            transition: transform 0.15s ease-out;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 60px;
             min-width: max-content;
             margin: 0 auto;
+            padding: 20px;
         }
 
         .gen-2d-block { display: flex; flex-direction: column; align-items: center; width: 100%; position: relative; }
-        .nodes-2d-row { display: flex; gap: 30px; justify-content: center; position: relative; }
+        .nodes-2d-row { display: flex; gap: 32px; justify-content: center; position: relative; }
 
         .couple-node-card {
             background: linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.95));
@@ -347,6 +317,7 @@
             .nav-logo { font-size: 15px; }
             .top-navbar { padding: 10px 12px; }
             .control-card { flex-direction: column; align-items: stretch; }
+            .export-controls { justify-content: space-between; }
         }
     </style>
 </head>
@@ -354,7 +325,7 @@
 
     <div id="app-loading" aria-live="polite">
         <div class="spinner"></div>
-        <div>ব্লাডলাইন তথ্য প্রসেস হচ্ছে...</div>
+        <div>২ডি ব্লাডলাইন প্রসেস হচ্ছে...</div>
     </div>
 
     <!-- TOP NAVBAR -->
@@ -369,7 +340,7 @@
     <!-- MAIN CONTAINER -->
     <main class="main-container">
 
-        <!-- CONTROL CARD -->
+        <!-- CONTROL & EXPORT CARD -->
         <section class="control-card">
             <div class="select-group">
                 <label for="member-select">মূল সদস্য নির্বাচন করুন:</label>
@@ -378,45 +349,20 @@
                 </select>
             </div>
 
-            <div class="mode-selector">
-                <label class="radio-label">
-                    <input type="radio" name="view-mode" value="tree2d" checked> 🌳 ২ডি বংশবৃক্ষ ভিউ
-                </label>
-                <label class="radio-label">
-                    <input type="radio" name="view-mode" value="chain"> 🔗 লিনিয়ার চেইন ভিউ
-                </label>
-            </div>
-
-            <div id="paternal-maternal-group" class="mode-selector" style="display: none;">
-                <label class="radio-label">
-                    <input type="radio" name="lineage-type" value="paternal" checked> পিতৃকুল
-                </label>
-                <label class="radio-label">
-                    <input type="radio" name="lineage-type" value="maternal"> মাতৃকুল
-                </label>
+            <!-- ZOOM & EXPORT TOOLBAR -->
+            <div class="export-controls">
+                <button class="action-btn" id="zoom-in-btn" title="Zoom In">➕</button>
+                <button class="action-btn" id="zoom-out-btn" title="Zoom Out">➖</button>
+                <button class="action-btn" id="zoom-reset-btn" title="Reset Zoom">↺</button>
+                <button class="action-btn btn-png" id="export-png-btn">🖼️ PNG</button>
+                <button class="action-btn btn-svg" id="export-svg-btn">🧬 SVG</button>
+                <button class="action-btn btn-pdf" id="export-pdf-btn">📄 PDF</button>
             </div>
         </section>
 
-        <!-- MODE 1: CHAIN DISPLAY CONTAINER -->
-        <section id="chain-display-container" class="chain-display" style="display: none;">
-            <div class="bloodline-section">
-                <h3>⬆️ পূর্বপুরুষের ধারা (Ancestors Chain)</h3>
-                <div id="ancestors-chain" class="bloodline-chain">
-                    <p style="font-size:12px; color:#aaa;">একটি সদস্য সিলেক্ট করুন।</p>
-                </div>
-            </div>
-
-            <div class="bloodline-section">
-                <h3>⬇️ উত্তরসূরির ধারা (Descendants Chain)</h3>
-                <div id="descendants-chain" class="bloodline-chain">
-                    <p style="font-size:12px; color:#aaa;">একটি সদস্য সিলেক্ট করুন।</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- MODE 2: 2D TREE CONTAINER -->
-        <section id="tree-2d-container">
-            <div id="tree-2d-wrapper" class="tree-2d-wrapper">
+        <!-- 2D TREE VIEWPORT -->
+        <section id="tree-2d-viewport">
+            <div id="tree-2d-view" class="tree-2d-wrapper">
                 <svg id="tree-svg-canvas"></svg>
             </div>
         </section>
@@ -479,9 +425,15 @@
         <img id="lightbox-img" src="" alt="Full View">
     </div>
 
+    <!-- EXTERNAL LIBRARIES FOR EXPORT -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
     <!-- JS MODULE IMPORT & LOGIC -->
     <script type="module">
         import { membersData } from './js/membersData.js';
+
+        let currentZoom = 1;
 
         const DEFAULT_NO_IMAGE = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 24 24' fill='none' stroke='%2000ffff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='3' width='18' height='18' rx='2' ry='2'/><circle cx='8.5' cy='8.5' r='1.5'/><polyline points='21 15 16 10 5 21'/><line x1='3' y1='3' x2='21' y2='21'/></svg>";
 
@@ -525,91 +477,16 @@
             });
         }
 
-        /* ----- MODE 1: LINEAR CHAIN LOGIC ----- */
-        function traceAncestors(startUid, isPaternal = true) {
-            const chain = [];
-            let current = membersData.find(m => m.uid === startUid);
-            const visited = new Set();
+        /* ----- 2D TREE GENERATION ----- */
+        function render2DTreeView() {
+            const rootUid = document.getElementById('member-select').value;
+            const container2D = document.getElementById('tree-2d-view');
 
-            while (current && !visited.has(current.uid)) {
-                visited.add(current.uid);
-                chain.unshift(current);
-                const parentUid = isPaternal ? current.father : current.mother;
-                current = membersData.find(m => m.uid === parentUid);
+            if (!rootUid) {
+                container2D.innerHTML = '<p style="color:#aaa; text-align:center; padding-top:40px;">বংশবৃক্ষ দেখতে উপরে একটি সদস্য নির্বাচন করুন।</p>';
+                return;
             }
-            return chain;
-        }
 
-        function traceDescendants(startUid) {
-            const descendants = [];
-            const queue = [startUid];
-            const visited = new Set();
-
-            while (queue.length > 0) {
-                const currUid = queue.shift();
-                if (visited.has(currUid)) continue;
-                visited.add(currUid);
-
-                const current = membersData.find(m => m.uid === currUid);
-                if (current && current.children && current.children.length > 0) {
-                    current.children.forEach(cUid => {
-                        const child = membersData.find(m => m.uid === cUid);
-                        if (child) {
-                            descendants.push(child);
-                            queue.push(child.uid);
-                        }
-                    });
-                }
-            }
-            return descendants;
-        }
-
-        function renderChainView(targetUid) {
-            const isPaternal = document.querySelector('input[name="lineage-type"]:checked').value === 'paternal';
-            const ancestorsContainer = document.getElementById('ancestors-chain');
-            const descendantsContainer = document.getElementById('descendants-chain');
-
-            const ancestors = traceAncestors(targetUid, isPaternal);
-            ancestorsContainer.innerHTML = '';
-            ancestors.forEach((m, idx) => {
-                const box = document.createElement('div');
-                box.className = `node-box ${m.uid === targetUid ? 'active-target' : ''}`;
-                box.innerHTML = `
-                    <div class="node-name">${m.bnName}</div>
-                    <div class="node-info">${m.uid} • Gen ${isPaternal ? m.patrilinealGen : m.matrilinealGen}</div>
-                `;
-                box.onclick = () => showProfileByUid(m.uid);
-                ancestorsContainer.appendChild(box);
-
-                if (idx < ancestors.length - 1) {
-                    const arrow = document.createElement('div');
-                    arrow.className = 'arrow-connector';
-                    arrow.innerText = '➔';
-                    ancestorsContainer.appendChild(arrow);
-                }
-            });
-
-            const descendants = traceDescendants(targetUid);
-            descendantsContainer.innerHTML = '';
-            if (descendants.length === 0) {
-                descendantsContainer.innerHTML = '<p style="font-size:12px; color:#aaa;">কোনো বংশধর পাওয়া যায়নি।</p>';
-            } else {
-                descendants.forEach(m => {
-                    const box = document.createElement('div');
-                    box.className = 'node-box';
-                    box.innerHTML = `
-                        <div class="node-name">${m.bnName}</div>
-                        <div class="node-info">${m.uid} • Gen ${m.patrilinealGen}</div>
-                    `;
-                    box.onclick = () => showProfileByUid(m.uid);
-                    descendantsContainer.appendChild(box);
-                });
-            }
-        }
-
-        /* ----- MODE 2: 2D TREE LOGIC ----- */
-        function render2DTreeView(rootUid) {
-            const container2D = document.getElementById('tree-2d-wrapper');
             container2D.innerHTML = '<svg id="tree-svg-canvas"></svg>';
 
             const relativeGenMap = {};
@@ -706,7 +583,7 @@
 
         function drawSvgConnections() {
             const svg = document.getElementById('tree-svg-canvas');
-            const wrapper = document.getElementById('tree-2d-wrapper');
+            const wrapper = document.getElementById('tree-2d-view');
             
             if (!svg || !wrapper) return;
             svg.innerHTML = '';
@@ -722,13 +599,13 @@
 
                 if (childrenCards.length > 0) {
                     const pRect = parentCard.getBoundingClientRect();
-                    const startX = (pRect.left + pRect.width / 2 - wRect.left);
-                    const startY = (pRect.bottom - wRect.top);
+                    const startX = (pRect.left + pRect.width / 2 - wRect.left) / currentZoom;
+                    const startY = (pRect.bottom - wRect.top) / currentZoom;
 
                     childrenCards.forEach(childCard => {
                         const cRect = childCard.getBoundingClientRect();
-                        const endX = (cRect.left + cRect.width / 2 - wRect.left);
-                        const endY = (cRect.top - wRect.top);
+                        const endX = (cRect.left + cRect.width / 2 - wRect.left) / currentZoom;
+                        const endY = (cRect.top - wRect.top) / currentZoom;
                         const midY = startY + (endY - startY) / 2;
 
                         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
@@ -744,36 +621,181 @@
             });
         }
 
-        /* ----- MAIN UPDATE FUNCTION ----- */
-        function updateBloodlineDisplay() {
-            const targetUid = document.getElementById('member-select').value;
-            const viewMode = document.querySelector('input[name="view-mode"]:checked').value;
-            const pmGroup = document.getElementById('paternal-maternal-group');
+        /* ----- ZOOM LOGIC ----- */
+        function zoomTree(delta) {
+            currentZoom = Math.max(0.4, Math.min(2.2, currentZoom + delta));
+            document.getElementById('tree-2d-view').style.transform = `scale(${currentZoom})`;
+            setTimeout(drawSvgConnections, 100);
+        }
 
-            const chainContainer = document.getElementById('chain-display-container');
-            const treeContainer = document.getElementById('tree-2d-container');
+        function resetZoom() {
+            currentZoom = 1;
+            document.getElementById('tree-2d-view').style.transform = `scale(1)`;
+            setTimeout(drawSvgConnections, 100);
+        }
 
-            if (!targetUid) {
-                chainContainer.style.display = 'none';
-                treeContainer.style.display = 'none';
-                pmGroup.style.display = 'none';
-                return;
+        /* ----- EXPORT FUNCTIONS (PNG, SVG, PDF) ----- */
+        function setExportButtonsBusy(busy) {
+            ['export-png-btn', 'export-svg-btn', 'export-pdf-btn'].forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) btn.disabled = busy;
+            });
+        }
+
+        function getExportFilename(ext) {
+            const selectEl = document.getElementById('member-select');
+            const uid = selectEl.value;
+            const m = membersData.find(x => x.uid === uid);
+            const label = m ? m.bnName.replace(/[^\w\u0980-\u09FF]+/g, '_') : 'bloodline-tree';
+            return `${label}.${ext}`;
+        }
+
+        async function renderTreeToCanvas() {
+            const wrapper = document.getElementById('tree-2d-view');
+            if (typeof html2canvas === 'undefined') {
+                alert('এক্সপোর্ট লাইব্রেরি লোড হয়নি। ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।');
+                return null;
             }
 
-            if (viewMode === 'chain') {
-                treeContainer.style.display = 'none';
-                chainContainer.style.display = 'flex';
-                pmGroup.style.display = 'flex';
-                renderChainView(targetUid);
-            } else {
-                chainContainer.style.display = 'none';
-                treeContainer.style.display = 'block';
-                pmGroup.style.display = 'none';
-                render2DTreeView(targetUid);
+            const savedZoom = currentZoom;
+            wrapper.style.transform = 'scale(1)';
+            drawSvgConnections();
+            await new Promise(r => setTimeout(r, 60));
+
+            const canvas = await html2canvas(wrapper, {
+                backgroundColor: '#0f172a',
+                scale: 2,
+                useCORS: true,
+                logging: false
+            });
+
+            wrapper.style.transform = `scale(${savedZoom})`;
+            drawSvgConnections();
+            return canvas;
+        }
+
+        async function exportTreeAsPNG() {
+            const uid = document.getElementById('member-select').value;
+            if (!uid) { alert('প্রথমে একজন সদস্য নির্বাচন করুন।'); return; }
+
+            setExportButtonsBusy(true);
+            try {
+                const canvas = await renderTreeToCanvas();
+                if (!canvas) return;
+                const link = document.createElement('a');
+                link.download = getExportFilename('png');
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            } catch (err) {
+                console.error(err);
+                alert('PNG এক্সপোর্ট ব্যর্থ হয়েছে।');
+            } finally {
+                setExportButtonsBusy(false);
             }
         }
 
-        // Profile Popup UI Functions
+        async function exportTreeAsPDF() {
+            const uid = document.getElementById('member-select').value;
+            if (!uid) { alert('প্রথমে একজন সদস্য নির্বাচন করুন।'); return; }
+
+            if (typeof window.jspdf === 'undefined') {
+                alert('PDF লাইব্রেরি লোড হয়নি। ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।');
+                return;
+            }
+
+            setExportButtonsBusy(true);
+            try {
+                const canvas = await renderTreeToCanvas();
+                if (!canvas) return;
+
+                const { jsPDF } = window.jspdf;
+                const imgData = canvas.toDataURL('image/png');
+                const isLandscape = canvas.width >= canvas.height;
+                const pdf = new jsPDF({
+                    orientation: isLandscape ? 'landscape' : 'portrait',
+                    unit: 'px',
+                    format: [canvas.width, canvas.height]
+                });
+                pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+                pdf.save(getExportFilename('pdf'));
+            } catch (err) {
+                console.error(err);
+                alert('PDF এক্সপোর্ট ব্যর্থ হয়েছে।');
+            } finally {
+                setExportButtonsBusy(false);
+            }
+        }
+
+        async function exportTreeAsSVG() {
+            const uid = document.getElementById('member-select').value;
+            if (!uid) { alert('প্রথমে একজন সদস্য নির্বাচন করুন।'); return; }
+
+            setExportButtonsBusy(true);
+            try {
+                const wrapper = document.getElementById('tree-2d-view');
+                const savedZoom = currentZoom;
+                wrapper.style.transform = 'scale(1)';
+                drawSvgConnections();
+                await new Promise(r => setTimeout(r, 60));
+
+                const width = wrapper.scrollWidth;
+                const height = wrapper.scrollHeight;
+
+                let styleText = '';
+                document.querySelectorAll('style').forEach(s => { styleText += s.textContent + '\n'; });
+
+                const clone = wrapper.cloneNode(true);
+                clone.style.transform = 'none';
+
+                const svgNS = 'http://www.w3.org/2000/svg';
+                const svgRoot = document.createElementNS(svgNS, 'svg');
+                svgRoot.setAttribute('xmlns', svgNS);
+                svgRoot.setAttribute('width', width);
+                svgRoot.setAttribute('height', height);
+                svgRoot.setAttribute('viewBox', `0 0 ${width} ${height}`);
+
+                const bg = document.createElementNS(svgNS, 'rect');
+                bg.setAttribute('width', '100%');
+                bg.setAttribute('height', '100%');
+                bg.setAttribute('fill', '#0f172a');
+                svgRoot.appendChild(bg);
+
+                const styleEl = document.createElementNS(svgNS, 'style');
+                styleEl.textContent = styleText;
+                svgRoot.appendChild(styleEl);
+
+                const fo = document.createElementNS(svgNS, 'foreignObject');
+                fo.setAttribute('x', '0');
+                fo.setAttribute('y', '0');
+                fo.setAttribute('width', width);
+                fo.setAttribute('height', height);
+                const foDiv = document.createElement('div');
+                foDiv.setAttribute('xmlns', 'http://www.w3.org/1999/xhtml');
+                foDiv.appendChild(clone);
+                fo.appendChild(foDiv);
+                svgRoot.appendChild(fo);
+
+                wrapper.style.transform = `scale(${savedZoom})`;
+                drawSvgConnections();
+
+                const serializer = new XMLSerializer();
+                const svgString = '<?xml version="1.0" standalone="no"?>\n' + serializer.serializeToString(svgRoot);
+                const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.download = getExportFilename('svg');
+                link.href = url;
+                link.click();
+                setTimeout(() => URL.revokeObjectURL(url), 2000);
+            } catch (err) {
+                console.error(err);
+                alert('SVG এক্সপোর্ট ব্যর্থ হয়েছে।');
+            } finally {
+                setExportButtonsBusy(false);
+            }
+        }
+
+        /* ----- PROFILE POPUP UI LOGIC ----- */
         function renderRelationLink(uid) {
             if (!uid) return "N/A";
             const uids = Array.isArray(uid) ? uid : [uid];
@@ -831,22 +853,24 @@
             document.getElementById('popup-modal').style.display = 'none';
         }
 
-        // Event Listeners
+        /* ----- INITIALIZATION & EVENTS ----- */
         document.addEventListener('DOMContentLoaded', () => {
             populateSelectOptions();
 
-            document.getElementById('member-select').onchange = updateBloodlineDisplay;
-            document.querySelectorAll('input[name="view-mode"]').forEach(r => {
-                r.onchange = updateBloodlineDisplay;
-            });
-            document.querySelectorAll('input[name="lineage-type"]').forEach(r => {
-                r.onchange = updateBloodlineDisplay;
-            });
+            document.getElementById('member-select').onchange = render2DTreeView;
+            document.getElementById('zoom-in-btn').onclick = () => zoomTree(0.1);
+            document.getElementById('zoom-out-btn').onclick = () => zoomTree(-0.1);
+            document.getElementById('zoom-reset-btn').onclick = resetZoom;
+
+            document.getElementById('export-png-btn').onclick = exportTreeAsPNG;
+            document.getElementById('export-svg-btn').onclick = exportTreeAsSVG;
+            document.getElementById('export-pdf-btn').onclick = exportTreeAsPDF;
 
             document.getElementById('close-popup-btn').onclick = closePopup;
             document.getElementById('image-lightbox').onclick = closeLightbox;
             document.getElementById('m-photo').onclick = function() { openLightbox(this.src); };
 
+            document.getElementById('tree-2d-viewport').addEventListener('scroll', drawSvgConnections);
             window.addEventListener('resize', drawSvgConnections);
 
             window.addEventListener('keydown', (e) => {
