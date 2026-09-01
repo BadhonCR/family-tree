@@ -3,26 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
-    <meta name="description" content="পারিবারিক বংশবৃক্ষ — ফটো গ্যালারি, কুইজ ও পরিসংখ্যান।">
-    <title>পারিবারিক বংশবৃক্ষ — হোমপেজ</title>
+    <meta name="description" content="পারিবারিক বংশবৃক্ষ — প্রধান ড্যাশবোর্ড, সদস্য সন্ধান ও সম্পর্ক নির্ণয়।">
+    <title>পারিবারিক বংশবৃক্ষ — হোম</title>
     <style>
         * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            margin: 0;
-            background-color: #0b0b0b;
+            background-color: #060a12;
             color: #e2e8f0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             min-height: 100vh;
+            line-height: 1.6;
         }
 
         #app-loading {
             position: fixed;
             inset: 0;
             z-index: 5000;
-            background: #0b0b0b;
+            background: #060a12;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -43,47 +45,44 @@
             animation: spin 0.9s linear infinite;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Top Navbar */
+        /* Navigation Header */
         .top-navbar {
             position: sticky;
             top: 0;
             z-index: 1000;
-            background: rgba(10, 15, 25, 0.95);
-            border-bottom: 1px solid rgba(0, 255, 255, 0.25);
+            background: rgba(10, 15, 25, 0.9);
+            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
             backdrop-filter: blur(16px);
-            padding: 12px 20px;
+            padding: 14px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 25px rgba(0,0,0,0.6);
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.6);
         }
 
         .nav-logo {
             color: #00ffff;
-            font-size: 18px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
+            font-size: 20px;
+            font-weight: 800;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             text-decoration: none;
+            letter-spacing: 0.5px;
         }
 
         .nav-links {
             display: flex;
-            gap: 10px;
-            align-items: center;
+            gap: 12px;
         }
 
         .nav-btn {
-            background: linear-gradient(135deg, #00b4db, #0083b0);
-            color: #fff;
-            border: none;
-            padding: 8px 16px;
+            background: rgba(0, 255, 255, 0.08);
+            color: #00ffff;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            padding: 8px 18px;
             border-radius: 20px;
             font-size: 13px;
             font-weight: 600;
@@ -93,262 +92,251 @@
             align-items: center;
             gap: 6px;
             transition: all 0.25s ease;
-            box-shadow: 0 4px 15px rgba(0, 180, 219, 0.3);
         }
 
-        .nav-btn:hover {
+        .nav-btn:hover, .nav-btn.active {
+            background: linear-gradient(135deg, #00b4db, #0083b0);
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 4px 15px rgba(0, 255, 255, 0.3);
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 255, 255, 0.4);
         }
 
-        /* Main Container */
-        .main-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 24px 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 36px;
+        /* Hero Banner */
+        .hero-banner {
+            text-align: center;
+            padding: 50px 20px 30px 20px;
+            background: radial-gradient(circle at center, rgba(0, 255, 255, 0.08) 0%, transparent 70%);
         }
 
-        .section-title {
-            color: #00ffff;
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
-            padding-bottom: 8px;
+        .hero-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
         }
 
-        /* Stats Section */
+        .hero-title span { color: #00ffff; }
+
+        .hero-subtitle {
+            font-size: 15px;
+            color: #94a3b8;
+            max-width: 600px;
+            margin: 0 auto 24px auto;
+        }
+
+        /* Stats Grid */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-        }
-
-        .stat-box {
-            background: rgba(15, 23, 42, 0.7);
-            padding: 20px 16px;
-            border-radius: 12px;
-            text-align: center;
-            border: 1px solid rgba(0, 255, 255, 0.2);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-
-        .stat-box:hover {
-            background: rgba(0, 255, 255, 0.15);
-            transform: translateY(-4px);
-            border-color: #00ffff;
-            box-shadow: 0 8px 25px rgba(0, 255, 255, 0.2);
-        }
-
-        .stat-number {
-            font-size: 28px;
-            font-weight: bold;
-            color: #00ffff;
-            margin-bottom: 4px;
-        }
-
-        .stat-label {
-            font-size: 13px;
-            color: #94a3b8;
-        }
-
-        .gen-container-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 12px;
-            margin-top: 14px;
-        }
-
-        .gen-item {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(0, 255, 255, 0.15);
-            border-radius: 8px;
-            padding: 12px 14px;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: 0.2s;
-        }
-
-        .gen-item:hover {
-            background: rgba(0, 255, 255, 0.18);
-            border-color: #00ffff;
-        }
-
-        .gen-title {
-            font-size: 13px;
-            font-weight: 600;
-            color: #fff;
-        }
-
-        .gen-count {
-            font-size: 11px;
-            background: rgba(0, 255, 255, 0.15);
-            color: #00ffff;
-            padding: 3px 10px;
-            border-radius: 12px;
-            border: 1px solid rgba(0, 255, 255, 0.4);
-        }
-
-        /* Gallery Section */
-        .gallery-filter {
-            width: 220px;
-            padding: 10px;
-            border-radius: 8px;
-            background: #0f172a;
-            color: #fff;
-            border: 1px solid rgba(0, 255, 255, 0.3);
-            margin-bottom: 16px;
-            font-size: 13px;
-            outline: none;
-        }
-
-        .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
             gap: 14px;
+            max-width: 900px;
+            margin: 0 auto 30px auto;
+            padding: 0 16px;
         }
 
-        .gallery-card {
+        .stat-card {
             background: rgba(15, 23, 42, 0.7);
             border: 1px solid rgba(0, 255, 255, 0.2);
-            border-radius: 10px;
-            padding: 10px;
+            border-radius: 12px;
+            padding: 16px;
             text-align: center;
-            cursor: pointer;
+            backdrop-filter: blur(8px);
             transition: 0.25s ease;
         }
 
-        .gallery-card:hover {
+        .stat-card:hover {
             border-color: #00ffff;
-            transform: translateY(-4px);
-            background: rgba(0, 255, 255, 0.15);
-            box-shadow: 0 6px 20px rgba(0, 255, 255, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 255, 255, 0.15);
         }
 
-        .gallery-img {
-            width: 100%;
-            height: 120px;
-            object-fit: cover;
-            border-radius: 8px;
-            background: #1a2230;
+        .stat-number {
+            font-size: 24px;
+            font-weight: 800;
+            color: #00ffff;
         }
 
-        .gallery-name {
+        .stat-label {
             font-size: 12px;
-            font-weight: 600;
-            color: #fff;
-            margin-top: 8px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            color: #94a3b8;
+            margin-top: 4px;
         }
 
-        /* Quiz Section */
-        .quiz-card {
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid rgba(0, 255, 255, 0.4);
-            border-radius: 16px;
-            padding: 24px;
-            text-align: center;
-            max-width: 450px;
+        /* Main Content Layout */
+        .main-layout {
+            max-width: 1100px;
             margin: 0 auto;
-            backdrop-filter: blur(12px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        .quiz-img {
-            width: 130px;
-            height: 130px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid #00ffff;
-            margin: 0 auto 16px auto;
-            display: block;
-            background: #1e293b;
-        }
-
-        .quiz-options {
+            padding: 0 16px 50px 16px;
             display: grid;
             grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .card-section {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
             gap: 10px;
-            margin-top: 14px;
-        }
-
-        .quiz-btn {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(0,255,255,0.3);
-            color: #fff;
-            padding: 10px 6px;
-            border-radius: 8px;
-            font-size: 12px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .quiz-btn:hover {
-            background: rgba(0, 255, 255, 0.2);
-            border-color: #00ffff;
-        }
-
-        .quiz-feedback {
-            margin-top: 14px;
-            font-weight: bold;
-            font-size: 13px;
-        }
-
-        /* Modals */
-        #list-modal {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(15, 23, 42, 0.98);
-            color: #fff;
-            padding: 22px;
-            border-radius: 14px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.9);
-            z-index: 3000;
-            width: 350px;
-            max-height: 75vh;
-            overflow-y: auto;
-            border: 1px solid rgba(0, 255, 255, 0.4);
-            backdrop-filter: blur(14px);
-        }
-
-        #list-modal h3 {
-            margin-top: 0;
+            font-size: 17px;
+            font-weight: 700;
             color: #00ffff;
-            font-size: 16px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 18px;
+            border-bottom: 1px dashed rgba(0, 255, 255, 0.2);
             padding-bottom: 10px;
         }
 
-        .modal-member-card {
-            padding: 10px 12px;
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 8px;
-            margin-bottom: 8px;
-            cursor: pointer;
+        /* Search Section */
+        .search-box {
+            position: relative;
+            margin-bottom: 14px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 10px;
+            background: rgba(6, 10, 18, 0.8);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            color: #fff;
+            font-size: 14px;
+            outline: none;
             transition: 0.2s;
         }
 
-        .modal-member-card:hover {
-            background: rgba(0, 255, 255, 0.18);
+        .search-input:focus {
             border-color: #00ffff;
+            box-shadow: 0 0 12px rgba(0, 255, 255, 0.3);
         }
 
+        .results-list {
+            max-height: 340px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .member-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 10px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .member-item:hover {
+            background: rgba(0, 255, 255, 0.15);
+            border-color: #00ffff;
+            transform: translateX(3px);
+        }
+
+        .avatar-thumb {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1.5px solid #00ffff;
+            background: #1a2230;
+            flex-shrink: 0;
+        }
+
+        .member-info strong { display: block; font-size: 14px; color: #fff; }
+        .member-info small { font-size: 12px; color: #94a3b8; }
+
+        /* Relationship Section */
+        .select-group {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .select-group label {
+            display: block;
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .autocomplete-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #0f172a;
+            border: 1px solid #00ffff;
+            border-radius: 8px;
+            max-height: 180px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.8);
+        }
+
+        .autocomplete-item {
+            padding: 8px 12px;
+            font-size: 13px;
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .autocomplete-item:hover {
+            background: rgba(0, 255, 255, 0.2);
+            color: #00ffff;
+        }
+
+        .rel-result-box {
+            margin-top: 16px;
+            padding: 14px;
+            background: rgba(6, 10, 18, 0.7);
+            border-radius: 10px;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-left: 4px solid #00ffff;
+            font-size: 13px;
+            min-height: 80px;
+        }
+
+        .rel-flow-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .rel-flow-card {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+        }
+
+        .rel-flow-arrow {
+            color: #00ffff;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        /* Profile Popup Modal */
         #popup-modal {
             display: none;
             position: fixed;
@@ -377,46 +365,11 @@
             margin-bottom: 14px;
         }
 
-        .popup-header-container h2 {
-            margin: 0 0 6px 0;
-            color: #00ffff;
-            font-size: 19px;
-            font-weight: 700;
-        }
-
-        .uid-gen-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .uid-badge {
-            font-size: 11px;
-            color: #38bdf8;
-            background: rgba(56, 189, 248, 0.12);
-            padding: 3px 8px;
-            border-radius: 6px;
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            font-weight: 600;
-        }
-
-        .gen-badge {
-            font-size: 11px;
-            color: #00ffff;
-            background: rgba(0, 255, 255, 0.15);
-            padding: 3px 8px;
-            border-radius: 6px;
-            border: 1px solid rgba(0, 255, 255, 0.4);
-            font-weight: 600;
-        }
-
-        .profile-details-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            font-size: 13px;
-        }
+        .popup-header-container h2 { margin: 0 0 6px 0; color: #00ffff; font-size: 19px; font-weight: 700; }
+        .uid-gen-wrapper { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .uid-badge { font-size: 11px; color: #38bdf8; background: rgba(56, 189, 248, 0.12); padding: 3px 8px; border-radius: 6px; border: 1px solid rgba(56, 189, 248, 0.3); font-weight: 600; }
+        .gen-badge { font-size: 11px; color: #00ffff; background: rgba(0, 255, 255, 0.15); padding: 3px 8px; border-radius: 6px; border: 1px solid rgba(0, 255, 255, 0.4); font-weight: 600; }
+        .profile-details-list { display: flex; flex-direction: column; gap: 8px; font-size: 13px; }
 
         .profile-field {
             display: flex;
@@ -428,72 +381,28 @@
             border: 1px solid rgba(255, 255, 255, 0.04);
         }
 
-        .profile-field.block-field {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 4px;
-        }
-
-        .field-label {
-            color: #94a3b8;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .field-value {
-            color: #f8fafc;
-            font-weight: 500;
-            text-align: right;
-        }
-
-        .profile-img-thumb {
-            width: 60px;
-            height: 60px;
-            border-radius: 10px;
-            object-fit: cover;
-            border: 2px solid #00ffff;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0, 255, 255, 0.25);
-            background-color: #1a2230;
-            flex-shrink: 0;
-        }
-
-        .btn-close {
-            background: linear-gradient(135deg, #ff4757, #ff6b81);
-            color: white;
-            border: none;
-            padding: 5px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 12px;
-        }
+        .profile-field.block-field { flex-direction: column; align-items: flex-start; gap: 4px; }
+        .field-label { color: #94a3b8; font-size: 12px; font-weight: 600; }
+        .field-value { color: #f8fafc; font-weight: 500; text-align: right; }
+        .profile-img-thumb { width: 60px; height: 60px; border-radius: 10px; object-fit: cover; border: 2px solid #00ffff; cursor: pointer; background-color: #1a2230; flex-shrink: 0; }
+        .btn-close { background: linear-gradient(135deg, #ff4757, #ff6b81); color: white; border: none; padding: 5px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; }
 
         #image-lightbox {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.85);
             z-index: 4000;
-            justify-content: center;
-            align-items: center;
+            justify-content: center; align-items: center;
             backdrop-filter: blur(8px);
         }
 
-        #image-lightbox img {
-            max-width: 85%;
-            max-height: 85%;
-            border-radius: 12px;
-            border: 2px solid #00ffff;
-        }
+        #image-lightbox img { max-width: 85%; max-height: 85%; border-radius: 12px; border: 2px solid #00ffff; }
 
-        @media (max-width: 600px) {
-            .nav-btn { padding: 6px 12px; font-size: 12px; }
-            .nav-logo { font-size: 15px; }
-            .top-navbar { padding: 10px 12px; }
+        @media (max-width: 768px) {
+            .main-layout { grid-template-columns: 1fr; }
+            .hero-title { font-size: 24px; }
+            .top-navbar { padding: 12px 16px; }
         }
     </style>
 </head>
@@ -501,77 +410,89 @@
 
     <div id="app-loading" aria-live="polite">
         <div class="spinner"></div>
-        <div>পারিবারিক হোমপেজ লোড হচ্ছে...</div>
+        <div>বংশবৃক্ষ ড্যাশবোর্ড লোড হচ্ছে...</div>
     </div>
 
     <!-- TOP NAVBAR -->
     <header class="top-navbar">
         <a href="home.html" class="nav-logo">🌳 পারিবারিক বংশবৃক্ষ</a>
         <nav class="nav-links">
-            <a href="genogram.html" class="nav-btn">🌐 ৩ডি বংশবৃক্ষ (Genogram) ➔</a>
+            <a href="home.html" class="nav-btn active">🏠 হোম</a>
+            <a href="bloodline.html" class="nav-btn">🩸 ২ডি ব্লাডলাইন</a>
+            <a href="genogram.html" class="nav-btn">🌐 ৩ডি ট্রি ➔</a>
         </nav>
     </header>
 
-    <!-- HOMEPAGE MAIN CONTAINER -->
-    <main class="main-container">
+    <!-- HERO BANNER -->
+    <section class="hero-banner">
+        <h1 class="hero-title">স্বাগতম <span>পারিবারিক আর্কাইভে</span></h1>
+        <p class="hero-subtitle">আপনার পরিবারের শিকড়, ঐতিহ্য ও রক্তেরই ধারা ডিজিটাল বংশবৃক্ষে সংরক্ষণ করুন।</p>
+    </section>
 
-        <!-- STATS SECTION -->
-        <section id="stats-section">
-            <div class="section-title">📊 তথ্য ও পরিসংখ্যান</div>
-            <p style="font-size: 12px; color: #94a3b8; margin-top: -10px; margin-bottom: 14px;">
-                💡 বিস্তারিত তালিকা দেখতে যেকোনো পরিসংখ্যানে ক্লিক করুন:
-            </p>
-            <div class="stats-grid">
-                <div class="stat-box" id="btn-stat-total">
-                    <div class="stat-number" id="stat-total">0</div>
-                    <div class="stat-label">মোট সদস্য</div>
-                </div>
-                <div class="stat-box" id="btn-stat-families">
-                    <div class="stat-number" id="stat-families">0</div>
-                    <div class="stat-label">পরিবার / দম্পতি</div>
-                </div>
-                <div class="stat-box" id="btn-stat-male">
-                    <div class="stat-number" id="stat-male" style="color: #00ccff;">0</div>
-                    <div class="stat-label">পুরুষ সদস্য</div>
-                </div>
-                <div class="stat-box" id="btn-stat-female">
-                    <div class="stat-number" id="stat-female" style="color: #ff1493;">0</div>
-                    <div class="stat-label">নারী সদস্য</div>
-                </div>
+    <!-- QUICK STATS -->
+    <section class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number" id="stat-total">0</div>
+            <div class="stat-label">মোট সদস্য</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="stat-male" style="color: #00ccff;">0</div>
+            <div class="stat-label">পুরুষ সদস্য</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="stat-female" style="color: #ff1493;">0</div>
+            <div class="stat-label">নারী সদস্য</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="stat-families" style="color: #ffda79;">0</div>
+            <div class="stat-label">পরিবার/দম্পতি</div>
+        </div>
+    </section>
+
+    <!-- MAIN DASHBOARD CONTENT -->
+    <main class="main-layout">
+
+        <!-- SEARCH SECTION -->
+        <section class="card-section">
+            <div class="section-header">
+                🔍 দ্রুত সদস্য সন্ধান
+            </div>
+            <div class="search-box">
+                <input type="text" id="search-input" class="search-input" placeholder="নাম বা UID দিয়ে খুঁজুন (যেমন: বাঁধন, FT-003)...">
+            </div>
+            <div id="results-list" class="results-list">
+                <p style="font-size: 13px; color: #94a3b8; text-align: center; padding-top: 20px;">
+                    সদস্যদের তালিকা দেখতে অনুসন্ধান শুরু করুন।
+                </p>
+            </div>
+        </section>
+
+        <!-- RELATIONSHIP CALCULATOR SECTION -->
+        <section class="card-section">
+            <div class="section-header">
+                🔗 সম্পর্ক নির্ণয় (Relationship Finder)
             </div>
 
-            <h3 style="margin-top:22px; font-size:15px; color:#00ffff;">🧬 পিতৃকুল জেনারেশন তালিকা</h3>
-            <div id="generation-container" class="gen-container-grid"></div>
-        </section>
+            <div class="select-group">
+                <label>প্রথম ব্যক্তি (Person A):</label>
+                <input type="text" id="rel-input-a" class="search-input" placeholder="নাম টাইপ করুন..." autocomplete="off">
+                <input type="hidden" id="rel-person-a">
+                <div id="dropdown-a" class="autocomplete-dropdown"></div>
+            </div>
 
-        <!-- GALLERY SECTION -->
-        <section id="gallery-section">
-            <div class="section-title">📸 পারিবারিক ফটো অ্যালবাম</div>
-            <select id="gallery-gen-filter" class="gallery-filter">
-                <option value="all">সকল জেনারেশন</option>
-            </select>
-            <div id="gallery-grid" class="gallery-grid"></div>
-        </section>
+            <div class="select-group">
+                <label>দ্বিতীয় ব্যক্তি (Person B):</label>
+                <input type="text" id="rel-input-b" class="search-input" placeholder="নাম টাইপ করুন..." autocomplete="off">
+                <input type="hidden" id="rel-person-b">
+                <div id="dropdown-b" class="autocomplete-dropdown"></div>
+            </div>
 
-        <!-- QUIZ SECTION -->
-        <section id="quiz-section">
-            <div class="section-title" style="justify-content: center;">🎮 কুইজ — আত্মীয়কে চিনুন!</div>
-            <div class="quiz-card">
-                <img id="quiz-photo" class="quiz-img" src="" alt="Quiz Face">
-                <div id="quiz-options" class="quiz-options"></div>
-                <div id="quiz-feedback" class="quiz-feedback"></div>
-                <button class="nav-btn" id="quiz-next-btn" style="margin:16px auto 0 auto; height:36px; font-size:12px;">পরবর্তী ছবি ➔</button>
+            <div id="rel-result-box" class="rel-result-box">
+                দুইজন ব্যক্তি নির্বাচন করলে তাদের মধ্যকার পারিবারিক সম্পর্কের পথ এখানে দেখাবে।
             </div>
         </section>
 
     </main>
-
-    <!-- LIST MODAL -->
-    <div id="list-modal">
-        <button class="btn-close" id="close-list-modal-btn" style="float:right;">✕</button>
-        <h3 id="list-modal-title">সদস্য তালিকা</h3>
-        <div id="list-modal-body"></div>
-    </div>
 
     <!-- PROFILE POPUP MODAL -->
     <div id="popup-modal">
@@ -629,7 +550,7 @@
         <img id="lightbox-img" src="" alt="Full View">
     </div>
 
-    <!-- JS MODULE IMPORT -->
+    <!-- JS MODULE IMPORT & LOGIC -->
     <script type="module">
         import { membersData } from './js/membersData.js';
 
@@ -665,250 +586,212 @@
             document.getElementById('image-lightbox').style.display = 'none';
         }
 
-        // Initialize Stats & Generations
-        function initializeStats() {
-            const total = membersData.length;
-            let males = 0;
-            let females = 0;
-            const marriedCouples = new Set();
-            const genCounts = {};
+        /* Stats Calculation */
+        function calculateStats() {
+            let total = membersData.length;
+            let males = 0, females = 0;
+            const couples = new Set();
 
-            membersData.forEach((m) => {
-                if (m.gender.includes('Male') || m.gender.includes('পুরুষ') || m.gender === 'M') males++;
-                else if (m.gender.includes('Female') || m.gender.includes('মহিলা') || m.gender === 'F') females++;
+            membersData.forEach(m => {
+                if (m.gender.includes('Male') || m.gender === 'M') males++;
+                else if (m.gender.includes('Female') || m.gender === 'F') females++;
 
                 if (m.spouse) {
                     const spouses = Array.isArray(m.spouse) ? m.spouse : [m.spouse];
-                    spouses.forEach(sUid => {
-                        const pair = [m.uid, sUid].sort().join('-');
-                        marriedCouples.add(pair);
-                    });
+                    spouses.forEach(sUid => couples.add([m.uid, sUid].sort().join('-')));
                 }
-
-                let gen = m.patrilinealGen;
-                genCounts[gen] = (genCounts[gen] || 0) + 1;
             });
 
             document.getElementById('stat-total').innerText = total;
             document.getElementById('stat-male').innerText = males;
             document.getElementById('stat-female').innerText = females;
-            document.getElementById('stat-families').innerText = marriedCouples.size;
-
-            const genContainer = document.getElementById('generation-container');
-            genContainer.innerHTML = '';
-
-            const galleryFilter = document.getElementById('gallery-gen-filter');
-            galleryFilter.innerHTML = '<option value="all">সকল জেনারেশন</option>';
-            
-            const genKeys = Object.keys(genCounts).sort((a,b) => a - b);
-            genKeys.forEach(g => {
-                const div = document.createElement('div');
-                div.className = 'gen-item';
-                div.onclick = () => showFilteredMemberList('gen-' + g, `পিতৃকুল জেনারেশন ${g} এর সদস্যগণ`);
-                div.innerHTML = `
-                    <span class="gen-title">পিতৃকুল জেনারেশন ${g}</span>
-                    <span class="gen-count">${genCounts[g]} জন</span>
-                `;
-                genContainer.appendChild(div);
-
-                const opt = document.createElement('option');
-                opt.value = g;
-                opt.innerText = `জেনারেশন ${g}`;
-                galleryFilter.appendChild(opt);
-            });
+            document.getElementById('stat-families').innerText = couples.size;
         }
 
-        // Gallery Functions
-        function renderGallery() {
-            const filterVal = document.getElementById('gallery-gen-filter').value;
-            const grid = document.getElementById('gallery-grid');
-            grid.innerHTML = '';
+        /* Search Logic */
+        function handleSearch() {
+            const query = document.getElementById('search-input').value.trim().toLowerCase();
+            const resultsContainer = document.getElementById('results-list');
+            resultsContainer.innerHTML = '';
 
-            const list = filterVal === 'all' ? membersData : membersData.filter(m => m.patrilinealGen == filterVal);
+            if (!query) {
+                resultsContainer.innerHTML = '<p style="font-size: 13px; color: #94a3b8; text-align: center; padding-top: 20px;">সদস্যদের তালিকা দেখতে অনুসন্ধান শুরু করুন।</p>';
+                return;
+            }
 
-            list.forEach(m => {
-                const card = document.createElement('div');
-                card.className = 'gallery-card';
-                
-                const img = document.createElement('img');
-                img.className = 'gallery-img';
-                img.loading = 'lazy';
-                
-                let candidates = [
-                    `images/${m.uid}.jpg`,
-                    `images/${m.uid}.jpeg`,
-                    `images/${m.uid}.png`,
-                    `images/${m.uid} 01.jpg`
-                ];
-                let idx = 0;
+            const matched = membersData.filter(m => 
+                m.uid.toLowerCase().includes(query) ||
+                m.bnName.toLowerCase().includes(query) ||
+                m.enName.toLowerCase().includes(query) ||
+                (m.nick && m.nick.toLowerCase().includes(query))
+            );
 
-                function tryNextImage() {
-                    if (idx >= candidates.length) {
-                        card.style.display = 'none';
-                        return;
-                    }
-                    img.src = candidates[idx++];
-                }
+            if (matched.length > 0) {
+                matched.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'member-item';
 
-                img.onerror = tryNextImage;
-                tryNextImage();
+                    const img = document.createElement('img');
+                    img.className = 'avatar-thumb';
+                    img.loading = 'lazy';
+                    loadProfilePhoto(img, item.uid);
 
-                const name = document.createElement('div');
-                name.className = 'gallery-name';
-                name.innerText = m.bnName;
+                    const textDiv = document.createElement('div');
+                    textDiv.className = 'member-info';
+                    textDiv.innerHTML = `<strong>${item.bnName} (${item.nick})</strong><small>${item.uid} • Gen ${item.patrilinealGen}</small>`;
 
-                card.appendChild(img);
-                card.appendChild(name);
-                card.onclick = () => { showProfileByUid(m.uid); };
+                    div.appendChild(img);
+                    div.appendChild(textDiv);
+                    div.onclick = () => showProfileByUid(item.uid);
 
-                grid.appendChild(card);
-            });
+                    resultsContainer.appendChild(div);
+                });
+            } else {
+                resultsContainer.innerHTML = `<div style="color: #ff4757; text-align: center; padding: 10px; font-size: 13px;">কোনো সদস্য পাওয়া যায়নি</div>`;
+            }
         }
 
-        // Quiz Functions
-        let currentQuizAnswer = null;
-        function startNewQuiz() {
-            const quizImg = document.getElementById('quiz-photo');
-            const optionsDiv = document.getElementById('quiz-options');
-            const feedback = document.getElementById('quiz-feedback');
-            feedback.innerText = '';
-            optionsDiv.innerHTML = '';
+        /* Relationship Autocomplete & Calculation */
+        function setupAutoSearch(inputId, hiddenId, dropdownId, targetType) {
+            const input = document.getElementById(inputId);
+            const hidden = document.getElementById(hiddenId);
+            const dropdown = document.getElementById(dropdownId);
 
-            let availableMembers = [...membersData].sort(() => Math.random() - 0.5);
-
-            function tryQuizWithMember(index) {
-                if (index >= availableMembers.length) {
-                    feedback.innerText = '⚠️ ছবিযুক্ত কোনো সদস্য পাওয়া যায়নি।';
-                    quizImg.style.display = 'none';
+            input.oninput = () => {
+                const val = input.value.trim().toLowerCase();
+                if (!val) {
+                    dropdown.style.display = 'none';
+                    hidden.value = '';
                     return;
                 }
 
-                const target = availableMembers[index];
-                let candidates = [
-                    `images/${target.uid}.jpg`,
-                    `images/${target.uid}.jpeg`,
-                    `images/${target.uid}.png`,
-                    `images/${target.uid} 01.jpg`
-                ];
-                let imgIdx = 0;
+                const matches = membersData.filter(m => 
+                    m.bnName.toLowerCase().includes(val) ||
+                    m.enName.toLowerCase().includes(val) ||
+                    m.uid.toLowerCase().includes(val)
+                );
 
-                function checkNextImage() {
-                    if (imgIdx >= candidates.length) {
-                        tryQuizWithMember(index + 1);
-                        return;
-                    }
-                    quizImg.src = candidates[imgIdx++];
-                }
+                dropdown.innerHTML = '';
+                if (matches.length === 0) { dropdown.style.display = 'none'; return; }
 
-                quizImg.onerror = checkNextImage;
-                quizImg.onload = () => {
-                    quizImg.style.display = 'block';
-                    currentQuizAnswer = target.uid;
-
-                    const choices = [target];
-                    while (choices.length < 4 && choices.length < membersData.length) {
-                        const rand = membersData[Math.floor(Math.random() * membersData.length)];
-                        if (!choices.includes(rand)) choices.push(rand);
-                    }
-                    choices.sort(() => Math.random() - 0.5);
-
-                    optionsDiv.innerHTML = '';
-                    choices.forEach(opt => {
-                        const btn = document.createElement('button');
-                        btn.className = 'quiz-btn';
-                        btn.innerText = `${opt.bnName} (${opt.nick})`;
-                        btn.onclick = () => {
-                            if (opt.uid === currentQuizAnswer) {
-                                feedback.innerText = '✅ সঠিক উত্তর!';
-                                feedback.style.color = '#00ffcc';
-                            } else {
-                                feedback.innerText = `❌ ভুল! সঠিক: ${target.bnName}`;
-                                feedback.style.color = '#ff4757';
-                            }
-                        };
-                        optionsDiv.appendChild(btn);
-                    });
-                };
-
-                checkNextImage();
-            }
-
-            tryQuizWithMember(0);
-        }
-
-        // Show Filtered Member List Modal
-        function showFilteredMemberList(filterType, title) {
-            document.getElementById('list-modal-title').innerText = title;
-            const body = document.getElementById('list-modal-body');
-            body.innerHTML = '';
-
-            let list = [];
-            if (filterType === 'all') {
-                list = membersData;
-            } else if (filterType === 'male') {
-                list = membersData.filter(m => m.gender.includes('Male') || m.gender.includes('পুরুষ') || m.gender === 'M');
-            } else if (filterType === 'female') {
-                list = membersData.filter(m => m.gender.includes('Female') || m.gender.includes('মহিলা') || m.gender === 'F');
-            } else if (filterType.startsWith('gen-')) {
-                const genNum = parseInt(filterType.split('-')[1]);
-                list = membersData.filter(m => m.patrilinealGen === genNum);
-            }
-
-            if (list.length === 0) {
-                body.innerHTML = '<p style="color:#aaa;">কোনো সদস্য পাওয়া যায়নি।</p>';
-            } else {
-                list.forEach(m => {
+                matches.forEach(m => {
                     const div = document.createElement('div');
-                    div.className = 'modal-member-card';
-                    div.innerHTML = `<strong>${m.bnName}</strong> (${m.nick})<br><small style="color:#00ffff">${m.uid} • Pitri: Gen ${m.patrilinealGen} | Matri: Gen ${m.matrilinealGen}</small>`;
-                    div.onclick = () => {
-                        showProfileByUid(m.uid);
-                        closeListModal();
-                    };
-                    body.appendChild(div);
-                });
-            }
+                    div.className = 'autocomplete-item';
 
-            document.getElementById('list-modal').style.display = 'block';
+                    const img = document.createElement('img');
+                    img.className = 'avatar-thumb';
+                    img.style.width = '30px'; img.style.height = '30px';
+                    loadProfilePhoto(img, m.uid);
+
+                    const span = document.createElement('span');
+                    span.innerHTML = `<b>${m.bnName}</b> (${m.nick}) <small style="color:#00ffff">${m.uid}</small>`;
+
+                    div.appendChild(img);
+                    div.appendChild(span);
+
+                    div.onclick = () => {
+                        input.value = `${m.bnName} (${m.nick})`;
+                        hidden.value = m.uid;
+                        dropdown.style.display = 'none';
+                        calculateRelationship();
+                    };
+                    dropdown.appendChild(div);
+                });
+                dropdown.style.display = 'block';
+            };
         }
 
-        function showCouplesList() {
-            document.getElementById('list-modal-title').innerText = 'দম্পতি / পরিবার সমূহ';
-            const body = document.getElementById('list-modal-body');
-            body.innerHTML = '';
+        function calculateRelationship() {
+            const uidA = document.getElementById('rel-person-a').value;
+            const uidB = document.getElementById('rel-person-b').value;
+            const resDiv = document.getElementById('rel-result-box');
 
-            const addedPairs = new Set();
+            if (!uidA || !uidB) {
+                resDiv.innerHTML = 'দুইজন ব্যক্তি নির্বাচন করলে তাদের মধ্যকার পারিবারিক সম্পর্কের পথ এখানে দেখাবে।';
+                return;
+            }
+
+            if (uidA === uidB) {
+                resDiv.innerHTML = '⚠️ অনুগ্রহ করে দুইজন ভিন্ন ব্যক্তি নির্বাচন করুন।';
+                return;
+            }
+
+            const graph = {};
+            membersData.forEach(m => { graph[m.uid] = []; });
+
             membersData.forEach(m => {
                 if (m.spouse) {
                     const spouses = Array.isArray(m.spouse) ? m.spouse : [m.spouse];
-                    spouses.forEach(sUid => {
-                        const pairKey = [m.uid, sUid].sort().join('-');
-                        if (!addedPairs.has(pairKey)) {
-                            addedPairs.add(pairKey);
-                            const spouseObj = membersData.find(x => x.uid === sUid);
-                            if (spouseObj) {
-                                const div = document.createElement('div');
-                                div.className = 'modal-member-card';
-                                div.innerHTML = `<strong>${m.bnName}</strong> & <strong>${spouseObj.bnName}</strong><br><small style="color:#00ffff">${m.uid} & ${spouseObj.uid}</small>`;
-                                div.onclick = () => {
-                                    showProfileByUid(m.uid);
-                                    closeListModal();
-                                };
-                                body.appendChild(div);
-                            }
-                        }
-                    });
+                    spouses.forEach(sUid => graph[m.uid].push({ target: sUid, relation: "স্বামী/স্ত্রী" }));
+                }
+                if (m.father) {
+                    graph[m.uid].push({ target: m.father, relation: "পিতা" });
+                    const isMale = m.gender.includes("Male") || m.gender === "M";
+                    graph[m.father].push({ target: m.uid, relation: isMale ? "পুত্র" : "কন্যা" });
+                }
+                if (m.mother) {
+                    graph[m.uid].push({ target: m.mother, relation: "মাতা" });
+                    const isMale = m.gender.includes("Male") || m.gender === "M";
+                    graph[m.mother].push({ target: m.uid, relation: isMale ? "পুত্র" : "কন্যা" });
                 }
             });
 
-            document.getElementById('list-modal').style.display = 'block';
+            const queue = [[{ uid: uidA, rel: "" }]];
+            const visited = new Set([uidA]);
+            let foundPath = null;
+
+            while (queue.length > 0) {
+                const path = queue.shift();
+                const lastNode = path[path.length - 1].uid;
+
+                if (lastNode === uidB) { foundPath = path; break; }
+
+                if (graph[lastNode]) {
+                    for (let edge of graph[lastNode]) {
+                        if (!visited.has(edge.target)) {
+                            visited.add(edge.target);
+                            queue.push([...path, { uid: edge.target, rel: edge.relation }]);
+                        }
+                    }
+                }
+            }
+
+            if (foundPath) {
+                let html = `<strong style="color:#00ffff;">সম্পর্কের সংযোগপথ (${foundPath.length - 1} ধাপ):</strong>`;
+                html += `<div class="rel-flow-container">`;
+
+                for (let i = 0; i < foundPath.length; i++) {
+                    const person = membersData.find(m => m.uid === foundPath[i].uid);
+                    const imgId = `rel-img-${person.uid}-${i}`;
+
+                    if (i > 0) {
+                        html += `<div class="rel-flow-arrow">➔ [${foundPath[i].rel}] ➔</div>`;
+                    }
+
+                    html += `
+                        <div class="rel-flow-card" onclick="showProfileByUid('${person.uid}')" style="cursor:pointer;">
+                            <img id="${imgId}" class="avatar-thumb" style="width:32px; height:32px;" loading="lazy" src="" alt="Photo">
+                            <div>
+                                <b style="color:#fff;">${person.bnName}</b> (${person.nick})<br>
+                                <small style="color:#00ffff;">${person.uid}</small>
+                            </div>
+                        </div>
+                    `;
+
+                    setTimeout(() => {
+                        const el = document.getElementById(imgId);
+                        if (el) loadProfilePhoto(el, person.uid);
+                    }, 10);
+                }
+
+                html += `</div>`;
+                resDiv.innerHTML = html;
+            } else {
+                resDiv.innerHTML = '❌ কোনো প্রত্যক্ষ বা পরোক্ষ পারিবারিক সম্পর্ক খুঁজে পাওয়া যায়নি।';
+            }
         }
 
-        function closeListModal() {
-            document.getElementById('list-modal').style.display = 'none';
-        }
-
-        // Profile Popup Functions
+        /* Profile Modal Logic */
         function renderRelationLink(uid) {
             if (!uid) return "N/A";
             const uids = Array.isArray(uid) ? uid : [uid];
@@ -952,7 +835,6 @@
 
             loadProfilePhoto(document.getElementById('m-photo'), data.uid);
 
-            // Add Click Events to Links in Popup
             document.querySelectorAll('#popup-modal .relation-link').forEach(link => {
                 link.onclick = (e) => {
                     const targetUid = e.target.getAttribute('data-uid');
@@ -967,40 +849,30 @@
             document.getElementById('popup-modal').style.display = 'none';
         }
 
-        // DOM Event Listeners Setup
+        /* Initialization */
         document.addEventListener('DOMContentLoaded', () => {
-            initializeStats();
-            renderGallery();
-            startNewQuiz();
+            calculateStats();
 
-            // Stats Buttons Event Listeners
-            document.getElementById('btn-stat-total').onclick = () => showFilteredMemberList('all', 'সকল সদস্যের তালিকা');
-            document.getElementById('btn-stat-families').onclick = () => showCouplesList();
-            document.getElementById('btn-stat-male').onclick = () => showFilteredMemberList('male', 'পুরুষ সদস্যদের তালিকা');
-            document.getElementById('btn-stat-female').onclick = () => showFilteredMemberList('female', 'নারী সদস্যদের তালিকা');
+            let debounceTimer;
+            document.getElementById('search-input').oninput = () => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(handleSearch, 200);
+            };
 
-            // Gallery Filter Event Listener
-            document.getElementById('gallery-gen-filter').onchange = renderGallery;
+            setupAutoSearch('rel-input-a', 'rel-person-a', 'dropdown-a', 'a');
+            setupAutoSearch('rel-input-b', 'rel-person-b', 'dropdown-b', 'b');
 
-            // Quiz Next Button Event Listener
-            document.getElementById('quiz-next-btn').onclick = startNewQuiz;
-
-            // Close Buttons
-            document.getElementById('close-list-modal-btn').onclick = closeListModal;
             document.getElementById('close-popup-btn').onclick = closePopup;
             document.getElementById('image-lightbox').onclick = closeLightbox;
             document.getElementById('m-photo').onclick = function() { openLightbox(this.src); };
 
-            // ESC Key Handler
             window.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') {
                     closeLightbox();
-                    closeListModal();
                     closePopup();
                 }
             });
 
-            // Remove Loading Overlay
             const loadingEl = document.getElementById('app-loading');
             if (loadingEl) {
                 loadingEl.style.opacity = '0';
