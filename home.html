@@ -455,6 +455,72 @@
         }
 
         html {scroll-behavior:smooth;}
+    
+/* ===== FAMILY QUIZ ===== */
+.quiz-section{
+    width:min(1100px,calc(100% - 32px));margin:0 auto 50px;padding:30px;
+    border:1px solid rgba(0,255,255,.14);border-radius:20px;
+    background:linear-gradient(135deg,rgba(15,23,42,.72),rgba(6,10,18,.72));
+    box-shadow:0 16px 45px rgba(0,0,0,.28);
+}
+.quiz-head{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:22px}
+.quiz-head .eyebrow{color:#22d3ee;font-size:10px;font-weight:800;letter-spacing:2px}
+.quiz-head h2{margin:8px 0 7px;font-size:clamp(21px,3vw,29px);line-height:1.25;color:#fff}
+.quiz-head p{max-width:680px;color:#94a3b8;font-size:13px;margin:0}
+.quiz-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.quiz-launch{
+    text-align:left;padding:22px;border-radius:16px;border:1px solid rgba(255,255,255,.07);
+    background:rgba(255,255,255,.025);cursor:pointer;color:#fff;transition:.22s;
+}
+.quiz-launch:hover{transform:translateY(-3px);border-color:rgba(0,255,255,.3);background:rgba(0,255,255,.045);box-shadow:0 12px 30px rgba(0,0,0,.22)}
+.quiz-icon{width:46px;height:46px;display:grid;place-items:center;border-radius:13px;
+    background:rgba(0,255,255,.08);border:1px solid rgba(0,255,255,.14);font-size:22px;margin-bottom:14px}
+.quiz-launch h3{font-size:17px;margin:0 0 7px}.quiz-launch p{font-size:12px;line-height:1.7;color:#94a3b8;margin:0 0 14px}
+.quiz-tag{display:inline-flex;padding:5px 8px;border-radius:999px;background:rgba(0,255,255,.06);
+    border:1px solid rgba(0,255,255,.1);color:#7dd3fc;font:700 9px Inter,sans-serif;letter-spacing:.4px}
+.quiz-arrow{float:right;color:#00ffff;font-weight:800}
+
+/* Quiz modal */
+#quiz-modal{display:none;position:fixed;inset:0;z-index:6000;background:rgba(0,0,0,.78);
+    backdrop-filter:blur(12px);align-items:center;justify-content:center;padding:14px}
+#quiz-modal.open{display:flex}
+.quiz-dialog{width:min(720px,100%);max-height:92vh;overflow:auto;border:1px solid rgba(0,255,255,.2);
+    border-radius:20px;background:linear-gradient(145deg,rgba(15,23,36,.98),rgba(6,10,18,.99));
+    box-shadow:0 30px 90px rgba(0,0,0,.65)}
+.quiz-dialog-head{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:18px 20px;
+    border-bottom:1px solid rgba(0,255,255,.12)}
+.quiz-dialog-head h3{margin:0;color:#00ffff;font-size:18px}.quiz-dialog-head small{color:#64748b}
+.quiz-close{width:34px;height:34px;border:1px solid rgba(0,255,255,.15);border-radius:9px;
+    background:rgba(255,255,255,.03);color:#fff;font-size:19px;cursor:pointer}
+.quiz-body{padding:20px}.quiz-progress{display:flex;justify-content:space-between;color:#94a3b8;font:700 10px Inter,sans-serif;margin-bottom:8px}
+.quiz-progressbar{height:5px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden;margin-bottom:18px}
+.quiz-progressbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#00ffff,#39d98a);transition:.25s}
+.quiz-question-card{padding:17px;border:1px solid rgba(0,255,255,.12);border-radius:15px;background:rgba(255,255,255,.025);margin-bottom:14px}
+.quiz-question-label{font:800 9px Inter,sans-serif;letter-spacing:1.5px;color:#22d3ee}
+.quiz-question{font-size:18px;font-weight:800;line-height:1.45;margin:8px 0 15px}
+.quiz-photo-row{display:flex;align-items:center;gap:16px}
+.quiz-photo{width:110px;height:110px;object-fit:cover;border-radius:18px;border:2px solid rgba(0,255,255,.28);background:#111827}
+.quiz-person-name{font-size:18px;font-weight:800}.quiz-person-en{font:500 10px Inter,sans-serif;color:#64748b;margin-top:4px}
+.quiz-options{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.quiz-option{padding:12px 13px;border-radius:12px;border:1px solid rgba(255,255,255,.08);
+    background:rgba(255,255,255,.025);color:#fff;text-align:left;cursor:pointer;min-height:55px;transition:.16s}
+.quiz-option:hover{border-color:rgba(0,255,255,.35);background:rgba(0,255,255,.06)}
+.quiz-option strong{font-size:12px;display:block}.quiz-option small{font-size:10px;color:#64748b;display:block;margin-top:3px}
+.quiz-option.correct{border-color:rgba(57,217,138,.6);background:rgba(57,217,138,.09)}
+.quiz-option.wrong{border-color:rgba(255,71,87,.6);background:rgba(255,71,87,.08)}
+.quiz-feedback{min-height:20px;margin-top:10px;font-size:11px;color:#94a3b8}
+.quiz-feedback.good{color:#86efac}.quiz-feedback.bad{color:#ff8fa0}
+.quiz-footer{display:flex;justify-content:space-between;align-items:center;margin-top:14px;gap:10px}
+.quiz-next{display:none;border:0;border-radius:10px;padding:10px 14px;background:#00ffff;color:#03131b;font-weight:800;cursor:pointer}
+.quiz-result{text-align:center;padding:25px 10px}.quiz-result .score{font:800 48px Inter,sans-serif;color:#00ffff}
+.quiz-result h3{margin:10px 0 5px;font-size:22px}.quiz-result p{color:#94a3b8;font-size:12px}
+.quiz-result button{margin-top:15px;border:0;border-radius:10px;padding:10px 15px;background:#00ffff;color:#03131b;font-weight:800;cursor:pointer}
+@media(max-width:768px){
+ .quiz-section{width:calc(100% - 24px);padding:20px}.quiz-head{align-items:flex-start;flex-direction:column}
+ .quiz-grid{grid-template-columns:1fr}.quiz-photo-row{align-items:flex-start}.quiz-photo{width:88px;height:88px;border-radius:14px}
+ .quiz-options{grid-template-columns:1fr}.quiz-body{padding:15px}
+}
+
     </style>
 </head>
 <body>
@@ -556,6 +622,44 @@
         </section>
 
     </main>
+
+    
+<!-- FAMILY QUIZ -->
+<section class="quiz-section" id="family-quiz">
+    <div class="quiz-head">
+        <div>
+            <span class="eyebrow">FAMILY QUIZ</span>
+            <h2>পরিবারকে জানুন, <span style="color:#00ffff;">নিজেকে যাচাই করুন</span></h2>
+            <p>পারিবারিক আর্কাইভের সদস্যদের তথ্য ব্যবহার করে তৈরি দুটি ইন্টার‌্যাকটিভ কুইজ। প্রতিবার নতুন প্রশ্ন ও বিকল্প আসবে।</p>
+        </div>
+    </div>
+    <div class="quiz-grid">
+        <button class="quiz-launch" data-start-quiz="photo">
+            <div class="quiz-icon">🖼️</div>
+            <h3>ছবি দেখে নাম শনাক্ত করুন</h3>
+            <p>একজন সদস্যের ছবি দেখুন এবং চারটি বিকল্পের মধ্যে সঠিক নামটি নির্বাচন করুন।</p>
+            <span class="quiz-tag">ছবি → নাম · ১০ প্রশ্ন</span>
+            <span class="quiz-arrow">→</span>
+        </button>
+        <button class="quiz-launch" data-start-quiz="parents">
+            <div class="quiz-icon">🧬</div>
+            <h3>পিতা–মাতা শনাক্ত করুন</h3>
+            <p>সদস্যের নাম ও ছবি দেখে সঠিক পিতা ও মাতার জুটি নির্বাচন করুন।</p>
+            <span class="quiz-tag">নাম + ছবি → পিতা–মাতা · ১০ প্রশ্ন</span>
+            <span class="quiz-arrow">→</span>
+        </button>
+    </div>
+</section>
+
+<div id="quiz-modal" aria-hidden="true">
+    <div class="quiz-dialog">
+        <div class="quiz-dialog-head">
+            <div><h3 id="quiz-title">Family Quiz</h3><small id="quiz-subtitle"></small></div>
+            <button class="quiz-close" id="quiz-close" aria-label="বন্ধ করুন">×</button>
+        </div>
+        <div class="quiz-body" id="quiz-body"></div>
+    </div>
+</div>
 
     <!-- ABOUT / PRODUCT OVERVIEW -->
     <section class="about-section" id="about">
@@ -970,6 +1074,122 @@
                 setTimeout(() => { loadingEl.style.display = 'none'; }, 400);
             }
         });
+    
+/* ===== FAMILY QUIZ ENGINE ===== */
+const QuizApp = (() => {
+    const fallback = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(
+        `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300"><rect width="300" height="300" fill="#111827"/><circle cx="150" cy="110" r="50" fill="#263548"/><path d="M65 270c10-60 42-90 85-90s75 30 85 90" fill="#263548"/><circle cx="150" cy="150" r="125" fill="none" stroke="#00ffff" stroke-opacity=".2" stroke-width="3"/></svg>`
+    );
+    const modal = document.getElementById('quiz-modal');
+    const body = document.getElementById('quiz-body');
+    const title = document.getElementById('quiz-title');
+    const subtitle = document.getElementById('quiz-subtitle');
+    let type = '', questions = [], index = 0, score = 0, locked = false;
+
+    const shuffle = a => a.slice().sort(() => Math.random() - .5);
+    const byUid = uid => membersData.find(m => m.uid === uid);
+    const name = uid => byUid(uid)?.bnName || 'তথ্য নেই';
+    const hasParents = m => m && m.father && m.mother && byUid(m.father) && byUid(m.mother);
+
+    function loadPhoto(img, uid) {
+        const candidates = [`images/${uid}.jpg`,`images/${uid}.jpeg`,`images/${uid}.png`,`images/${uid} 01.jpg`];
+        let i = 0;
+        const next = () => {
+            if(i >= candidates.length){ img.onerror = null; img.src = fallback; return; }
+            img.src = candidates[i++];
+        };
+        img.onerror = next; next();
+    }
+
+    function open(qtype){
+        type=qtype; index=0; score=0; locked=false;
+        const pool = type === 'photo'
+            ? membersData.filter(m => m.bnName && m.uid)
+            : membersData.filter(hasParents);
+        questions=shuffle(pool).slice(0,Math.min(10,pool.length));
+        title.textContent=type==='photo'?'ছবি দেখে নাম শনাক্ত করুন':'পিতা–মাতা শনাক্ত করুন';
+        subtitle.textContent=type==='photo'?'ছবি দেখে সঠিক সদস্য নির্বাচন করুন':'নাম ও ছবি দেখে সঠিক পিতা–মাতা নির্বাচন করুন';
+        modal.classList.add('open'); modal.setAttribute('aria-hidden','false'); render();
+    }
+
+    function render(){
+        if(index >= questions.length){ result(); return; }
+        locked=false;
+        const m=questions[index];
+        const opts = type==='photo'
+            ? shuffle([m,...shuffle(membersData.filter(x=>x.uid!==m.uid)).slice(0,3)])
+            : parentOptions(m);
+
+        body.innerHTML=`
+            <div class="quiz-progress"><span>QUESTION ${index+1} / ${questions.length}</span><span>স্কোর: ${score}</span></div>
+            <div class="quiz-progressbar"><i style="width:${(index/questions.length)*100}%"></i></div>
+            <div class="quiz-question-card">
+                <div class="quiz-question-label">${type==='photo'?'IDENTIFY THE MEMBER':'IDENTIFY THE PARENTS'}</div>
+                <div class="quiz-photo-row">
+                    <img id="quiz-photo" class="quiz-photo" alt="সদস্যের ছবি">
+                    <div>
+                        ${type==='photo'
+                            ? `<div class="quiz-question">এই ছবির সদস্যের নাম কী?</div><div class="quiz-person-en">Family Archive</div>`
+                            : `<div class="quiz-person-name">${esc(m.bnName)}</div><div class="quiz-person-en">${esc(m.enName||'')}</div><div class="quiz-question" style="font-size:14px;margin-top:10px;">এই সদস্যের পিতা ও মাতা কে?</div>`}
+                    </div>
+                </div>
+            </div>
+            <div class="quiz-options">
+                ${opts.map((o,i)=> type==='photo'
+                    ? `<button class="quiz-option" data-i="${i}"><strong>${esc(o.bnName)}</strong><small>${esc(o.enName||'')}</small></button>`
+                    : `<button class="quiz-option" data-i="${i}"><strong>পিতা: ${esc(name(o.father))}</strong><small>মাতা: ${esc(name(o.mother))}</small></button>`
+                ).join('')}
+            </div>
+            <div class="quiz-feedback" id="quiz-feedback"></div>
+            <div class="quiz-footer"><span style="font-size:10px;color:#64748b;">সঠিক উত্তর = +1</span><button class="quiz-next" id="quiz-next">পরের প্রশ্ন →</button></div>
+        `;
+        loadPhoto(document.getElementById('quiz-photo'),m.uid);
+        body.querySelectorAll('.quiz-option').forEach((b,i)=>b.onclick=()=>answer(i,opts,m));
+        document.getElementById('quiz-next').onclick=()=>{index++;render();};
+    }
+
+    function parentOptions(m){
+        const correct={father:m.father,mother:m.mother,key:m.father+'|'+m.mother};
+        const pool=shuffle(membersData.filter(hasParents).filter(x=>x.uid!==m.uid)
+            .map(x=>({father:x.father,mother:x.mother,key:x.father+'|'+x.mother})))
+            .filter((x,i,a)=>x.key!==correct.key && a.findIndex(y=>y.key===x.key)===i).slice(0,3);
+        return shuffle([correct,...pool]);
+    }
+
+    function answer(i,opts,m){
+        if(locked)return; locked=true;
+        const chosen=opts[i];
+        const correct=type==='photo' ? chosen.uid===m.uid : chosen.father===m.father && chosen.mother===m.mother;
+        if(correct)score++;
+        const buttons=[...body.querySelectorAll('.quiz-option')];
+        buttons.forEach((b,j)=>{
+            b.disabled=true;
+            const o=opts[j];
+            const ok=type==='photo'?o.uid===m.uid:o.father===m.father&&o.mother===m.mother;
+            if(ok)b.classList.add('correct'); if(j===i&&!ok)b.classList.add('wrong');
+        });
+        const f=document.getElementById('quiz-feedback');
+        f.className='quiz-feedback '+(correct?'good':'bad');
+        f.textContent=correct?'✓ সঠিক উত্তর!':type==='photo'?`✕ সঠিক উত্তর: ${m.bnName}`:`✕ সঠিক উত্তর — পিতা: ${name(m.father)} · মাতা: ${name(m.mother)}`;
+        document.getElementById('quiz-next').style.display='inline-block';
+    }
+
+    function result(){
+        const pct=questions.length?Math.round(score/questions.length*100):0;
+        const msg=pct>=80?'অসাধারণ! পরিবারের তথ্য আপনার বেশ ভালো জানা।':pct>=60?'খুব ভালো! আর একটু অনুশীলন করুন।':'আরও একবার চেষ্টা করুন—বংশবৃক্ষ ঘেঁটে নিলে স্কোর বাড়বে।';
+        body.innerHTML=`<div class="quiz-result"><div class="quiz-question-label">QUIZ COMPLETE</div><div class="score">${score}/${questions.length}</div><h3>${pct}% সঠিক</h3><p>${msg}</p><button id="quiz-again">আবার খেলুন</button></div>`;
+        document.getElementById('quiz-again').onclick=()=>open(type);
+    }
+
+    function close(){modal.classList.remove('open');modal.setAttribute('aria-hidden','true');}
+    function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));}
+
+    document.querySelectorAll('[data-start-quiz]').forEach(b=>b.onclick=()=>open(b.dataset.startQuiz));
+    document.getElementById('quiz-close').onclick=close;
+    modal.onclick=e=>{if(e.target===modal)close();};
+    window.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
+})();
+
     </script>
 </body>
 </html>
