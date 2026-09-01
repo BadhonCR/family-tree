@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
-    <meta name="description" content="ইন্টারেক্টিভ ৩ডি ও ২ডি পারিবারিক বংশবৃক্ষ — সদস্য অনুসন্ধান, সম্পর্ক নির্ণয়, ব্লাডলাইন ট্রি ও PNG/SVG/PDF এক্সপোর্ট।">
+    <meta name="description" content="ইন্টারেক্টিভ ৩ডি ও ২ডি পারিবারিক বংশবৃক্ষ — ফটো গ্যালারি, কুইজ, সম্পর্ক নির্ণয় ও ২ডি ট্রি।">
     <title>পারিবারিক বংশবৃক্ষ — 3D Marbles & Bloodline Tree</title>
     <style>
         body {
@@ -27,7 +27,7 @@
             touch-action: auto;
         }
 
-        .drawer-body, #search-results-list, #list-modal-body, .profile-details-list {
+        .drawer-body, #search-results-list, #list-modal-body, .profile-details-list, .gallery-grid, .quiz-card {
             -webkit-overflow-scrolling: touch;
         }
 
@@ -116,8 +116,8 @@
         #nav-drawer {
             position: fixed;
             top: 0;
-            left: -360px;
-            width: 340px;
+            left: -380px;
+            width: 360px;
             height: 100%;
             background: rgba(10, 15, 25, 0.95);
             border-right: 1px solid rgba(0, 255, 255, 0.25);
@@ -179,20 +179,21 @@
 
         .tab-buttons {
             display: flex;
-            gap: 6px;
+            flex-wrap: wrap;
+            gap: 4px;
             margin-bottom: 18px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             padding-bottom: 10px;
         }
 
         .tab-btn {
-            flex: 1;
+            flex: 1 1 30%;
             background: rgba(255,255,255,0.03);
             color: #94a3b8;
             border: 1px solid rgba(255,255,255,0.08);
-            padding: 9px 4px;
+            padding: 8px 2px;
             border-radius: 8px;
-            font-size: 11px;
+            font-size: 10.5px;
             cursor: pointer;
             text-align: center;
             font-weight: 600;
@@ -228,13 +229,13 @@
         }
 
         #search-results-list {
-            max-height: 300px;
+            max-height: 320px;
             overflow-y: auto;
             border-radius: 6px;
         }
 
         .search-item {
-            padding: 10px;
+            padding: 8px 10px;
             color: #fff;
             cursor: pointer;
             font-size: 13px;
@@ -243,11 +244,24 @@
             border-radius: 6px;
             border: 1px solid rgba(255,255,255,0.05);
             transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .search-item:hover {
             background: rgba(0, 255, 255, 0.2);
             color: #00ffff;
+        }
+
+        .avatar-thumb {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1.5px solid #00ffff;
+            background: #1e293b;
+            flex-shrink: 0;
         }
 
         .stats-grid {
@@ -320,6 +334,7 @@
 
         .select-group {
             margin-bottom: 14px;
+            position: relative;
         }
 
         .select-group label {
@@ -329,7 +344,7 @@
             margin-bottom: 6px;
         }
 
-        .select-group select {
+        .autocomplete-input {
             width: 100%;
             padding: 10px;
             border-radius: 8px;
@@ -338,6 +353,38 @@
             border: 1px solid rgba(0, 255, 255, 0.4);
             outline: none;
             font-size: 13px;
+            box-sizing: border-box;
+        }
+
+        .autocomplete-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #0f172a;
+            border: 1px solid #00ffff;
+            border-radius: 8px;
+            max-height: 180px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.8);
+        }
+
+        .autocomplete-item {
+            padding: 8px 12px;
+            font-size: 12px;
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .autocomplete-item:hover {
+            background: rgba(0, 255, 255, 0.2);
+            color: #00ffff;
         }
 
         #rel-result, #bloodline-result {
@@ -350,6 +397,135 @@
             border-left: 4px solid #00ffff;
             font-size: 13px;
             line-height: 1.6;
+        }
+
+        /* Relationship Visual Flow */
+        .rel-flow-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .rel-flow-card {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            width: 90%;
+        }
+
+        .rel-flow-arrow {
+            color: #00ffff;
+            font-size: 12px;
+            text-align: center;
+            font-style: italic;
+        }
+
+        /* Gallery Tab Styling */
+        .gallery-filter {
+            width: 100%;
+            padding: 8px;
+            border-radius: 6px;
+            background: #0f172a;
+            color: #fff;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            margin-bottom: 12px;
+            font-size: 12px;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            max-height: 380px;
+            overflow-y: auto;
+        }
+
+        .gallery-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .gallery-card:hover {
+            border-color: #00ffff;
+            transform: translateY(-2px);
+            background: rgba(0, 255, 255, 0.1);
+        }
+
+        .gallery-img {
+            width: 100%;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 6px;
+            background: #1a2230;
+        }
+
+        .gallery-name {
+            font-size: 11px;
+            font-weight: 600;
+            color: #fff;
+            margin-top: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Quiz Tab Styling */
+        .quiz-card {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(0, 255, 255, 0.4);
+            border-radius: 10px;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .quiz-img {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #00ffff;
+            margin: 0 auto 12px auto;
+            display: block;
+            background: #1e293b;
+        }
+
+        .quiz-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .quiz-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(0,255,255,0.3);
+            color: #fff;
+            padding: 8px 4px;
+            border-radius: 6px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .quiz-btn:hover {
+            background: rgba(0, 255, 255, 0.2);
+        }
+
+        .quiz-feedback {
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 12px;
         }
 
         #tree-2d-overlay {
@@ -541,8 +717,14 @@
             white-space: nowrap;
         }
 
-        .person-icon {
-            font-size: 12px;
+        .node-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1.5px solid #00ffff;
+            background: #1a2230;
+            flex-shrink: 0;
         }
 
         #tree-svg-canvas {
@@ -819,7 +1001,7 @@
         }
 
         @media (max-width: 600px) {
-            #nav-drawer { width: 85%; max-width: 320px; }
+            #nav-drawer { width: 85%; max-width: 340px; }
             #popup-modal { 
                 width: calc(100% - 32px) !important;
                 left: 16px !important; right: 16px !important;
@@ -861,10 +1043,12 @@
         
         <div class="drawer-body">
             <div class="tab-buttons">
-                <button class="tab-btn active" onclick="switchTab('stats-tab', this)">📊 পরিসংখ্যান</button>
+                <button class="tab-btn active" onclick="switchTab('stats-tab', this)">📊 তথ্য</button>
                 <button class="tab-btn" onclick="switchTab('search-tab', this)">🔍 সন্ধান</button>
                 <button class="tab-btn" onclick="switchTab('rel-tab', this)">🔗 সম্পর্ক</button>
                 <button class="tab-btn" onclick="switchTab('bloodline-tab', this)">🩸 ব্লাডলাইন</button>
+                <button class="tab-btn" onclick="switchTab('gallery-tab', this)">📸 অ্যালবাম</button>
+                <button class="tab-btn" onclick="switchTab('quiz-tab', this)">🎮 কুইজ</button>
             </div>
 
             <div id="stats-tab" class="tab-content active">
@@ -900,15 +1084,20 @@
                 <div id="search-results-list"></div>
             </div>
 
+            <!-- AUTOSEARCH RELATIVE TAB -->
             <div id="rel-tab" class="tab-content">
                 <div class="select-group">
                     <label>প্রথম ব্যক্তি (Person A):</label>
-                    <select id="rel-person-a" onchange="calculateRelationship()"></select>
+                    <input type="text" id="rel-input-a" class="autocomplete-input" placeholder="টাইপ করুন..." oninput="autoSearchPerson('a')" autocomplete="off">
+                    <input type="hidden" id="rel-person-a">
+                    <div id="dropdown-a" class="autocomplete-dropdown"></div>
                 </div>
 
                 <div class="select-group">
                     <label>দ্বিতীয় ব্যক্তি (Person B):</label>
-                    <select id="rel-person-b" onchange="calculateRelationship()"></select>
+                    <input type="text" id="rel-input-b" class="autocomplete-input" placeholder="টাইপ করুন..." oninput="autoSearchPerson('b')" autocomplete="off">
+                    <input type="hidden" id="rel-person-b">
+                    <div id="dropdown-b" class="autocomplete-dropdown"></div>
                 </div>
 
                 <div id="rel-result">
@@ -916,13 +1105,35 @@
                 </div>
             </div>
 
+            <!-- AUTOSEARCH BLOODLINE TAB -->
             <div id="bloodline-tab" class="tab-content">
                 <div class="select-group">
                     <label>মূল ব্যক্তি নির্বাচন করুন:</label>
-                    <select id="bloodline-person" onchange="calculateBloodline()"></select>
+                    <input type="text" id="bloodline-input" class="autocomplete-input" placeholder="টাইপ করুন..." oninput="autoSearchPerson('blood')" autocomplete="off">
+                    <input type="hidden" id="bloodline-person">
+                    <div id="dropdown-blood" class="autocomplete-dropdown"></div>
                 </div>
                 <div id="bloodline-result">
                     ব্যক্তি নির্বাচন করলে তার ২ডি বংশবৃক্ষ স্ক্রিনে ভেসে উঠবে।
+                </div>
+            </div>
+
+            <!-- GALLERY TAB -->
+            <div id="gallery-tab" class="tab-content">
+                <select id="gallery-gen-filter" class="gallery-filter" onchange="renderGallery()">
+                    <option value="all">সকল জেনারেশন</option>
+                </select>
+                <div id="gallery-grid" class="gallery-grid"></div>
+            </div>
+
+            <!-- QUIZ TAB -->
+            <div id="quiz-tab" class="tab-content">
+                <div class="quiz-card">
+                    <h4 style="margin:0 0 10px 0; color:#00ffff; font-size:14px;">আত্মীয়কে চিনুন!</h4>
+                    <img id="quiz-photo" class="quiz-img" src="" alt="Quiz Face">
+                    <div id="quiz-options" class="quiz-options"></div>
+                    <div id="quiz-feedback" class="quiz-feedback"></div>
+                    <button class="print-btn" onclick="startNewQuiz()" style="margin:12px auto 0 auto; height:32px; font-size:11px;">পরবর্তী ছবি ➔</button>
                 </div>
             </div>
         </div>
@@ -1103,6 +1314,12 @@
             document.getElementById(tabId).classList.add('active');
             btn.classList.add('active');
 
+            if (tabId === 'gallery-tab') {
+                renderGallery();
+            } else if (tabId === 'quiz-tab') {
+                startNewQuiz();
+            }
+
             if (tabId !== 'bloodline-tab') {
                 if (is2DViewActive()) setViewMode('3d');
             } else {
@@ -1166,7 +1383,7 @@
             return sprite;
         }
 
-        // ALL MEMBERS DATA (CORRECTED FT-019 & FT-036 CHILDREN RELATIONSHIPS)
+        // ALL MEMBERS DATA
         const membersData = [
             // Ancestors / Root Generation
             { uid: "FT-120", bnName: "রাজমোহন", enName: "Rajmohon", nick: "রাজমোহন", gender: "Male", color: 0x0055ff, spouse: null, father: null, mother: null, children: ["FT-122", "FT-124", "FT-126", "FT-128", "FT-130", "FT-132"], description: "" },
@@ -1240,9 +1457,7 @@
 
             { uid: "FT-157", bnName: "অর্ঘ রায়", enName: "Argho Roy", nick: "অর্ঘ", gender: "Male", color: 0x00ccff, spouse: null, father: null, mother: "FT-149", children: [], description: "" },
 
-            // UPDATED MEMBERS (FT-018 & FT-019 CORRECTION)
             { uid: "FT-018", bnName: "জয়ন্তী রাণী রায়", enName: "Joyonti Rani Roy", nick: "জয়ন্তী", gender: "Female", color: 0xff1493, spouse: "FT-028", father: "FT-016", mother: "FT-017", children: ["FT-029", "FT-030", "FT-031", "FT-032", "FT-033"], description: "" },
-            // FT-019's children updated to FT-037 (1st) and FT-040 (2nd)
             { uid: "FT-019", bnName: "বাসন্তী রাণী রায়", enName: "Basonti Rani Roy", nick: "বাসন্তী", gender: "Female", color: 0xff1493, spouse: "FT-036", father: "FT-016", mother: "FT-017", children: ["FT-037", "FT-040"], description: "" },
             
             { uid: "FT-020", bnName: "দিনেশ চন্দ্র রায়", enName: "Dinash Chandra Roy", nick: "দিনেশ", gender: "Male", color: 0x0055ff, spouse: "FT-047", father: "FT-016", mother: "FT-017", children: ["FT-048", "FT-049", "FT-050"], description: "" },
@@ -1283,23 +1498,17 @@
             { uid: "FT-106", bnName: "মানিক চন্দ্র রায়", enName: "Manik Chandra Roy", nick: "মানিক", gender: "Male", color: 0x0055ff, spouse: "FT-107", father: "FT-100", mother: "FT-101", children: [], description: "" },
             { uid: "FT-107", bnName: "সঞ্জিতা রানী রায়", enName: "Sanjita Rani Roy", nick: "সঞ্জিতা", gender: "Female", color: 0xff1493, spouse: "FT-106", father: null, mother: null, children: [], description: "" },
 
-            // ADDED & CORRECTED FAMILY MEMBERS
-            // --- FT-019 & FT-036 Family ---
-            // FT-036 & FT-019 children set to FT-037 and FT-040
             { uid: "FT-036", bnName: "ভোলা কাজ্জি", enName: "Vola Kagozi", nick: "ভোলা", gender: "Male", color: 0x0055ff, spouse: "FT-019", father: null, mother: null, children: ["FT-037", "FT-040"], description: "" },
             { uid: "FT-037", bnName: "বিপুল রায়", enName: "Bepul Roy", nick: "বিপুল", gender: "Male", color: 0x00ccff, spouse: "FT-038", father: "FT-036", mother: "FT-019", children: ["FT-039"], description: "" },
             { uid: "FT-038", bnName: "কল্পনা (নয়নি)", enName: "Kalpona (Nayoni)", nick: "কল্পনা", gender: "Female", color: 0xff1493, spouse: "FT-037", father: null, mother: null, children: ["FT-039"], description: "" },
             { uid: "FT-039", bnName: "তোতা রায় ", enName: "Tota Roy", nick: "তোতা", gender: "Male", color: 0x3366ff, spouse: null, father: "FT-037", mother: "FT-038", children: [], description: "" },
 
-            // --- FT-040 & FT-041 Family ---
-            // FT-040 updated with parents FT-036 & FT-019
             { uid: "FT-040", bnName: "বিউটি রানী", enName: "Beauty Rani", nick: "বিউটি", gender: "Female", color: 0xff1493, spouse: "FT-041", father: "FT-036", mother: "FT-019", children: ["FT-042", "FT-045"], description: "" },
             { uid: "FT-041", bnName: "অমূল্য চন্দ্র রায়", enName: "Amullo Chandra Roy", nick: "অমূল্য", gender: "Male", color: 0x0055ff, spouse: "FT-040", father: null, mother: null, children: ["FT-042", "FT-045"], description: "" },
             { uid: "FT-042", bnName: "দিপা রানী", enName: "Depa Rani", nick: "দিপা", gender: "Female", color: 0xff1493, spouse: "FT-043", father: "FT-041", mother: "FT-040", children: [], description: "" },
             { uid: "FT-043", bnName: "মোহন রায়", enName: "Mohon Roy", nick: "মোহন", gender: "Male", color: 0x0055ff, spouse: "FT-042", father: null, mother: null, children: [], description: "" },
             { uid: "FT-045", bnName: "অর্জুন চন্দ্র রায়", enName: "Arjun Chandra Roy", nick: "অর্জুন", gender: "Male", color: 0x00ccff, spouse: null, father: "FT-041", mother: "FT-040", children: [], description: "" },
 
-            // --- FT-018 & FT-028 Family ---
             { uid: "FT-028", bnName: "রমেশ চন্দ্র রায়", enName: "Romesh Chandra Roy", nick: "রমেশ", gender: "Male", color: 0x0055ff, spouse: "FT-018", father: null, mother: null, children: ["FT-029", "FT-030", "FT-031", "FT-032", "FT-033"], description: "১৯৭১ থেকে ভারতে." },
             { uid: "FT-029", bnName: "অনজু রাণী রায়", enName: "Anju Rani Roy", nick: "অনজু", gender: "Female", color: 0xff1493, spouse: null, father: "FT-028", mother: "FT-018", children: [], description: "" },
             { uid: "FT-030", bnName: "দিলীপ চন্দ্র রায়", enName: "Dilip Chandra Roy", nick: "দিলীপ", gender: "Male", color: 0x00ccff, spouse: null, father: "FT-028", mother: "FT-018", children: [], description: "" },
@@ -1417,14 +1626,6 @@
             const marriedCouples = new Set();
             const genCounts = {};
 
-            const selectA = document.getElementById('rel-person-a');
-            const selectB = document.getElementById('rel-person-b');
-            const selectBloodline = document.getElementById('bloodline-person');
-
-            selectA.innerHTML = '<option value="">-- ব্যক্তি নির্বাচন করুন --</option>';
-            selectB.innerHTML = '<option value="">-- ব্যক্তি নির্বাচন করুন --</option>';
-            selectBloodline.innerHTML = '<option value="">-- ব্যক্তি নির্বাচন করুন --</option>';
-
             membersData.forEach((m) => {
                 if (m.gender.includes('Male') || m.gender.includes('পুরুষ') || m.gender === 'M') males++;
                 else if (m.gender.includes('Female') || m.gender.includes('মহিলা') || m.gender === 'F') females++;
@@ -1439,13 +1640,6 @@
 
                 let gen = m.patrilinealGen;
                 genCounts[gen] = (genCounts[gen] || 0) + 1;
-
-                const optA = new Option(`${m.bnName} (${m.nick})`, m.uid);
-                const optB = new Option(`${m.bnName} (${m.nick})`, m.uid);
-                const optBlood = new Option(`${m.bnName} (${m.nick})`, m.uid);
-                selectA.add(optA);
-                selectB.add(optB);
-                selectBloodline.add(optBlood);
             });
 
             document.getElementById('stat-total').innerText = total;
@@ -1455,6 +1649,9 @@
 
             const genContainer = document.getElementById('generation-container');
             genContainer.innerHTML = '';
+
+            const galleryFilter = document.getElementById('gallery-gen-filter');
+            galleryFilter.innerHTML = '<option value="all">সকল জেনারেশন</option>';
             
             const genKeys = Object.keys(genCounts).sort((a,b) => a - b);
             genKeys.forEach(g => {
@@ -1466,7 +1663,188 @@
                     <span class="gen-count">${genCounts[g]} জন</span>
                 `;
                 genContainer.appendChild(div);
+
+                const opt = document.createElement('option');
+                opt.value = g;
+                opt.innerText = `জেনারেশন ${g}`;
+                galleryFilter.appendChild(opt);
             });
+        }
+
+        // AUTO-SEARCH DROPDOWN LOGIC FOR RELATIVE & BLOODLINE TABS
+        function autoSearchPerson(targetType) {
+            let inputId, hiddenId, dropdownId;
+            if (targetType === 'a') { inputId = 'rel-input-a'; hiddenId = 'rel-person-a'; dropdownId = 'dropdown-a'; }
+            else if (targetType === 'b') { inputId = 'rel-input-b'; hiddenId = 'rel-person-b'; dropdownId = 'dropdown-b'; }
+            else if (targetType === 'blood') { inputId = 'bloodline-input'; hiddenId = 'bloodline-person'; dropdownId = 'dropdown-blood'; }
+
+            const val = document.getElementById(inputId).value.trim().toLowerCase();
+            const dropdown = document.getElementById(dropdownId);
+
+            if (!val) {
+                dropdown.style.display = 'none';
+                document.getElementById(hiddenId).value = '';
+                return;
+            }
+
+            const matches = membersData.filter(m => 
+                m.bnName.toLowerCase().includes(val) ||
+                m.enName.toLowerCase().includes(val) ||
+                m.nick.toLowerCase().includes(val) ||
+                m.uid.toLowerCase().includes(val)
+            );
+
+            dropdown.innerHTML = '';
+            if (matches.length === 0) {
+                dropdown.style.display = 'none';
+                return;
+            }
+
+            matches.forEach(m => {
+                const div = document.createElement('div');
+                div.className = 'autocomplete-item';
+
+                const img = document.createElement('img');
+                img.className = 'avatar-thumb';
+                img.loading = 'lazy';
+                loadProfilePhoto(img, m.uid);
+
+                const span = document.createElement('span');
+                span.innerHTML = `<b>${m.bnName}</b> (${m.nick}) <small style="color:#00ffff">${m.uid}</small>`;
+
+                div.appendChild(img);
+                div.appendChild(span);
+
+                div.onclick = () => {
+                    document.getElementById(inputId).value = `${m.bnName} (${m.nick})`;
+                    document.getElementById(hiddenId).value = m.uid;
+                    dropdown.style.display = 'none';
+
+                    if (targetType === 'a' || targetType === 'b') calculateRelationship();
+                    else if (targetType === 'blood') calculateBloodline();
+                };
+                dropdown.appendChild(div);
+            });
+
+            dropdown.style.display = 'block';
+        }
+
+        // GALLERY FEATURE
+        function renderGallery() {
+            const filterVal = document.getElementById('gallery-gen-filter').value;
+            const grid = document.getElementById('gallery-grid');
+            grid.innerHTML = '';
+
+            const list = filterVal === 'all' ? membersData : membersData.filter(m => m.patrilinealGen == filterVal);
+
+            list.forEach(m => {
+                const card = document.createElement('div');
+                card.className = 'gallery-card';
+                
+                const img = document.createElement('img');
+                img.className = 'gallery-img';
+                img.loading = 'lazy';
+                
+                let candidates = [
+                    `images/${m.uid}.jpg`,
+                    `images/${m.uid}.jpeg`,
+                    `images/${m.uid}.png`,
+                    `images/${m.uid} 01.jpg`
+                ];
+                let idx = 0;
+
+                function tryNextImage() {
+                    if (idx >= candidates.length) {
+                        card.style.display = 'none';
+                        return;
+                    }
+                    img.src = candidates[idx++];
+                }
+
+                img.onerror = tryNextImage;
+                tryNextImage();
+
+                const name = document.createElement('div');
+                name.className = 'gallery-name';
+                name.innerText = m.bnName;
+
+                card.appendChild(img);
+                card.appendChild(name);
+                card.onclick = () => { focusByUid(m.uid); };
+
+                grid.appendChild(card);
+            });
+        }
+
+        // QUIZ FEATURE
+        let currentQuizAnswer = null;
+        function startNewQuiz() {
+            const quizImg = document.getElementById('quiz-photo');
+            const optionsDiv = document.getElementById('quiz-options');
+            const feedback = document.getElementById('quiz-feedback');
+            feedback.innerText = '';
+            optionsDiv.innerHTML = '';
+
+            let availableMembers = [...membersData].sort(() => Math.random() - 0.5);
+
+            function tryQuizWithMember(index) {
+                if (index >= availableMembers.length) {
+                    feedback.innerText = '⚠️ ছবিযুক্ত কোনো সদস্য পাওয়া যায়নি।';
+                    quizImg.style.display = 'none';
+                    return;
+                }
+
+                const target = availableMembers[index];
+                let candidates = [
+                    `images/${target.uid}.jpg`,
+                    `images/${target.uid}.jpeg`,
+                    `images/${target.uid}.png`,
+                    `images/${target.uid} 01.jpg`
+                ];
+                let imgIdx = 0;
+
+                function checkNextImage() {
+                    if (imgIdx >= candidates.length) {
+                        tryQuizWithMember(index + 1);
+                        return;
+                    }
+                    quizImg.src = candidates[imgIdx++];
+                }
+
+                quizImg.onerror = checkNextImage;
+                quizImg.onload = () => {
+                    quizImg.style.display = 'block';
+                    currentQuizAnswer = target.uid;
+
+                    const choices = [target];
+                    while (choices.length < 4 && choices.length < membersData.length) {
+                        const rand = membersData[Math.floor(Math.random() * membersData.length)];
+                        if (!choices.includes(rand)) choices.push(rand);
+                    }
+                    choices.sort(() => Math.random() - 0.5);
+
+                    optionsDiv.innerHTML = '';
+                    choices.forEach(opt => {
+                        const btn = document.createElement('button');
+                        btn.className = 'quiz-btn';
+                        btn.innerText = `${opt.bnName} (${opt.nick})`;
+                        btn.onclick = () => {
+                            if (opt.uid === currentQuizAnswer) {
+                                feedback.innerText = '✅ সঠিক উত্তর!';
+                                feedback.style.color = '#00ffcc';
+                            } else {
+                                feedback.innerText = `❌ ভুল! সঠিক: ${target.bnName}`;
+                                feedback.style.color = '#ff4757';
+                            }
+                        };
+                        optionsDiv.appendChild(btn);
+                    });
+                };
+
+                checkNextImage();
+            }
+
+            tryQuizWithMember(0);
         }
 
         membersData.forEach(data => {
@@ -1595,9 +1973,10 @@
         }
 
         function getExportFilename(ext) {
-            const sel = document.getElementById('bloodline-person');
-            const opt = sel && sel.options[sel.selectedIndex];
-            const label = opt && opt.value ? opt.text.replace(/[^\w\u0980-\u09FF]+/g, '_') : 'bloodline-tree';
+            const hiddenInput = document.getElementById('bloodline-person');
+            const uid = hiddenInput ? hiddenInput.value : '';
+            const m = membersData.find(x => x.uid === uid);
+            const label = m ? m.bnName.replace(/[^\w\u0980-\u09FF]+/g, '_') : 'bloodline-tree';
             return `${label}.${ext}`;
         }
 
@@ -1849,10 +2228,10 @@
             }, { passive: true });
         })();
 
+        // 2D TREE GENERATION WITH CIRCULAR THUMBNAILS
         function calculateBloodline() {
             const rootUid = document.getElementById('bloodline-person').value;
             const resDiv = document.getElementById('bloodline-result');
-            const overlay2D = document.getElementById('tree-2d-overlay');
             const container2D = document.getElementById('tree-2d-view');
 
             if (!rootUid) {
@@ -1903,9 +2282,11 @@
                     coupleCard.setAttribute('data-family-id', p.uid);
                     if (entry.parentUid) coupleCard.setAttribute('data-parent-id', entry.parentUid);
 
+                    const imgId = `node-img-${p.uid}`;
+
                     let cardHtml = `
                         <div class="person-unit" onclick="focusByUid('${p.uid}')">
-                            <span class="person-icon">👤</span>
+                            <img id="${imgId}" class="node-avatar" loading="lazy" src="" alt="Photo">
                             <span class="card-2d-name">${p.nick}</span>
                         </div>
                     `;
@@ -1915,18 +2296,29 @@
                         spouses.forEach(sUid => {
                             const spouseObj = membersData.find(m => m.uid === sUid);
                             if (spouseObj) {
+                                const spouseImgId = `node-img-${spouseObj.uid}`;
                                 cardHtml += `
                                     <div class="spouse-divider">💍</div>
                                     <div class="person-unit spouse-unit" onclick="focusByUid('${spouseObj.uid}')">
+                                        <img id="${spouseImgId}" class="node-avatar" loading="lazy" src="" alt="Photo">
                                         <span class="card-2d-name">${spouseObj.nick}</span>
                                     </div>
                                 `;
+                                setTimeout(() => {
+                                    const simg = document.getElementById(spouseImgId);
+                                    if (simg) loadProfilePhoto(simg, spouseObj.uid);
+                                }, 10);
                             }
                         });
                     }
 
                     coupleCard.innerHTML = cardHtml;
                     row.appendChild(coupleCard);
+
+                    setTimeout(() => {
+                        const pimg = document.getElementById(imgId);
+                        if (pimg) loadProfilePhoto(pimg, p.uid);
+                    }, 10);
                 });
 
                 block.appendChild(row);
@@ -2011,6 +2403,7 @@
             document.getElementById('list-modal').style.display = 'none';
         }
 
+        // RELATIONSHIP CALCULATION WITH PHOTO CARDS
         function calculateRelationship() {
             const uidA = document.getElementById('rel-person-a').value;
             const uidB = document.getElementById('rel-person-b').value;
@@ -2072,15 +2465,34 @@
             }
 
             if (foundPath) {
-                let html = `<strong style="color:#00ffff;">সম্পর্কের মাধ্যম (${foundPath.length - 1} ধাপ):</strong><br><br>`;
+                let html = `<strong style="color:#00ffff;">সম্পর্কের সংযোগপথ (${foundPath.length - 1} ধাপ):</strong>`;
+                html += `<div class="rel-flow-container">`;
+
                 for (let i = 0; i < foundPath.length; i++) {
-                    const person = marbleMap[foundPath[i].uid].userData;
-                    if (i === 0) {
-                        html += `<b>${person.bnName}</b> (${person.nick})`;
-                    } else {
-                        html += ` <br> ⬇️ <i>[${foundPath[i].rel}]</i><br> <b>${person.bnName}</b> (${person.nick})`;
+                    const person = membersData.find(m => m.uid === foundPath[i].uid);
+                    const imgId = `rel-img-${person.uid}-${i}`;
+
+                    if (i > 0) {
+                        html += `<div class="rel-flow-arrow">➔ [${foundPath[i].rel}] ➔</div>`;
                     }
+
+                    html += `
+                        <div class="rel-flow-card" onclick="focusByUid('${person.uid}')" style="cursor:pointer;">
+                            <img id="${imgId}" class="avatar-thumb" loading="lazy" src="" alt="Photo">
+                            <div>
+                                <b style="color:#fff;">${person.bnName}</b> (${person.nick})<br>
+                                <small style="color:#00ffff;">${person.uid}</small>
+                            </div>
+                        </div>
+                    `;
+
+                    setTimeout(() => {
+                        const el = document.getElementById(imgId);
+                        if (el) loadProfilePhoto(el, person.uid);
+                    }, 10);
                 }
+
+                html += `</div>`;
                 resDiv.innerHTML = html;
             } else {
                 resDiv.innerHTML = '❌ কোনো প্রত্যক্ষ বা পরোক্ষ পারিবারিক সম্পর্ক খুঁজে পাওয়া যায়নি।';
@@ -2093,6 +2505,7 @@
             searchDebounceTimer = setTimeout(handleSearch, 180);
         }
 
+        // SEARCH TAB WITH THUMBNAIL AVATARS
         function handleSearch() {
             const query = document.getElementById('search-input').value.trim().toLowerCase();
             const resultsContainer = document.getElementById('search-results-list');
@@ -2111,7 +2524,18 @@
                 matched.forEach(item => {
                     const div = document.createElement('div');
                     div.className = 'search-item';
-                    div.innerHTML = `<strong>${item.bnName}</strong> (${item.uid})<br><small style="color:#aaa">${item.enName}</small>`;
+
+                    const img = document.createElement('img');
+                    img.className = 'avatar-thumb';
+                    img.loading = 'lazy';
+                    loadProfilePhoto(img, item.uid);
+
+                    const textDiv = document.createElement('div');
+                    textDiv.innerHTML = `<strong>${item.bnName}</strong> (${item.uid})<br><small style="color:#aaa">${item.enName}</small>`;
+
+                    div.appendChild(img);
+                    div.appendChild(textDiv);
+
                     div.onclick = () => { focusByUid(item.uid); };
                     resultsContainer.appendChild(div);
                 });
