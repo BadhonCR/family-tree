@@ -3,12 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
-    <meta name="description" content="পারিবারিক বংশবৃক্ষ — রক্তের ধারা ও ব্লাডলাইন ট্র্যাকার।">
+    <meta name="description" content="পারিবারিক বংশবৃক্ষ — রক্তের ধারা ও ব্লাডলাইন ট্র্যাকার (২ডি ও চেইন ভিউ)।">
     <title>পারিবারিক বংশবৃক্ষ — ব্লাডলাইন ট্র্যাকার</title>
     <style>
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         body {
             margin: 0;
@@ -43,9 +41,7 @@
             animation: spin 0.9s linear infinite;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         /* Top Navbar */
         .top-navbar {
@@ -72,11 +68,7 @@
             text-decoration: none;
         }
 
-        .nav-links {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
+        .nav-links { display: flex; gap: 10px; align-items: center; }
 
         .nav-btn {
             background: linear-gradient(135deg, #00b4db, #0083b0);
@@ -100,29 +92,15 @@
             box-shadow: 0 6px 20px rgba(0, 255, 255, 0.4);
         }
 
-        /* Main Container */
         .main-container {
-            max-width: 1000px;
+            max-width: 1100px;
             margin: 0 auto;
             padding: 24px 16px;
             display: flex;
             flex-direction: column;
-            gap: 28px;
+            gap: 20px;
         }
 
-        .section-title {
-            color: #00ffff;
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
-            padding-bottom: 8px;
-        }
-
-        /* Controls Panel */
         .control-card {
             background: rgba(15, 23, 42, 0.8);
             border: 1px solid rgba(0, 255, 255, 0.3);
@@ -141,14 +119,10 @@
             flex-direction: column;
             gap: 6px;
             flex: 1;
-            min-width: 240px;
+            min-width: 250px;
         }
 
-        .select-group label {
-            font-size: 13px;
-            color: #94a3b8;
-            font-weight: 600;
-        }
+        .select-group label { font-size: 13px; color: #94a3b8; font-weight: 600; }
 
         .custom-select {
             background: #0f172a;
@@ -161,10 +135,13 @@
             width: 100%;
         }
 
-        .radio-group {
+        .mode-selector {
             display: flex;
-            gap: 14px;
-            align-items: center;
+            gap: 12px;
+            background: rgba(0,0,0,0.4);
+            padding: 6px 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 255, 255, 0.2);
         }
 
         .radio-label {
@@ -176,8 +153,8 @@
             gap: 6px;
         }
 
-        /* Bloodline Tree Visualization */
-        .bloodline-display {
+        /* Mode 1: Chain View Styling */
+        .chain-display {
             display: flex;
             flex-direction: column;
             gap: 20px;
@@ -228,22 +205,78 @@
             box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
         }
 
-        .node-name {
-            font-size: 13px;
-            font-weight: 600;
-            color: #fff;
+        .node-name { font-size: 13px; font-weight: 600; color: #fff; }
+        .node-info { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+        .arrow-connector { color: #00ffff; font-size: 18px; font-weight: bold; }
+
+        /* Mode 2: 2D Tree View Styling */
+        #tree-2d-container {
+            display: none;
+            width: 100%;
+            min-height: 550px;
+            background: radial-gradient(circle, #0f172a 0%, #020617 100%);
+            border-radius: 14px;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            position: relative;
+            overflow: auto;
+            padding: 40px;
         }
 
-        .node-info {
-            font-size: 11px;
-            color: #94a3b8;
-            margin-top: 2px;
+        .tree-2d-wrapper {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 60px;
+            min-width: max-content;
+            margin: 0 auto;
         }
 
-        .arrow-connector {
-            color: #00ffff;
-            font-size: 18px;
-            font-weight: bold;
+        .gen-2d-block { display: flex; flex-direction: column; align-items: center; width: 100%; position: relative; }
+        .nodes-2d-row { display: flex; gap: 30px; justify-content: center; position: relative; }
+
+        .couple-node-card {
+            background: linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.95));
+            border: 2px solid #00ffff;
+            border-radius: 12px;
+            padding: 8px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 6px 20px rgba(0, 255, 255, 0.2);
+            position: relative;
+            z-index: 2;
+        }
+
+        .couple-node-card.root-card {
+            border-color: #ffda79;
+            box-shadow: 0 0 20px rgba(255, 218, 121, 0.4);
+        }
+
+        .person-unit { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+        .person-unit:hover .card-2d-name { color: #00ffff; }
+        .spouse-unit { color: #ff79c6; }
+        .spouse-divider { color: #ff79c6; font-size: 13px; font-weight: bold; }
+        .card-2d-name { font-weight: 700; font-size: 13px; color: #f8fafc; white-space: nowrap; }
+
+        .node-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1.5px solid #00ffff;
+            background: #1a2230;
+            flex-shrink: 0;
+        }
+
+        #tree-svg-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
         }
 
         /* Profile Popup Modal */
@@ -275,46 +308,11 @@
             margin-bottom: 14px;
         }
 
-        .popup-header-container h2 {
-            margin: 0 0 6px 0;
-            color: #00ffff;
-            font-size: 19px;
-            font-weight: 700;
-        }
-
-        .uid-gen-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .uid-badge {
-            font-size: 11px;
-            color: #38bdf8;
-            background: rgba(56, 189, 248, 0.12);
-            padding: 3px 8px;
-            border-radius: 6px;
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            font-weight: 600;
-        }
-
-        .gen-badge {
-            font-size: 11px;
-            color: #00ffff;
-            background: rgba(0, 255, 255, 0.15);
-            padding: 3px 8px;
-            border-radius: 6px;
-            border: 1px solid rgba(0, 255, 255, 0.4);
-            font-weight: 600;
-        }
-
-        .profile-details-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            font-size: 13px;
-        }
+        .popup-header-container h2 { margin: 0 0 6px 0; color: #00ffff; font-size: 19px; font-weight: 700; }
+        .uid-gen-wrapper { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .uid-badge { font-size: 11px; color: #38bdf8; background: rgba(56, 189, 248, 0.12); padding: 3px 8px; border-radius: 6px; border: 1px solid rgba(56, 189, 248, 0.3); font-weight: 600; }
+        .gen-badge { font-size: 11px; color: #00ffff; background: rgba(0, 255, 255, 0.15); padding: 3px 8px; border-radius: 6px; border: 1px solid rgba(0, 255, 255, 0.4); font-weight: 600; }
+        .profile-details-list { display: flex; flex-direction: column; gap: 8px; font-size: 13px; }
 
         .profile-field {
             display: flex;
@@ -326,72 +324,29 @@
             border: 1px solid rgba(255, 255, 255, 0.04);
         }
 
-        .profile-field.block-field {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 4px;
-        }
-
-        .field-label {
-            color: #94a3b8;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .field-value {
-            color: #f8fafc;
-            font-weight: 500;
-            text-align: right;
-        }
-
-        .profile-img-thumb {
-            width: 60px;
-            height: 60px;
-            border-radius: 10px;
-            object-fit: cover;
-            border: 2px solid #00ffff;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0, 255, 255, 0.25);
-            background-color: #1a2230;
-            flex-shrink: 0;
-        }
-
-        .btn-close {
-            background: linear-gradient(135deg, #ff4757, #ff6b81);
-            color: white;
-            border: none;
-            padding: 5px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 12px;
-        }
+        .profile-field.block-field { flex-direction: column; align-items: flex-start; gap: 4px; }
+        .field-label { color: #94a3b8; font-size: 12px; font-weight: 600; }
+        .field-value { color: #f8fafc; font-weight: 500; text-align: right; }
+        .profile-img-thumb { width: 60px; height: 60px; border-radius: 10px; object-fit: cover; border: 2px solid #00ffff; cursor: pointer; background-color: #1a2230; flex-shrink: 0; }
+        .btn-close { background: linear-gradient(135deg, #ff4757, #ff6b81); color: white; border: none; padding: 5px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; }
 
         #image-lightbox {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.85);
             z-index: 4000;
-            justify-content: center;
-            align-items: center;
+            justify-content: center; align-items: center;
             backdrop-filter: blur(8px);
         }
 
-        #image-lightbox img {
-            max-width: 85%;
-            max-height: 85%;
-            border-radius: 12px;
-            border: 2px solid #00ffff;
-        }
+        #image-lightbox img { max-width: 85%; max-height: 85%; border-radius: 12px; border: 2px solid #00ffff; }
 
         @media (max-width: 600px) {
             .nav-btn { padding: 6px 12px; font-size: 12px; }
             .nav-logo { font-size: 15px; }
             .top-navbar { padding: 10px 12px; }
+            .control-card { flex-direction: column; align-items: stretch; }
         }
     </style>
 </head>
@@ -417,25 +372,33 @@
         <!-- CONTROL CARD -->
         <section class="control-card">
             <div class="select-group">
-                <label for="member-select">সদস্য নির্বাচন করুন:</label>
+                <label for="member-select">মূল সদস্য নির্বাচন করুন:</label>
                 <select id="member-select" class="custom-select">
                     <option value="">-- সদস্য নির্বাচন করুন --</option>
                 </select>
             </div>
 
-            <div class="radio-group">
+            <div class="mode-selector">
                 <label class="radio-label">
-                    <input type="radio" name="lineage-type" value="paternal" checked> পিতৃকুল (Paternal)
+                    <input type="radio" name="view-mode" value="tree2d" checked> 🌳 ২ডি বংশবৃক্ষ ভিউ
                 </label>
                 <label class="radio-label">
-                    <input type="radio" name="lineage-type" value="maternal"> মাতৃকুল (Maternal)
+                    <input type="radio" name="view-mode" value="chain"> 🔗 লিনিয়ার চেইন ভিউ
+                </label>
+            </div>
+
+            <div id="paternal-maternal-group" class="mode-selector" style="display: none;">
+                <label class="radio-label">
+                    <input type="radio" name="lineage-type" value="paternal" checked> পিতৃকুল
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="lineage-type" value="maternal"> মাতৃকুল
                 </label>
             </div>
         </section>
 
-        <!-- BLOODLINE DISPLAY SECTION -->
-        <section class="bloodline-display">
-            <!-- ANCESTOR CHAIN -->
+        <!-- MODE 1: CHAIN DISPLAY CONTAINER -->
+        <section id="chain-display-container" class="chain-display" style="display: none;">
             <div class="bloodline-section">
                 <h3>⬆️ পূর্বপুরুষের ধারা (Ancestors Chain)</h3>
                 <div id="ancestors-chain" class="bloodline-chain">
@@ -443,12 +406,18 @@
                 </div>
             </div>
 
-            <!-- DESCENDANTS CHAIN -->
             <div class="bloodline-section">
                 <h3>⬇️ উত্তরসূরির ধারা (Descendants Chain)</h3>
                 <div id="descendants-chain" class="bloodline-chain">
                     <p style="font-size:12px; color:#aaa;">একটি সদস্য সিলেক্ট করুন।</p>
                 </div>
+            </div>
+        </section>
+
+        <!-- MODE 2: 2D TREE CONTAINER -->
+        <section id="tree-2d-container">
+            <div id="tree-2d-wrapper" class="tree-2d-wrapper">
+                <svg id="tree-svg-canvas"></svg>
             </div>
         </section>
 
@@ -546,18 +515,17 @@
             document.getElementById('image-lightbox').style.display = 'none';
         }
 
-        // Initialize Select Options
         function populateSelectOptions() {
             const selectEl = document.getElementById('member-select');
             membersData.forEach(m => {
                 const opt = document.createElement('option');
                 opt.value = m.uid;
-                opt.innerText = `${m.bnName} (${m.uid})`;
+                opt.innerText = `${m.bnName} (${m.nick}) - ${m.uid}`;
                 selectEl.appendChild(opt);
             });
         }
 
-        // Bloodline Tracing Functions
+        /* ----- MODE 1: LINEAR CHAIN LOGIC ----- */
         function traceAncestors(startUid, isPaternal = true) {
             const chain = [];
             let current = membersData.find(m => m.uid === startUid);
@@ -565,8 +533,7 @@
 
             while (current && !visited.has(current.uid)) {
                 visited.add(current.uid);
-                chain.unshift(current); // Add to beginning of array to maintain chronological order
-                
+                chain.unshift(current);
                 const parentUid = isPaternal ? current.father : current.mother;
                 current = membersData.find(m => m.uid === parentUid);
             }
@@ -597,21 +564,11 @@
             return descendants;
         }
 
-        function renderBloodline() {
-            const selectEl = document.getElementById('member-select');
-            const targetUid = selectEl.value;
+        function renderChainView(targetUid) {
             const isPaternal = document.querySelector('input[name="lineage-type"]:checked').value === 'paternal';
-
             const ancestorsContainer = document.getElementById('ancestors-chain');
             const descendantsContainer = document.getElementById('descendants-chain');
 
-            if (!targetUid) {
-                ancestorsContainer.innerHTML = '<p style="font-size:12px; color:#aaa;">একটি সদস্য সিলেক্ট করুন।</p>';
-                descendantsContainer.innerHTML = '<p style="font-size:12px; color:#aaa;">একটি সদস্য সিলেক্ট করুন।</p>';
-                return;
-            }
-
-            // Render Ancestors
             const ancestors = traceAncestors(targetUid, isPaternal);
             ancestorsContainer.innerHTML = '';
             ancestors.forEach((m, idx) => {
@@ -632,11 +589,10 @@
                 }
             });
 
-            // Render Descendants
             const descendants = traceDescendants(targetUid);
             descendantsContainer.innerHTML = '';
             if (descendants.length === 0) {
-                descendantsContainer.innerHTML = '<p style="font-size:12px; color:#aaa;">কোনো তথ্য পাওয়া যায়নি।</p>';
+                descendantsContainer.innerHTML = '<p style="font-size:12px; color:#aaa;">কোনো বংশধর পাওয়া যায়নি।</p>';
             } else {
                 descendants.forEach(m => {
                     const box = document.createElement('div');
@@ -648,6 +604,172 @@
                     box.onclick = () => showProfileByUid(m.uid);
                     descendantsContainer.appendChild(box);
                 });
+            }
+        }
+
+        /* ----- MODE 2: 2D TREE LOGIC ----- */
+        function render2DTreeView(rootUid) {
+            const container2D = document.getElementById('tree-2d-wrapper');
+            container2D.innerHTML = '<svg id="tree-svg-canvas"></svg>';
+
+            const relativeGenMap = {};
+            const visited = new Set([rootUid]);
+            const queue = [{ uid: rootUid, relGen: 0, parentUid: null }];
+
+            while (queue.length > 0) {
+                const current = queue.shift();
+                if (!relativeGenMap[current.relGen]) relativeGenMap[current.relGen] = [];
+
+                const personObj = membersData.find(m => m.uid === current.uid);
+                if (personObj) {
+                    relativeGenMap[current.relGen].push({ person: personObj, parentUid: current.parentUid });
+
+                    if (personObj.children) {
+                        personObj.children.forEach(childUid => {
+                            if (!visited.has(childUid)) {
+                                visited.add(childUid);
+                                queue.push({ uid: childUid, relGen: current.relGen + 1, parentUid: current.uid });
+                            }
+                        });
+                    }
+                }
+            }
+
+            const sortedGens = Object.keys(relativeGenMap).sort((a,b) => a - b);
+            sortedGens.forEach(genLevel => {
+                const block = document.createElement('div');
+                block.className = 'gen-2d-block';
+
+                const row = document.createElement('div');
+                row.className = 'nodes-2d-row';
+
+                relativeGenMap[genLevel].forEach(entry => {
+                    const p = entry.person;
+                    const coupleCard = document.createElement('div');
+                    coupleCard.className = `couple-node-card ${p.uid === rootUid ? 'root-card' : ''}`;
+                    coupleCard.setAttribute('data-family-id', p.uid);
+                    if (entry.parentUid) coupleCard.setAttribute('data-parent-id', entry.parentUid);
+
+                    const imgId = `node-img-${p.uid}`;
+                    let cardHtml = `
+                        <div class="person-unit" id="unit-${p.uid}">
+                            <img id="${imgId}" class="node-avatar" loading="lazy" src="" alt="Photo">
+                            <span class="card-2d-name">${p.nick}</span>
+                        </div>
+                    `;
+
+                    if (p.spouse) {
+                        const spouses = Array.isArray(p.spouse) ? p.spouse : [p.spouse];
+                        spouses.forEach(sUid => {
+                            const spouseObj = membersData.find(m => m.uid === sUid);
+                            if (spouseObj) {
+                                const spouseImgId = `node-img-${spouseObj.uid}`;
+                                cardHtml += `
+                                    <div class="spouse-divider">💍</div>
+                                    <div class="person-unit spouse-unit" id="unit-${spouseObj.uid}">
+                                        <img id="${spouseImgId}" class="node-avatar" loading="lazy" src="" alt="Photo">
+                                        <span class="card-2d-name">${spouseObj.nick}</span>
+                                    </div>
+                                `;
+                                setTimeout(() => {
+                                    const simg = document.getElementById(spouseImgId);
+                                    if (simg) loadProfilePhoto(simg, spouseObj.uid);
+                                }, 10);
+                            }
+                        });
+                    }
+
+                    coupleCard.innerHTML = cardHtml;
+                    row.appendChild(coupleCard);
+
+                    setTimeout(() => {
+                        const pimg = document.getElementById(imgId);
+                        if (pimg) loadProfilePhoto(pimg, p.uid);
+                        
+                        document.getElementById(`unit-${p.uid}`).onclick = () => showProfileByUid(p.uid);
+                        if (p.spouse) {
+                            const spouses = Array.isArray(p.spouse) ? p.spouse : [p.spouse];
+                            spouses.forEach(sUid => {
+                                const el = document.getElementById(`unit-${sUid}`);
+                                if (el) el.onclick = () => showProfileByUid(sUid);
+                            });
+                        }
+                    }, 10);
+                });
+
+                block.appendChild(row);
+                container2D.appendChild(block);
+            });
+
+            setTimeout(drawSvgConnections, 150);
+        }
+
+        function drawSvgConnections() {
+            const svg = document.getElementById('tree-svg-canvas');
+            const wrapper = document.getElementById('tree-2d-wrapper');
+            
+            if (!svg || !wrapper) return;
+            svg.innerHTML = '';
+            
+            const wRect = wrapper.getBoundingClientRect();
+            svg.setAttribute('width', wrapper.scrollWidth || wrapper.offsetWidth);
+            svg.setAttribute('height', wrapper.scrollHeight || wrapper.offsetHeight);
+
+            const cards = document.querySelectorAll('.couple-node-card');
+            cards.forEach(parentCard => {
+                const parentId = parentCard.getAttribute('data-family-id');
+                const childrenCards = document.querySelectorAll(`.couple-node-card[data-parent-id="${parentId}"]`);
+
+                if (childrenCards.length > 0) {
+                    const pRect = parentCard.getBoundingClientRect();
+                    const startX = (pRect.left + pRect.width / 2 - wRect.left);
+                    const startY = (pRect.bottom - wRect.top);
+
+                    childrenCards.forEach(childCard => {
+                        const cRect = childCard.getBoundingClientRect();
+                        const endX = (cRect.left + cRect.width / 2 - wRect.left);
+                        const endY = (cRect.top - wRect.top);
+                        const midY = startY + (endY - startY) / 2;
+
+                        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                        const d = `M ${startX} ${startY} C ${startX} ${midY}, ${endX} ${midY}, ${endX} ${endY}`;
+                        path.setAttribute('d', d);
+                        path.setAttribute('stroke', '#00ffff');
+                        path.setAttribute('stroke-width', '2.5');
+                        path.setAttribute('fill', 'none');
+                        path.setAttribute('opacity', '0.9');
+                        svg.appendChild(path);
+                    });
+                }
+            });
+        }
+
+        /* ----- MAIN UPDATE FUNCTION ----- */
+        function updateBloodlineDisplay() {
+            const targetUid = document.getElementById('member-select').value;
+            const viewMode = document.querySelector('input[name="view-mode"]:checked').value;
+            const pmGroup = document.getElementById('paternal-maternal-group');
+
+            const chainContainer = document.getElementById('chain-display-container');
+            const treeContainer = document.getElementById('tree-2d-container');
+
+            if (!targetUid) {
+                chainContainer.style.display = 'none';
+                treeContainer.style.display = 'none';
+                pmGroup.style.display = 'none';
+                return;
+            }
+
+            if (viewMode === 'chain') {
+                treeContainer.style.display = 'none';
+                chainContainer.style.display = 'flex';
+                pmGroup.style.display = 'flex';
+                renderChainView(targetUid);
+            } else {
+                chainContainer.style.display = 'none';
+                treeContainer.style.display = 'block';
+                pmGroup.style.display = 'none';
+                render2DTreeView(targetUid);
             }
         }
 
@@ -713,14 +835,19 @@
         document.addEventListener('DOMContentLoaded', () => {
             populateSelectOptions();
 
-            document.getElementById('member-select').onchange = renderBloodline;
+            document.getElementById('member-select').onchange = updateBloodlineDisplay;
+            document.querySelectorAll('input[name="view-mode"]').forEach(r => {
+                r.onchange = updateBloodlineDisplay;
+            });
             document.querySelectorAll('input[name="lineage-type"]').forEach(r => {
-                r.onchange = renderBloodline;
+                r.onchange = updateBloodlineDisplay;
             });
 
             document.getElementById('close-popup-btn').onclick = closePopup;
             document.getElementById('image-lightbox').onclick = closeLightbox;
             document.getElementById('m-photo').onclick = function() { openLightbox(this.src); };
+
+            window.addEventListener('resize', drawSvgConnections);
 
             window.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') {
@@ -729,7 +856,6 @@
                 }
             });
 
-            // Remove Loading Overlay
             const loadingEl = document.getElementById('app-loading');
             if (loadingEl) {
                 loadingEl.style.opacity = '0';
