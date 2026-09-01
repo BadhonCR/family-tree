@@ -43,54 +43,49 @@
 
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Top Navbar */
+        /* Top Navbar — same visual language as Home */
         .top-navbar {
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            background: rgba(10, 15, 25, 0.95);
-            border-bottom: 1px solid rgba(0, 255, 255, 0.25);
-            backdrop-filter: blur(16px);
-            padding: 12px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 25px rgba(0,0,0,0.6);
+            position: sticky; top:0; z-index:1000; padding:10px 18px;
+            background:rgba(6,10,18,.82);
+            border-bottom:1px solid rgba(0,255,255,.14);
+            backdrop-filter:blur(20px) saturate(140%);
+            -webkit-backdrop-filter:blur(20px) saturate(140%);
+            box-shadow:0 8px 30px rgba(0,0,0,.28);
         }
-
-        .nav-logo {
-            color: #00ffff;
-            font-size: 18px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
+        .nav-inner {
+            width:min(1180px,100%); min-height:58px; margin:auto;
+            display:flex; align-items:center; justify-content:space-between; gap:24px;
         }
-
-        .nav-links { display: flex; gap: 10px; align-items: center; }
-
+        .nav-logo {color:#fff;text-decoration:none;display:flex;align-items:center;gap:10px;min-width:max-content;}
+        .logo-mark {
+            width:40px;height:40px;display:grid;place-items:center;border-radius:12px;font-size:21px;
+            background:linear-gradient(145deg,rgba(0,255,255,.18),rgba(56,189,248,.08));
+            border:1px solid rgba(0,255,255,.25);box-shadow:inset 0 0 18px rgba(0,255,255,.08);
+        }
+        .logo-text {display:flex;flex-direction:column;line-height:1.1;}
+        .logo-text strong {font-size:15px;letter-spacing:.2px;}
+        .logo-text small {color:#64748b;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;margin-top:4px;}
+        .nav-links {
+            display:flex;align-items:center;gap:6px;padding:5px;border:1px solid rgba(255,255,255,.07);
+            border-radius:15px;background:rgba(255,255,255,.025);
+        }
         .nav-btn {
-            background: linear-gradient(135deg, #00b4db, #0083b0);
-            color: #fff;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.25s ease;
-            box-shadow: 0 4px 15px rgba(0, 180, 219, 0.3);
+            color:#94a3b8;background:transparent;border:0;padding:10px 14px;border-radius:10px;
+            font-size:12px;font-weight:700;cursor:pointer;text-decoration:none;display:flex;
+            align-items:center;justify-content:center;gap:7px;transition:.22s ease;white-space:nowrap;
         }
-
-        .nav-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 255, 255, 0.4);
+        .nav-btn span {font-size:14px;opacity:.85;}
+        .nav-btn:hover {color:#fff;background:rgba(0,255,255,.07);}
+        .nav-btn.active {
+            color:#fff;background:linear-gradient(135deg,rgba(0,180,219,.92),rgba(0,131,176,.92));
+            box-shadow:0 5px 18px rgba(0,200,255,.18);
         }
+        .nav-btn.active span {color:#dffcff;}
+        .nav-toggle {
+            display:none;width:42px;height:42px;border:1px solid rgba(0,255,255,.2);
+            border-radius:11px;background:rgba(0,255,255,.06);cursor:pointer;padding:9px;
+        }
+        .nav-toggle span {display:block;height:2px;margin:5px 0;border-radius:4px;background:#00ffff;transition:.2s;}
 
         .main-container {
             max-width: 1200px;
@@ -136,6 +131,51 @@
             width: 100%;
         }
 
+
+        .native-select-hidden { display:none !important; }
+        .member-picker { min-width:min(100%, 420px); position:relative; }
+        .member-search-wrap { position:relative; }
+        .member-search-input { padding:11px 42px 11px 40px; cursor:text; }
+        .member-search-input:focus { border-color:#00ffff; box-shadow:0 0 0 3px rgba(0,255,255,.08); }
+        .search-icon {
+            position:absolute; left:14px; top:50%; transform:translateY(-51%);
+            color:#00ffff; font-size:19px; z-index:2; pointer-events:none;
+        }
+        .member-clear {
+            position:absolute; right:9px; top:50%; transform:translateY(-50%);
+            width:27px;height:27px;border:0;border-radius:8px;background:transparent;
+            color:#64748b;font-size:20px;cursor:pointer;display:none;z-index:3;
+        }
+        .member-clear:hover {color:#fff;background:rgba(255,255,255,.07);}
+        .member-options {
+            position:absolute;left:0;right:0;top:calc(100% + 7px);z-index:1200;
+            display:none;max-height:310px;overflow-y:auto;padding:6px;
+            background:rgba(8,14,24,.98);border:1px solid rgba(0,255,255,.28);
+            border-radius:13px;box-shadow:0 18px 45px rgba(0,0,0,.65);
+            backdrop-filter:blur(16px);
+        }
+        .member-options.open {display:block;}
+        .member-option {
+            display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:9px;
+            cursor:pointer;border:1px solid transparent;transition:.16s ease;
+        }
+        .member-option:hover,.member-option.highlighted {
+            background:rgba(0,255,255,.09);border-color:rgba(0,255,255,.16);
+        }
+        .member-option-avatar {
+            width:35px;height:35px;border-radius:50%;object-fit:cover;flex-shrink:0;
+            border:1px solid rgba(0,255,255,.55);background:#1a2230;
+        }
+        .member-option-text {min-width:0;line-height:1.25;}
+        .member-option-text strong {display:block;color:#f8fafc;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+        .member-option-text small {display:block;color:#64748b;font-size:10px;margin-top:3px;}
+        .member-option-badge {
+            margin-left:auto;color:#00ffff;font-size:9px;border:1px solid rgba(0,255,255,.18);
+            background:rgba(0,255,255,.06);padding:3px 6px;border-radius:6px;white-space:nowrap;
+        }
+        .picker-empty {padding:18px 10px;text-align:center;color:#64748b;font-size:12px;}
+        .picker-hint {margin-top:5px;color:#64748b;font-size:10px;}
+
         /* Export Buttons Toolbar */
         .export-controls {
             display: flex;
@@ -175,6 +215,21 @@
         .btn-png { background: linear-gradient(135deg, #00b4db, #0083b0); color: white; border: none; }
         .btn-svg { background: linear-gradient(135deg, #7c3aed, #4c1d95); color: white; border: none; }
         .btn-pdf { background: linear-gradient(135deg, #dc2626, #7f1d1d); color: white; border: none; }
+
+
+        .control-card {
+            background:linear-gradient(135deg,rgba(15,23,42,.84),rgba(8,14,24,.82));
+            border-color:rgba(0,255,255,.18);
+            box-shadow:0 12px 35px rgba(0,0,0,.22);
+        }
+        .control-card::before {
+            content:""; width:3px; align-self:stretch; border-radius:5px;
+            background:linear-gradient(#00ffff,transparent); opacity:.8;
+        }
+        #tree-2d-viewport {
+            min-height:600px;
+            box-shadow:inset 0 0 55px rgba(0,0,0,.25),0 14px 35px rgba(0,0,0,.25);
+        }
 
         /* 2D Tree Canvas View */
         #tree-2d-viewport {
@@ -312,13 +367,34 @@
 
         #image-lightbox img { max-width: 85%; max-height: 85%; border-radius: 12px; border: 2px solid #00ffff; }
 
-        @media (max-width: 600px) {
-            .nav-btn { padding: 6px 12px; font-size: 12px; }
-            .nav-logo { font-size: 15px; }
-            .top-navbar { padding: 10px 12px; }
-            .control-card { flex-direction: column; align-items: stretch; }
-            .export-controls { justify-content: space-between; }
+        @media (max-width: 768px) {
+            .top-navbar {padding:9px 12px;}
+            .nav-inner {min-height:54px;}
+            .nav-toggle {display:block;}
+            .nav-links {
+                position:absolute;top:calc(100% + 8px);left:12px;right:12px;
+                display:none;flex-direction:column;align-items:stretch;gap:4px;padding:7px;
+                border-radius:14px;background:rgba(8,14,24,.97);
+                border-color:rgba(0,255,255,.18);box-shadow:0 18px 40px rgba(0,0,0,.55);
+            }
+            .nav-links.open {display:flex;}
+            .nav-btn {justify-content:flex-start;padding:12px 14px;}
+            .logo-text strong {font-size:13px;}
+            .logo-text small {font-size:8px;}
+            .control-card {flex-direction:column;align-items:stretch;padding:16px;}
+            .control-card::before {display:none;}
+            .select-group {min-width:0;width:100%;}
+            .export-controls {justify-content:stretch;display:grid;grid-template-columns:repeat(3,1fr);}
+            .action-btn {justify-content:center;padding:8px 10px;}
+            #tree-2d-viewport {min-height:480px;padding:20px;}
+            .member-options {max-height:260px;}
         }
+        @media (max-width:390px) {
+            .logo-mark {width:36px;height:36px;}
+            .logo-text strong {font-size:12px;}
+            .export-controls {grid-template-columns:repeat(2,1fr);}
+        }
+            html { scroll-behavior:smooth; }
     </style>
 </head>
 <body>
@@ -330,11 +406,26 @@
 
     <!-- TOP NAVBAR -->
     <header class="top-navbar">
-        <a href="home.html" class="nav-logo">🩸 ব্লাডলাইন ট্র্যাকার</a>
-        <nav class="nav-links">
-            <a href="home.html" class="nav-btn">🏠 হোমপেজ</a>
-            <a href="genogram.html" class="nav-btn">🌐 ৩ডি বংশবৃক্ষ ➔</a>
-        </nav>
+        <div class="nav-inner">
+            <a href="home.html" class="nav-logo" aria-label="পারিবারিক বংশবৃক্ষ হোম">
+                <span class="logo-mark">🌳</span>
+                <span class="logo-text">
+                    <strong>পারিবারিক বংশবৃক্ষ</strong>
+                    <small>Family Archive</small>
+                </span>
+            </a>
+
+            <button class="nav-toggle" id="nav-toggle" aria-label="মেনু খুলুন" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
+
+            <nav class="nav-links" id="nav-links" aria-label="প্রধান নেভিগেশন">
+                <a href="home.html" class="nav-btn"><span>⌂</span> Home</a>
+                <a href="genogram.html" class="nav-btn"><span>◎</span> Genogram</a>
+                <a href="bloodline.html" class="nav-btn active"><span>◈</span> Bloodline</a>
+                <a href="home.html#about" class="nav-btn"><span>ⓘ</span> About</a>
+            </nav>
+        </div>
     </header>
 
     <!-- MAIN CONTAINER -->
@@ -342,11 +433,20 @@
 
         <!-- CONTROL & EXPORT CARD -->
         <section class="control-card">
-            <div class="select-group">
-                <label for="member-select">মূল সদস্য নির্বাচন করুন:</label>
-                <select id="member-select" class="custom-select">
+            <div class="select-group member-picker">
+                <label for="member-search">মূল সদস্য নির্বাচন করুন:</label>
+                <div class="member-search-wrap">
+                    <span class="search-icon">⌕</span>
+                    <input id="member-search" class="custom-select member-search-input"
+                           type="text" placeholder="সদস্যের নাম লিখে খুঁজুন..." autocomplete="off"
+                           aria-autocomplete="list" aria-controls="member-options" aria-expanded="false">
+                    <button type="button" id="member-clear" class="member-clear" aria-label="নির্বাচন মুছুন">×</button>
+                    <div id="member-options" class="member-options" role="listbox"></div>
+                </div>
+                <select id="member-select" class="native-select-hidden" aria-hidden="true" tabindex="-1">
                     <option value="">-- সদস্য নির্বাচন করুন --</option>
                 </select>
+                <div class="picker-hint">নাম, ডাকনাম বা UID লিখে সদস্য খুঁজে নির্বাচন করুন</div>
             </div>
 
             <!-- ZOOM & EXPORT TOOLBAR -->
@@ -465,16 +565,6 @@
 
         function closeLightbox() {
             document.getElementById('image-lightbox').style.display = 'none';
-        }
-
-        function populateSelectOptions() {
-            const selectEl = document.getElementById('member-select');
-            membersData.forEach(m => {
-                const opt = document.createElement('option');
-                opt.value = m.uid;
-                opt.innerText = `${m.bnName} (${m.nick}) - ${m.uid}`;
-                selectEl.appendChild(opt);
-            });
         }
 
         /* ----- 2D TREE GENERATION ----- */
@@ -853,9 +943,177 @@
             document.getElementById('popup-modal').style.display = 'none';
         }
 
+
+        /* ----- SEARCHABLE MEMBER PICKER ----- */
+        let sortedMembers = [];
+        let highlightedIndex = -1;
+
+        function bengaliNameSort(a, b) {
+            const an = (a.bnName || '').trim();
+            const bn = (b.bnName || '').trim();
+            return an.localeCompare(bn, 'bn', { sensitivity: 'base', numeric: true });
+        }
+
+        function populateSelectOptions() {
+            const selectEl = document.getElementById('member-select');
+            const optionsEl = document.getElementById('member-options');
+            sortedMembers = [...membersData].sort(bengaliNameSort);
+
+            selectEl.innerHTML = '<option value="">-- সদস্য নির্বাচন করুন --</option>';
+            optionsEl.innerHTML = '';
+
+            sortedMembers.forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m.uid;
+                opt.innerText = `${m.bnName} (${m.nick}) - ${m.uid}`;
+                selectEl.appendChild(opt);
+            });
+
+            renderMemberOptions(sortedMembers);
+        }
+
+        function renderMemberOptions(list) {
+            const optionsEl = document.getElementById('member-options');
+            optionsEl.innerHTML = '';
+
+            if (!list.length) {
+                optionsEl.innerHTML = '<div class="picker-empty">কোনো সদস্য পাওয়া যায়নি</div>';
+                return;
+            }
+
+            list.forEach((m, index) => {
+                const item = document.createElement('div');
+                item.className = 'member-option';
+                item.setAttribute('role', 'option');
+                item.dataset.uid = m.uid;
+                item.dataset.index = index;
+
+                const img = document.createElement('img');
+                img.className = 'member-option-avatar';
+                img.alt = '';
+                loadProfilePhoto(img, m.uid);
+
+                const text = document.createElement('div');
+                text.className = 'member-option-text';
+                text.innerHTML = `<strong>${m.bnName}${m.nick ? ` (${m.nick})` : ''}</strong><small>${m.enName || ''}</small>`;
+
+                const badge = document.createElement('span');
+                badge.className = 'member-option-badge';
+                badge.textContent = m.uid;
+
+                item.appendChild(img);
+                item.appendChild(text);
+                item.appendChild(badge);
+
+                item.addEventListener('mousedown', e => {
+                    e.preventDefault();
+                    selectMember(m.uid);
+                });
+                optionsEl.appendChild(item);
+            });
+        }
+
+        function selectMember(uid) {
+            const member = membersData.find(m => m.uid === uid);
+            if (!member) return;
+
+            const search = document.getElementById('member-search');
+            const select = document.getElementById('member-select');
+            search.value = `${member.bnName}${member.nick ? ` (${member.nick})` : ''}`;
+            select.value = uid;
+            document.getElementById('member-options').classList.remove('open');
+            search.setAttribute('aria-expanded', 'false');
+            document.getElementById('member-clear').style.display = 'block';
+            highlightedIndex = -1;
+            render2DTreeView();
+        }
+
+        function filterMembers(query) {
+            const q = query.trim().toLocaleLowerCase('bn-BD');
+            if (!q) return sortedMembers;
+
+            return sortedMembers.filter(m => {
+                const haystack = [m.bnName, m.enName, m.nick, m.uid].filter(Boolean).join(' ').toLocaleLowerCase('bn-BD');
+                return haystack.includes(q);
+            });
+        }
+
+        function openMemberPicker() {
+            const search = document.getElementById('member-search');
+            const options = document.getElementById('member-options');
+            renderMemberOptions(filterMembers(search.value));
+            options.classList.add('open');
+            search.setAttribute('aria-expanded', 'true');
+        }
+
+        function clearMemberSelection() {
+            document.getElementById('member-search').value = '';
+            document.getElementById('member-select').value = '';
+            document.getElementById('member-clear').style.display = 'none';
+            document.getElementById('member-options').classList.remove('open');
+            document.getElementById('member-search').setAttribute('aria-expanded', 'false');
+            render2DTreeView();
+        }
+
         /* ----- INITIALIZATION & EVENTS ----- */
         document.addEventListener('DOMContentLoaded', () => {
             populateSelectOptions();
+
+            const navToggle = document.getElementById('nav-toggle');
+            const navLinks = document.getElementById('nav-links');
+            if (navToggle && navLinks) {
+                navToggle.addEventListener('click', () => {
+                    const open = navLinks.classList.toggle('open');
+                    navToggle.setAttribute('aria-expanded', String(open));
+                });
+                navLinks.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        navLinks.classList.remove('open');
+                        navToggle.setAttribute('aria-expanded', 'false');
+                    });
+                });
+            }
+
+            const memberSearch = document.getElementById('member-search');
+            const memberOptions = document.getElementById('member-options');
+            const memberClear = document.getElementById('member-clear');
+
+            memberSearch.addEventListener('focus', openMemberPicker);
+            memberSearch.addEventListener('input', () => {
+                const filtered = filterMembers(memberSearch.value);
+                renderMemberOptions(filtered);
+                memberOptions.classList.add('open');
+                memberSearch.setAttribute('aria-expanded', 'true');
+                memberClear.style.display = memberSearch.value ? 'block' : 'none';
+            });
+            memberSearch.addEventListener('keydown', e => {
+                const items = [...memberOptions.querySelectorAll('.member-option')];
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    highlightedIndex = Math.min(highlightedIndex + 1, items.length - 1);
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    highlightedIndex = Math.max(highlightedIndex - 1, 0);
+                } else if (e.key === 'Enter' && highlightedIndex >= 0 && items[highlightedIndex]) {
+                    e.preventDefault();
+                    selectMember(items[highlightedIndex].dataset.uid);
+                    return;
+                } else if (e.key === 'Escape') {
+                    memberOptions.classList.remove('open');
+                    memberSearch.setAttribute('aria-expanded', 'false');
+                    return;
+                } else {
+                    return;
+                }
+                items.forEach((el, i) => el.classList.toggle('highlighted', i === highlightedIndex));
+            });
+            memberClear.addEventListener('click', clearMemberSelection);
+            document.addEventListener('click', e => {
+                if (!e.target.closest('.member-picker')) {
+                    memberOptions.classList.remove('open');
+                    memberSearch.setAttribute('aria-expanded', 'false');
+                }
+            });
 
             document.getElementById('member-select').onchange = render2DTreeView;
             document.getElementById('zoom-in-btn').onclick = () => zoomTree(0.1);
