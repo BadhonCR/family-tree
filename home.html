@@ -47,61 +47,58 @@
 
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Navigation Header */
+        /* Navigation Header — modern responsive glass navigation */
         .top-navbar {
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            background: rgba(10, 15, 25, 0.9);
-            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
-            backdrop-filter: blur(16px);
-            padding: 14px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.6);
+            position: sticky; top: 0; z-index: 1000;
+            padding: 10px 18px;
+            background: rgba(6,10,18,.82);
+            border-bottom: 1px solid rgba(0,255,255,.14);
+            backdrop-filter: blur(20px) saturate(140%);
+            -webkit-backdrop-filter: blur(20px) saturate(140%);
+            box-shadow: 0 8px 30px rgba(0,0,0,.28);
         }
-
+        .nav-inner {
+            width:min(1180px,100%); min-height:58px; margin:auto;
+            display:flex; align-items:center; justify-content:space-between; gap:24px;
+        }
         .nav-logo {
-            color: #00ffff;
-            font-size: 20px;
-            font-weight: 800;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
-            letter-spacing: 0.5px;
+            color:#fff; text-decoration:none; display:flex; align-items:center;
+            gap:10px; min-width:max-content;
         }
-
+        .logo-mark {
+            width:40px; height:40px; display:grid; place-items:center;
+            border-radius:12px; font-size:21px;
+            background:linear-gradient(145deg,rgba(0,255,255,.18),rgba(56,189,248,.08));
+            border:1px solid rgba(0,255,255,.25);
+            box-shadow:inset 0 0 18px rgba(0,255,255,.08);
+        }
+        .logo-text {display:flex; flex-direction:column; line-height:1.1;}
+        .logo-text strong {font-size:15px; letter-spacing:.2px;}
+        .logo-text small {color:#64748b;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;margin-top:4px;}
         .nav-links {
-            display: flex;
-            gap: 12px;
+            display:flex; align-items:center; gap:6px; padding:5px;
+            border:1px solid rgba(255,255,255,.07); border-radius:15px;
+            background:rgba(255,255,255,.025);
         }
-
         .nav-btn {
-            background: rgba(0, 255, 255, 0.08);
-            color: #00ffff;
-            border: 1px solid rgba(0, 255, 255, 0.3);
-            padding: 8px 18px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.25s ease;
+            position:relative; color:#94a3b8; background:transparent; border:0;
+            padding:10px 14px; border-radius:10px; font-size:12px; font-weight:700;
+            cursor:pointer; text-decoration:none; display:flex; align-items:center;
+            justify-content:center; gap:7px; transition:.22s ease; white-space:nowrap;
         }
-
-        .nav-btn:hover, .nav-btn.active {
-            background: linear-gradient(135deg, #00b4db, #0083b0);
-            color: #fff;
-            border-color: transparent;
-            box-shadow: 0 4px 15px rgba(0, 255, 255, 0.3);
-            transform: translateY(-2px);
+        .nav-btn span {font-size:14px;opacity:.85;}
+        .nav-btn:hover {color:#fff;background:rgba(0,255,255,.07);}
+        .nav-btn.active {
+            color:#fff;
+            background:linear-gradient(135deg,rgba(0,180,219,.92),rgba(0,131,176,.92));
+            box-shadow:0 5px 18px rgba(0,200,255,.18);
         }
-
+        .nav-btn.active span {color:#dffcff;}
+        .nav-toggle {
+            display:none; width:42px;height:42px;border:1px solid rgba(0,255,255,.2);
+            border-radius:11px;background:rgba(0,255,255,.06);cursor:pointer;padding:9px;
+        }
+        .nav-toggle span {display:block;height:2px;margin:5px 0;border-radius:4px;background:#00ffff;transition:.2s;}
         /* Hero Banner */
         .hero-banner {
             text-align: center;
@@ -404,6 +401,60 @@
             .hero-title { font-size: 24px; }
             .top-navbar { padding: 12px 16px; }
         }
+
+        /* About */
+        .about-section {
+            width:min(1100px,calc(100% - 32px)); margin:0 auto 50px; padding:28px;
+            display:grid; grid-template-columns:1.15fr .85fr; gap:28px; align-items:center;
+            border:1px solid rgba(0,255,255,.14); border-radius:20px;
+            background:linear-gradient(135deg,rgba(15,23,42,.72),rgba(6,10,18,.72));
+            box-shadow:0 16px 45px rgba(0,0,0,.28);
+        }
+        .eyebrow {color:#22d3ee;font-size:10px;font-weight:800;letter-spacing:2px;}
+        .about-copy h2 {margin:8px 0 9px;font-size:clamp(21px,3vw,29px);line-height:1.25;color:#fff;}
+        .about-copy h2 span {color:#00ffff;}
+        .about-copy p {max-width:650px;color:#94a3b8;font-size:13px;}
+        .about-features {display:grid;gap:9px;}
+        .feature-chip {
+            display:flex;align-items:center;gap:13px;padding:12px 14px;
+            border:1px solid rgba(255,255,255,.07);border-radius:12px;background:rgba(255,255,255,.025);
+        }
+        .feature-chip b {
+            width:31px;height:31px;display:grid;place-items:center;border-radius:9px;
+            color:#00ffff;background:rgba(0,255,255,.08);font-size:10px;
+        }
+        .feature-chip span {color:#e2e8f0;font-size:12px;font-weight:700;}
+        .feature-chip small {color:#64748b;font-weight:500;}
+
+        @media (max-width: 768px) {
+            .top-navbar {padding:9px 12px;}
+            .nav-inner {min-height:54px;}
+            .nav-toggle {display:block;}
+            .nav-links {
+                position:absolute;top:calc(100% + 8px);left:12px;right:12px;
+                display:none;flex-direction:column;align-items:stretch;gap:4px;padding:7px;
+                border-radius:14px;background:rgba(8,14,24,.97);
+                border-color:rgba(0,255,255,.18);box-shadow:0 18px 40px rgba(0,0,0,.55);
+            }
+            .nav-links.open {display:flex;}
+            .nav-btn {justify-content:flex-start;padding:12px 14px;}
+            .logo-text strong {font-size:13px;}
+            .logo-text small {font-size:8px;}
+            .main-layout {grid-template-columns:1fr;}
+            .hero-banner {padding:38px 16px 24px;}
+            .hero-title {font-size:24px;line-height:1.3;}
+            .stats-grid {grid-template-columns:repeat(2,1fr);gap:10px;padding:0 12px;}
+            .stat-card {padding:13px 9px;}
+            .about-section {grid-template-columns:1fr;width:calc(100% - 24px);padding:20px;gap:20px;}
+        }
+        @media (max-width:390px) {
+            .logo-mark {width:36px;height:36px;}
+            .logo-text strong {font-size:12px;}
+            .hero-subtitle {font-size:13px;}
+            .card-section {padding:18px 15px;}
+        }
+
+        html {scroll-behavior:smooth;}
     </style>
 </head>
 <body>
@@ -415,12 +466,24 @@
 
     <!-- TOP NAVBAR -->
     <header class="top-navbar">
-        <a href="home.html" class="nav-logo">🌳 পারিবারিক বংশবৃক্ষ</a>
-        <nav class="nav-links">
-            <a href="home.html" class="nav-btn active">🏠 হোম</a>
-            <a href="bloodline.html" class="nav-btn">🩸 ২ডি ব্লাডলাইন</a>
-            <a href="genogram.html" class="nav-btn">🌐 ৩ডি ট্রি ➔</a>
-        </nav>
+        <div class="nav-inner">
+            <a href="home.html" class="nav-logo" aria-label="পারিবারিক বংশবৃক্ষ হোম">
+                <span class="logo-mark">🌳</span>
+                <span class="logo-text">
+                    <strong>পারিবারিক বংশবৃক্ষ</strong>
+                    <small>Family Archive</small>
+                </span>
+            </a>
+            <button class="nav-toggle" id="nav-toggle" aria-label="মেনু খুলুন" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
+            <nav class="nav-links" id="nav-links" aria-label="প্রধান নেভিগেশন">
+                <a href="home.html" class="nav-btn active"><span>⌂</span> Home</a>
+                <a href="genogram.html" class="nav-btn"><span>◎</span> Genogram</a>
+                <a href="bloodline.html" class="nav-btn"><span>◈</span> Bloodline</a>
+                <a href="#about" class="nav-btn"><span>ⓘ</span> About</a>
+            </nav>
+        </div>
     </header>
 
     <!-- HERO BANNER -->
@@ -493,6 +556,20 @@
         </section>
 
     </main>
+
+    <!-- ABOUT / PRODUCT OVERVIEW -->
+    <section class="about-section" id="about">
+        <div class="about-copy">
+            <span class="eyebrow">ABOUT THE ARCHIVE</span>
+            <h2>এক জায়গায় পরিবারের <span>সম্পর্ক, প্রজন্ম ও ইতিহাস</span></h2>
+            <p>পারিবারিক তথ্যকে সহজে খুঁজে দেখা, সম্পর্কের সংযোগ বোঝা এবং প্রজন্মভিত্তিক বংশধারা অন্বেষণের জন্য একটি পরিচ্ছন্ন ডিজিটাল আর্কাইভ।</p>
+        </div>
+        <div class="about-features">
+            <div class="feature-chip"><b>01</b><span>Member Search<br><small>দ্রুত সদস্য সন্ধান</small></span></div>
+            <div class="feature-chip"><b>02</b><span>Relationship Finder<br><small>সম্পর্কের পথ নির্ণয়</small></span></div>
+            <div class="feature-chip"><b>03</b><span>Family Visualization<br><small>Genogram &amp; Bloodline</small></span></div>
+        </div>
+    </section>
 
     <!-- PROFILE POPUP MODAL -->
     <div id="popup-modal">
@@ -851,6 +928,20 @@
 
         /* Initialization */
         document.addEventListener('DOMContentLoaded', () => {
+            const navToggle = document.getElementById('nav-toggle');
+            const navLinks = document.getElementById('nav-links');
+            if (navToggle && navLinks) {
+                navToggle.addEventListener('click', () => {
+                    const open = navLinks.classList.toggle('open');
+                    navToggle.setAttribute('aria-expanded', String(open));
+                });
+                navLinks.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        navLinks.classList.remove('open');
+                        navToggle.setAttribute('aria-expanded', 'false');
+                    });
+                });
+            }
             calculateStats();
 
             let debounceTimer;
