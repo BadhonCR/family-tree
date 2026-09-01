@@ -59,7 +59,7 @@
             background: rgba(10, 15, 25, 0.85);
             border-bottom: 1px solid rgba(0, 255, 255, 0.25);
             backdrop-filter: blur(12px);
-            padding: 12px 20px;
+            padding: 12px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -75,468 +75,365 @@
             gap: 8px;
         }
 
-        .nav-btn {
-            background: linear-gradient(135deg, #00b4db, #0083b0);
-            color: #fff;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
+        .nav-menu {
             display: flex;
             align-items: center;
-            gap: 6px;
-            transition: all 0.25s ease;
-            box-shadow: 0 4px 15px rgba(0, 180, 219, 0.3);
+            gap: 16px;
         }
 
-        .nav-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 255, 255, 0.4);
-        }
-
-        /* 3D Canvas Container */
-        #canvas-container {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 1;
-        }
-
-        /* Controls Instructions Overlay */
-        .controls-hint {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            z-index: 100;
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid rgba(0, 255, 255, 0.25);
-            backdrop-filter: blur(8px);
-            padding: 10px 16px;
-            border-radius: 8px;
-            font-size: 12px;
+        .nav-link {
             color: #94a3b8;
-            pointer-events: none;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
         }
 
-        .controls-hint span {
+        .nav-link:hover, .nav-link.active {
             color: #00ffff;
-            font-weight: bold;
+            background: rgba(0, 255, 255, 0.12);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
         }
 
-        /* Profile Popup Modal */
+        /* Popup Modal */
         #popup-modal {
             display: none;
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: linear-gradient(145deg, rgba(15, 23, 36, 0.96), rgba(8, 14, 24, 0.98));
-            color: #e2e8f0;
-            padding: 22px;
+            z-index: 2000;
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(0, 255, 255, 0.4);
             border-radius: 16px;
-            box-shadow: 0 10px 32px rgba(0, 0, 0, 0.85), 0 0 15px rgba(0, 255, 255, 0.15);
-            z-index: 3500;
-            width: 340px;
-            max-height: 85vh;
-            overflow-y: auto;
-            border: 1px solid rgba(0, 255, 255, 0.35);
+            padding: 24px;
+            width: 320px;
+            max-width: 90vw;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 30px rgba(0, 255, 255, 0.2);
             backdrop-filter: blur(16px);
         }
 
-        .popup-header-container {
+        .popup-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid rgba(0, 255, 255, 0.2);
             padding-bottom: 12px;
-            margin-bottom: 14px;
+            margin-bottom: 16px;
         }
 
-        .popup-header-container h2 {
-            margin: 0 0 6px 0;
+        .popup-title {
             color: #00ffff;
-            font-size: 19px;
+            font-size: 18px;
             font-weight: 700;
+            margin: 0;
         }
 
-        .uid-gen-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .uid-badge {
-            font-size: 11px;
-            color: #38bdf8;
-            background: rgba(56, 189, 248, 0.12);
-            padding: 3px 8px;
-            border-radius: 6px;
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            font-weight: 600;
-        }
-
-        .gen-badge {
-            font-size: 11px;
-            color: #00ffff;
-            background: rgba(0, 255, 255, 0.15);
-            padding: 3px 8px;
-            border-radius: 6px;
-            border: 1px solid rgba(0, 255, 255, 0.4);
-            font-weight: 600;
-        }
-
-        .profile-details-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            font-size: 13px;
-        }
-
-        .profile-field {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 6px 10px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 6px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-        }
-
-        .profile-field.block-field {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 4px;
-        }
-
-        .field-label {
+        .close-btn {
+            background: transparent;
+            border: none;
             color: #94a3b8;
-            font-size: 12px;
-            font-weight: 600;
+            font-size: 20px;
+            cursor: pointer;
         }
 
-        .field-value {
-            color: #f8fafc;
-            font-weight: 500;
-            text-align: right;
+        .close-btn:hover {
+            color: #fff;
         }
 
-        .profile-img-thumb {
-            width: 60px;
-            height: 60px;
-            border-radius: 10px;
+        .profile-photo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
             object-fit: cover;
             border: 2px solid #00ffff;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0, 255, 255, 0.25);
-            background-color: #1a2230;
-            flex-shrink: 0;
+            margin: 0 auto 12px auto;
+            display: block;
+            background: #1e293b;
         }
 
-        .btn-close {
-            background: linear-gradient(135deg, #ff4757, #ff6b81);
-            color: white;
-            border: none;
-            padding: 5px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 12px;
+        .profile-info {
+            font-size: 13px;
+            line-height: 1.6;
         }
 
+        .relation-link {
+            color: #00ffff;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        /* Lightbox */
         #image-lightbox {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            z-index: 4000;
+            inset: 0;
+            z-index: 6000;
+            background: rgba(0,0,0,0.9);
             justify-content: center;
             align-items: center;
-            backdrop-filter: blur(8px);
         }
 
         #image-lightbox img {
-            max-width: 85%;
-            max-height: 85%;
-            border-radius: 12px;
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 8px;
             border: 2px solid #00ffff;
-        }
-
-        @media (max-width: 600px) {
-            .nav-btn { padding: 6px 12px; font-size: 12px; }
-            .nav-logo { font-size: 15px; }
-            .top-navbar { padding: 10px 12px; }
-            .controls-hint { display: none; }
         }
     </style>
 
-    <!-- Three.js & OrbitControls via CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
 </head>
 <body>
 
-    <div id="app-loading" aria-live="polite">
+    <div id="app-loading">
         <div class="spinner"></div>
-        <div>৩ডি মডেল তৈরি হচ্ছে...</div>
+        <div>৩ডি জিনোগ্রাম প্রস্তুত হচ্ছে...</div>
     </div>
 
-    <!-- TOP NAVBAR -->
-    <header class="top-navbar">
-        <a href="home.html" class="nav-logo">🌐 ৩ডি জিনোগ্রাম</a>
-        <nav>
-            <a href="home.html" class="nav-btn">🏠 হোমপেজে ফিরে যান</a>
-        </nav>
-    </header>
+    <nav class="top-navbar">
+        <a href="#" class="nav-logo">
+            <span>🌳</span> পারিবারিক ৩ডি জিনোগ্রাম
+        </a>
+        <div class="nav-menu">
+            <a href="#" class="nav-link active" onclick="resetView()">Home</a>
+            <a href="#" class="nav-link" onclick="focusBloodline()">Bloodline</a>
+            <a href="#" class="nav-link" onclick="showAboutInfo()">About</a>
+        </div>
+    </nav>
 
-    <!-- 3D CANVAS CONTAINER -->
-    <div id="canvas-container"></div>
-
-    <!-- CONTROLS INSTRUCTIONS -->
-    <div class="controls-hint">
-        💡 <span>মাউস ড্র্যাগ:</span> ঘোরান | <span>স্ক্রোল:</span> জুম করুন | <span>ক্লিক:</span> তথ্য দেখুন
-    </div>
-
-    <!-- PROFILE POPUP MODAL -->
     <div id="popup-modal">
-        <div class="popup-header-container">
-            <div>
-                <h2 id="m-bname">প্রোফাইল বিবরণ</h2>
-                <div class="uid-gen-wrapper">
-                    <span class="uid-badge">UID: <span id="m-uid"></span></span>
-                    <span class="gen-badge" id="m-gen"></span>
-                </div>
-            </div>
-            <img id="m-photo" class="profile-img-thumb" src="" alt="Profile Photo">
+        <div class="popup-header">
+            <h3 class="popup-title" id="m-name">সদস্যের নাম</h3>
+            <button class="close-btn" id="close-popup-btn">&times;</button>
         </div>
-
-        <div class="profile-details-list">
-            <div class="profile-field">
-                <span class="field-label">ইংরেজি নাম:</span>
-                <span class="field-value" id="m-ename"></span>
-            </div>
-            <div class="profile-field">
-                <span class="field-label">লিঙ্গ:</span>
-                <span class="field-value" id="m-gender"></span>
-            </div>
-            <div class="profile-field">
-                <span class="field-label">দ্বৈত জেনারেশন ইনডেক্স:</span>
-                <span class="field-value" id="m-dual-gen" style="color: #00ffff; font-weight: bold;"></span>
-            </div>
-            <div class="profile-field">
-                <span class="field-label">দাম্পত্য সঙ্গী:</span>
-                <span class="field-value" id="m-spouse"></span>
-            </div>
-            <div class="profile-field">
-                <span class="field-label">পিতার নাম:</span>
-                <span class="field-value" id="m-father"></span>
-            </div>
-            <div class="profile-field">
-                <span class="field-label">মাতার নাম:</span>
-                <span class="field-value" id="m-mother"></span>
-            </div>
-            <div class="profile-field block-field">
-                <span class="field-label">সন্তানগণ:</span>
-                <span class="field-value" id="m-children"></span>
-            </div>
-            <div class="profile-field block-field" id="desc-container">
-                <span class="field-label">বিবরণ:</span>
-                <span class="field-value" id="m-desc" style="color: #ffda79;"></span>
-            </div>
+        <img id="m-photo" class="profile-photo" src="" alt="Profile Photo">
+        <div class="profile-info">
+            <p><strong>ইউআইডি (UID):</strong> <span id="m-uid"></span></p>
+            <p><strong>লিঙ্গ:</strong> <span id="m-gender"></span></p>
+            <p><strong>পিতা:</strong> <span id="m-father"></span></p>
+            <p><strong>মাতা:</strong> <span id="m-mother"></span></p>
+            <p><strong>জীবনসঙ্গী:</strong> <span id="m-spouse"></span></p>
         </div>
-
-        <button id="close-popup-btn" class="btn-close" style="margin-top:16px; width:100%; padding:9px;">বন্ধ করুন</button>
     </div>
 
-    <!-- LIGHTBOX MODAL -->
     <div id="image-lightbox">
-        <img id="lightbox-img" src="" alt="Full View">
+        <img id="lightbox-img" src="" alt="Enlarged View">
     </div>
 
-    <!-- MAIN 3D LOGIC & JS MODULE -->
     <script type="module">
-        import { membersData } from './js/membersData.js';
+        import { rawMembersData } from './membersData.js';
 
-        const DEFAULT_NO_IMAGE = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 24 24' fill='none' stroke='%2000ffff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='3' width='18' height='18' rx='2' ry='2'/><circle cx='8.5' cy='8.5' r='1.5'/><polyline points='21 15 16 10 5 21'/><line x1='3' y1='3' x2='21' y2='21'/></svg>";
-
-        function loadProfilePhoto(imgEl, uid) {
-            const candidates = [
-                `images/${uid}.jpg`,
-                `images/${uid}.jpeg`,
-                `images/${uid}.png`,
-                `images/${uid} 01.jpg`
-            ];
-            let i = 0;
-            function tryNext() {
-                if (i >= candidates.length) {
-                    imgEl.onerror = null;
-                    imgEl.src = DEFAULT_NO_IMAGE;
-                    return;
-                }
-                imgEl.src = candidates[i++];
-            }
-            imgEl.onerror = tryNext;
-            tryNext();
-        }
-
-        function openLightbox(src) {
-            if (!src || src.includes("data:image/svg+xml")) return;
-            document.getElementById('lightbox-img').src = src;
-            document.getElementById('image-lightbox').style.display = 'flex';
-        }
-
-        function closeLightbox() {
-            document.getElementById('image-lightbox').style.display = 'none';
-        }
-
-        // --- Three.js 3D Setup ---
         let scene, camera, renderer, controls;
-        const nodeMeshMap = new Map();
-        const interactiveMeshes = [];
-        const raycaster = new THREE.Raycaster();
-        const mouse = new THREE.Vector2();
+        let marbles = [], marbleMap = new Map();
+        let raycaster, mouse;
+        const photoCache = new Map();
 
+        // 1. Create Canvas Texture for Marbles (from test.html logic)
+        function createMarbleTexture(member) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 256;
+            canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+
+            const hexColor = '#' + (member.color || 0x0055ff).toString(16).padStart(6, '0');
+
+            // Background Gradient
+            const grad = ctx.createRadialGradient(128, 128, 10, 128, 128, 120);
+            grad.addColorStop(0, '#ffffff');
+            grad.addColorStop(0.2, hexColor);
+            grad.addColorStop(0.8, '#050b14');
+            grad.addColorStop(1, '#000000');
+
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 256, 256);
+
+            // Ring Outer Border
+            ctx.strokeStyle = hexColor;
+            ctx.lineWidth = 6;
+            ctx.beginPath();
+            ctx.arc(128, 128, 118, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Text (Nickname / Name)
+            const textToShow = member.nick || member.bnName.split(' ')[0] || member.uid;
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 36px "Segoe UI", Arial, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.shadowColor = hexColor;
+            ctx.shadowBlur = 12;
+            ctx.fillText(textToShow, 128, 128);
+
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        // 2. Init Three.js World
         function init3D() {
-            const container = document.getElementById('canvas-container');
-
-            // Scene
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x0b0b0b);
-            scene.fog = new THREE.FogExp2(0x0b0b0b, 0.005);
+            scene.fog = new THREE.FogExp2(0x0b0b0b, 0.008);
 
-            // Camera
             camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(0, 20, 90);
+            camera.position.set(0, 20, 80);
 
-            // Renderer
-            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            container.appendChild(renderer.domElement);
+            document.body.appendChild(renderer.domElement);
 
-            // Controls
             controls = new THREE.OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.dampingFactor = 0.05;
-            controls.maxDistance = 250;
-            controls.minDistance = 10;
 
             // Lights
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
             scene.add(ambientLight);
 
-            const dirLight = new THREE.DirectionalLight(0x00ffff, 0.8);
-            dirLight.position.set(20, 40, 20);
-            scene.add(dirLight);
-
-            const pointLight = new THREE.PointLight(0xff1493, 0.5, 100);
-            pointLight.position.set(-20, -20, -20);
+            const pointLight = new THREE.PointLight(0x00ffff, 1.5, 200);
+            pointLight.position.set(20, 50, 50);
             scene.add(pointLight);
 
-            // Grid Helper
-            const gridHelper = new THREE.GridHelper(200, 40, 0x00ffff, 0x222222);
-            gridHelper.position.y = -30;
-            scene.add(gridHelper);
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            dirLight.position.set(-30, 40, -20);
+            scene.add(dirLight);
 
-            // Build Tree Model Nodes
-            buildGenogramNodes();
+            raycaster = new THREE.Raycaster();
+            mouse = new THREE.Vector2();
 
-            // Window Resize Listener
+            buildGenogramTree(rawMembersData);
+
             window.addEventListener('resize', onWindowResize);
+            window.addEventListener('click', onPointerClick);
 
-            // Click Interaction Listener
-            renderer.domElement.addEventListener('click', onDocumentClick);
-
-            // Animation Loop
             animate();
         }
 
-        // Build 3D Nodes and Lines based on Generation
-        function buildGenogramNodes() {
-            // Group members by patrilineal generation
+        // 3. Process Member Data & Position 3D Marbles
+        function buildGenogramTree(data) {
+            const memberDict = {};
+            data.forEach(m => { memberDict[m.uid] = m; });
+
+            // Calculate Generation depth
+            function getGenLevel(uid, visited = new Set()) {
+                if (visited.has(uid)) return 1;
+                visited.add(uid);
+                const m = memberDict[uid];
+                if (!m) return 1;
+                if (m.father && memberDict[m.father]) return getGenLevel(m.father, visited) + 1;
+                return 1;
+            }
+
+            // Grouping members by generation level
             const genGroups = {};
-            membersData.forEach(m => {
-                const g = m.patrilinealGen || 1;
-                if (!genGroups[g]) genGroups[g] = [];
-                genGroups[g].push(m);
+            data.forEach(m => {
+                const gen = getGenLevel(m.uid);
+                if (!genGroups[gen]) genGroups[gen] = [];
+                genGroups[gen].push(m);
             });
 
-            const genKeys = Object.keys(genGroups).sort((a, b) => a - b);
-            const Y_SPACING = 14;
-            const X_SPACING = 12;
+            const sphereGeo = new THREE.SphereGeometry(3.2, 32, 32);
 
-            genKeys.forEach((gKey) => {
-                const members = genGroups[gKey];
-                const gNum = parseInt(gKey);
-                const yPos = (4 - gNum) * Y_SPACING;
-                const totalWidth = (members.length - 1) * X_SPACING;
-                const startX = -totalWidth / 2;
+            Object.keys(genGroups).forEach(genStr => {
+                const gen = parseInt(genStr);
+                const members = genGroups[gen];
+                const yPos = (gen - 1) * -18 + 20; // Y spacing between generations
+                const total = members.length;
 
                 members.forEach((m, idx) => {
-                    const xPos = startX + idx * X_SPACING;
-                    const zPos = (Math.random() - 0.5) * 8; // Small Z depth variation
+                    const xPos = (idx - (total - 1) / 2) * 12; // X spacing
+                    const zPos = (Math.random() - 0.5) * 6;     // Slight Z depth offset
 
-                    // Node Geometry & Material
-                    const isMale = m.gender.includes('Male') || m.gender.includes('পুরুষ') || m.gender === 'M';
-                    const geometry = isMale 
-                        ? new THREE.BoxGeometry(2.2, 2.2, 2.2) 
-                        : new THREE.SphereGeometry(1.4, 24, 24);
-
-                    const materialColor = m.color || (isMale ? 0x0055ff : 0xff1493);
-                    const material = new THREE.MeshPhongMaterial({
-                        color: materialColor,
-                        emissive: materialColor,
-                        emissiveIntensity: 0.2,
-                        shininess: 80
+                    const texture = createMarbleTexture(m);
+                    const mat = new THREE.MeshPhongMaterial({
+                        map: texture,
+                        shininess: 90,
+                        reflectivity: 0.9,
+                        transparent: true,
+                        opacity: 0.95
                     });
 
-                    const mesh = new THREE.Mesh(geometry, material);
-                    mesh.position.set(xPos, yPos, zPos);
-                    mesh.userData = { uid: m.uid };
+                    const marbleMesh = new THREE.Mesh(sphereGeo, mat);
+                    marbleMesh.position.set(xPos, yPos, zPos);
+                    marbleMesh.userData = m;
 
-                    scene.add(mesh);
-                    interactiveMeshes.push(mesh);
-                    nodeMeshMap.set(m.uid, mesh);
+                    scene.add(marbleMesh);
+                    marbles.push(marbleMesh);
+                    marbleMap.set(m.uid, marbleMesh);
                 });
             });
 
-            // Create Parent-Child & Spouse Connection Lines
-            const lineMaterial = new THREE.LineBasicMaterial({
-                color: 0x00ffff,
-                transparent: true,
-                opacity: 0.4
-            });
-
-            membersData.forEach(m => {
-                const currentMesh = nodeMeshMap.get(m.uid);
+            // Draw Connection Lines between parents and children
+            const lineMat = new THREE.LineBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 0.4 });
+            data.forEach(m => {
+                const currentMesh = marbleMap.get(m.uid);
                 if (!currentMesh) return;
 
-                // Father line
-                if (m.father && nodeMeshMap.has(m.father)) {
-                    const parentMesh = nodeMeshMap.get(m.father);
-                    const points = [currentMesh.position, parentMesh.position];
-                    const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
-                    const line = new THREE.Line(lineGeo, lineMaterial);
-                    scene.add(line);
-                }
-
-                // Mother line (if father not linked)
-                if (!m.father && m.mother && nodeMeshMap.has(m.mother)) {
-                    const parentMesh = nodeMeshMap.get(m.mother);
-                    const points = [currentMesh.position, parentMesh.position];
-                    const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
-                    const line = new THREE.Line(lineGeo, lineMaterial);
+                if (m.father && marbleMap.has(m.father)) {
+                    const fatherMesh = marbleMap.get(m.father);
+                    const geo = new THREE.BufferGeometry().setFromPoints([
+                        fatherMesh.position,
+                        currentMesh.position
+                    ]);
+                    const line = new THREE.Line(geo, lineMat);
                     scene.add(line);
                 }
             });
+        }
+
+        // 4. Interaction Events
+        function onPointerClick(e) {
+            // Ignore click on Navbar or Modals
+            if (e.target.closest('.top-navbar') || e.target.closest('#popup-modal')) return;
+
+            mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(marbles);
+
+            if (intersects.length > 0) {
+                const selectedMember = intersects[0].object.userData;
+                showProfileModal(selectedMember);
+                
+                // Tween camera focus to selected marble
+                new TWEEN.Tween(controls.target)
+                    .to(intersects[0].object.position, 800)
+                    .easing(TWEEN.Easing.Cubic.Out)
+                    .start();
+            }
+        }
+
+        function showProfileModal(data) {
+            document.getElementById('m-name').innerText = data.bnName || data.enName;
+            document.getElementById('m-uid').innerText = data.uid;
+            document.getElementById('m-gender').innerText = data.gender === 'Male' ? 'পুরুষ' : 'নারী';
+            document.getElementById('m-father').innerText = data.father || 'N/A';
+            document.getElementById('m-mother').innerText = data.mother || 'N/A';
+            document.getElementById('m-spouse').innerText = Array.isArray(data.spouse) ? data.spouse.join(', ') : (data.spouse || 'N/A');
+
+            // Set placeholder photo
+            document.getElementById('m-photo').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(data.enName || data.uid)}&background=0D8ABC&color=fff`;
+
+            document.getElementById('popup-modal').style.display = 'block';
+        }
+
+        function animate(time) {
+            requestAnimationFrame(animate);
+            TWEEN.update();
+            controls.update();
+
+            // Gentle rotation for marbles
+            marbles.forEach(m => {
+                m.rotation.y += 0.005;
+            });
+
+            renderer.render(scene, camera);
         }
 
         function onWindowResize() {
@@ -545,109 +442,41 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
-        function onDocumentClick(event) {
-            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        // Global Nav Actions
+        window.resetView = function() {
+            new TWEEN.Tween(camera.position).to({ x: 0, y: 20, z: 80 }, 1000).easing(TWEEN.Easing.Cubic.Out).start();
+            new TWEEN.Tween(controls.target).to({ x: 0, y: 0, z: 0 }, 1000).easing(TWEEN.Easing.Cubic.Out).start();
+        };
 
-            raycaster.setFromCamera(mouse, camera);
-            const intersects = raycaster.intersectObjects(interactiveMeshes);
-
-            if (intersects.length > 0) {
-                const clickedMesh = intersects[0].object;
-                const uid = clickedMesh.userData.uid;
-                if (uid) {
-                    showProfileByUid(uid);
-                }
+        window.focusBloodline = function() {
+            alert('Bloodline view: ৩ডি স্পেসে প্রধান ধারার সদস্যদের ফোকাস করা হচ্ছে।');
+            if (marbles.length > 0) {
+                new TWEEN.Tween(controls.target).to(marbles[0].position, 1000).start();
             }
-        }
+        };
 
-        function animate() {
-            requestAnimationFrame(animate);
-            controls.update();
+        window.showAboutInfo = function() {
+            alert('পারিবারিক ৩ডি জিনোগ্রাম প্রজেক্ট\nডেভেলপড বাই: বাঁধন চন্দ্র রায়');
+        };
 
-            // Subtle floating rotation effect for nodes
-            interactiveMeshes.forEach(mesh => {
-                mesh.rotation.y += 0.005;
-            });
-
-            renderer.render(scene, camera);
-        }
-
-        // --- Profile Popup UI Functions ---
-        function renderRelationLink(uid) {
-            if (!uid) return "N/A";
-            const uids = Array.isArray(uid) ? uid : [uid];
-            const links = uids.map(u => {
-                const data = membersData.find(x => x.uid === u);
-                if (!data) return "N/A";
-                return `<span class="relation-link" data-uid="${data.uid}" style="color:#38bdf8; cursor:pointer;">${data.bnName}</span>`;
-            });
-            return links.join(', ');
-        }
-
-        function showProfileByUid(uid) {
-            const data = membersData.find(m => m.uid === uid);
-            if (!data) return;
-
-            document.getElementById('m-uid').innerText = data.uid;
-            document.getElementById('m-bname').innerText = data.bnName;
-            document.getElementById('m-ename').innerText = data.enName;
-            document.getElementById('m-gender').innerText = data.gender;
-            document.getElementById('m-gen').innerText = "পিতৃকুল Gen " + data.patrilinealGen;
-            document.getElementById('m-dual-gen').innerText = `পিতৃকুল: Gen ${data.patrilinealGen} | মাতৃকুল: Gen ${data.matrilinealGen}`;
-            
-            document.getElementById('m-spouse').innerHTML = renderRelationLink(data.spouse);
-            document.getElementById('m-father').innerHTML = renderRelationLink(data.father);
-            document.getElementById('m-mother').innerHTML = renderRelationLink(data.mother);
-
-            if (data.children && data.children.length > 0) {
-                const childLinks = data.children.map(childUid => renderRelationLink(childUid));
-                document.getElementById('m-children').innerHTML = childLinks.join(', ');
-            } else {
-                document.getElementById('m-children').innerText = "N/A";
-            }
-
-            const descContainer = document.getElementById('desc-container');
-            if (data.description && data.description.trim() !== "") {
-                document.getElementById('m-desc').innerText = data.description;
-                descContainer.style.display = 'flex';
-            } else {
-                descContainer.style.display = 'none';
-            }
-
-            loadProfilePhoto(document.getElementById('m-photo'), data.uid);
-
-            // Add Click Events to Links in Popup
-            document.querySelectorAll('#popup-modal .relation-link').forEach(link => {
-                link.onclick = (e) => {
-                    const targetUid = e.target.getAttribute('data-uid');
-                    showProfileByUid(targetUid);
-                };
-            });
-
-            document.getElementById('popup-modal').style.display = 'block';
-        }
-
-        function closePopup() {
-            document.getElementById('popup-modal').style.display = 'none';
-        }
-
-        // DOM Setup
+        // DOM Ready Initializer
         document.addEventListener('DOMContentLoaded', () => {
             init3D();
 
-            document.getElementById('close-popup-btn').onclick = closePopup;
-            document.getElementById('image-lightbox').onclick = closeLightbox;
-            document.getElementById('m-photo').onclick = function() { openLightbox(this.src); };
+            document.getElementById('close-popup-btn').onclick = () => {
+                document.getElementById('popup-modal').style.display = 'none';
+            };
 
-            window.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') {
-                    closeLightbox();
-                    closePopup();
-                }
-            });
+            document.getElementById('m-photo').onclick = function() {
+                document.getElementById('lightbox-img').src = this.src;
+                document.getElementById('image-lightbox').style.display = 'flex';
+            };
 
-            // Remove Loading Overlay
+            document.getElementById('image-lightbox').onclick = function() {
+                this.style.display = 'none';
+            };
+
+            // Remove loading screen
             const loadingEl = document.getElementById('app-loading');
             if (loadingEl) {
                 loadingEl.style.opacity = '0';
