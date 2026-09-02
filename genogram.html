@@ -3,14 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
-    <meta name="description" content="ইন্টারেক্টিভ ৩ডি ও ২ডি পারিবারিক বংশবৃক্ষ — ফটো গ্যালারি, কুইজ, সম্পর্ক নির্ণয় ও ২ডি ট্রি।">
-    <title>পারিবারিক বংশবৃক্ষ — 3D Marbles & Bloodline Tree</title>
+    <meta name="description" content="ইন্টারেক্টিভ ৩ডি ও ২ডি পারিবারিক বংশবৃক্ষ — ফটো গ্যালারি, সম্পর্ক নির্ণয় ও ২ডি জেনোগ্রাম।">
+    <title>পারিবারিক বংশবৃক্ষ — জেনোগ্রাম (Genogram)</title>
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             margin: 0;
             overflow: hidden;
             background-color: #0b0b0b;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #e2e8f0;
         }
 
         body > canvas {
@@ -25,10 +32,6 @@
 
         #tree-viewport {
             touch-action: auto;
-        }
-
-        .drawer-body, #search-results-list, #list-modal-body, .profile-details-list, .gallery-grid, .quiz-card {
-            -webkit-overflow-scrolling: touch;
         }
 
         #app-loading {
@@ -60,474 +63,127 @@
             to { transform: rotate(360deg); }
         }
 
-        #menu-toggle-btn {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            z-index: 100;
-            background: rgba(12, 18, 28, 0.75);
-            color: #00ffff;
-            border: 1px solid rgba(0, 255, 255, 0.4);
-            padding: 12px 22px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-weight: 600;
-            backdrop-filter: blur(12px);
-            font-size: 14px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 255, 255, 0.2);
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        #menu-toggle-btn:hover {
-            background: rgba(0, 255, 255, 0.2);
-            border-color: #00ffff;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0, 255, 255, 0.3);
-        }
-
-        #restore-btn {
-            display: none;
-            position: fixed;
-            bottom: 25px;
-            left: 25px;
-            z-index: 1001;
-            background: rgba(12, 25, 40, 0.85);
-            color: #00ffff;
-            border: 1px solid rgba(0, 255, 255, 0.5);
-            padding: 12px 24px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
-            backdrop-filter: blur(12px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 255, 255, 0.25);
-            transition: all 0.3s ease;
-        }
-
-        #restore-btn:hover {
-            background: rgba(0, 255, 255, 0.25);
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 12px 35px rgba(0, 255, 255, 0.4);
-        }
-
-        #nav-drawer {
+        /* ===== TOP NAVBAR (HOME STYLE) ===== */
+        .top-navbar {
             position: fixed;
             top: 0;
-            left: -380px;
-            width: 360px;
-            height: 100%;
-            background: rgba(10, 15, 25, 0.95);
-            border-right: 1px solid rgba(0, 255, 255, 0.25);
-            z-index: 1000;
-            transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 10px 0 35px rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(16px);
-            display: flex;
-            flex-direction: column;
-        }
-
-        #nav-drawer.open {
-            left: 0;
-        }
-
-        .drawer-header {
-            padding: 16px 20px;
-            background: rgba(0, 255, 255, 0.05);
-            border-bottom: 1px solid rgba(0, 255, 255, 0.15);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .drawer-header h2 {
-            margin: 0;
-            color: #00ffff;
-            font-size: 17px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .btn-min {
-            background: rgba(0, 255, 255, 0.15);
-            color: #00ffff;
-            border: 1px solid rgba(0, 255, 255, 0.4);
-            padding: 3px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 16px;
-            transition: 0.2s ease;
-        }
-
-        .btn-min:hover {
-            background: rgba(0, 255, 255, 0.35);
-        }
-
-        .drawer-body {
-            padding: 18px;
-            overflow-y: auto;
-            flex-grow: 1;
-        }
-
-        .tab-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px;
-            margin-bottom: 18px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding-bottom: 10px;
-        }
-
-        .tab-btn {
-            flex: 1 1 30%;
-            background: rgba(255,255,255,0.03);
-            color: #94a3b8;
-            border: 1px solid rgba(255,255,255,0.08);
-            padding: 8px 2px;
-            border-radius: 8px;
-            font-size: 10.5px;
-            cursor: pointer;
-            text-align: center;
-            font-weight: 600;
-            transition: 0.2s ease;
-        }
-
-        .tab-btn.active {
-            background: rgba(0, 255, 255, 0.2);
-            color: #00ffff;
-            border-color: #00ffff;
-            box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        #search-input {
-            width: 100%;
-            padding: 11px;
-            border-radius: 8px;
-            border: 1px solid rgba(0, 255, 255, 0.4);
-            background: rgba(0, 0, 0, 0.6);
-            color: #fff;
-            font-size: 13px;
-            box-sizing: border-box;
-            outline: none;
-            margin-bottom: 12px;
-        }
-
-        #search-results-list {
-            max-height: 320px;
-            overflow-y: auto;
-            border-radius: 6px;
-        }
-
-        .search-item {
-            padding: 8px 10px;
-            color: #fff;
-            cursor: pointer;
-            font-size: 13px;
-            background: rgba(255,255,255,0.03);
-            margin-bottom: 6px;
-            border-radius: 6px;
-            border: 1px solid rgba(255,255,255,0.05);
-            transition: 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .search-item:hover {
-            background: rgba(0, 255, 255, 0.2);
-            color: #00ffff;
-        }
-
-        .avatar-thumb {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 1.5px solid #00ffff;
-            background: #1e293b;
-            flex-shrink: 0;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .stat-box {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 14px 10px;
-            border-radius: 10px;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .stat-box:hover {
-            background: rgba(0, 255, 255, 0.15);
-            transform: translateY(-2px);
-            border-color: #00ffff;
-        }
-
-        .stat-number {
-            font-size: 22px;
-            font-weight: bold;
-            color: #00ffff;
-            margin-bottom: 2px;
-        }
-
-        .stat-label {
-            font-size: 11px;
-            color: #94a3b8;
-        }
-
-        .gen-item {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(0, 255, 255, 0.15);
-            border-radius: 8px;
-            padding: 11px 14px;
-            margin-top: 8px;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: 0.2s;
-        }
-
-        .gen-item:hover {
-            background: rgba(0, 255, 255, 0.18);
-            border-color: #00ffff;
-        }
-
-        .gen-title {
-            font-size: 13px;
-            font-weight: 600;
-            color: #fff;
-        }
-
-        .gen-count {
-            font-size: 11px;
-            background: rgba(0, 255, 255, 0.15);
-            color: #00ffff;
-            padding: 3px 10px;
-            border-radius: 12px;
-            border: 1px solid rgba(0, 255, 255, 0.4);
-        }
-
-        .select-group {
-            margin-bottom: 14px;
-            position: relative;
-        }
-
-        .select-group label {
-            display: block;
-            font-size: 12px;
-            color: #94a3b8;
-            margin-bottom: 6px;
-        }
-
-        .autocomplete-input {
-            width: 100%;
-            padding: 10px;
-            border-radius: 8px;
-            background: #0f172a;
-            color: #fff;
-            border: 1px solid rgba(0, 255, 255, 0.4);
-            outline: none;
-            font-size: 13px;
-            box-sizing: border-box;
-        }
-
-        .autocomplete-dropdown {
-            position: absolute;
-            top: 100%;
             left: 0;
             right: 0;
-            background: #0f172a;
-            border: 1px solid #00ffff;
-            border-radius: 8px;
-            max-height: 180px;
-            overflow-y: auto;
-            z-index: 100;
-            display: none;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.8);
+            z-index: 1000;
+            padding: 10px 18px;
+            background: rgba(6, 10, 18, 0.82);
+            border-bottom: 1px solid rgba(0, 255, 255, 0.14);
+            backdrop-filter: blur(20px) saturate(140%);
+            -webkit-backdrop-filter: blur(20px) saturate(140%);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.28);
         }
 
-        .autocomplete-item {
-            padding: 8px 12px;
-            font-size: 12px;
-            color: #fff;
-            cursor: pointer;
+        .nav-inner {
+            width: min(1180px, 100%);
+            min-height: 58px;
+            margin: auto;
             display: flex;
             align-items: center;
-            gap: 8px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            justify-content: space-between;
+            gap: 24px;
         }
 
-        .autocomplete-item:hover {
-            background: rgba(0, 255, 255, 0.2);
-            color: #00ffff;
-        }
-
-        #rel-result, #bloodline-result {
-            margin-top: 15px;
-            padding: 14px;
-            background: rgba(15, 23, 42, 0.9);
-            color: #e2e8f0;
-            border-radius: 10px;
-            border: 1px solid rgba(0, 255, 255, 0.4);
-            border-left: 4px solid #00ffff;
-            font-size: 13px;
-            line-height: 1.6;
-        }
-
-        /* Relationship Visual Flow */
-        .rel-flow-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .rel-flow-card {
+        .brand {
             display: flex;
             align-items: center;
-            gap: 10px;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 8px 12px;
-            border-radius: 8px;
-            border: 1px solid rgba(0, 255, 255, 0.3);
-            width: 90%;
+            gap: 12px;
+            min-width: max-content;
+            color: inherit;
+            text-decoration: none;
         }
 
-        .rel-flow-arrow {
-            color: #00ffff;
-            font-size: 12px;
-            text-align: center;
-            font-style: italic;
-        }
-
-        /* Gallery Tab Styling */
-        .gallery-filter {
-            width: 100%;
-            padding: 8px;
-            border-radius: 6px;
-            background: #0f172a;
-            color: #fff;
-            border: 1px solid rgba(0, 255, 255, 0.3);
-            margin-bottom: 12px;
-            font-size: 12px;
-        }
-
-        .gallery-grid {
+        .brand-mark {
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            max-height: 380px;
-            overflow-y: auto;
+            place-items: center;
+            font-size: 22px;
+            background: linear-gradient(145deg, rgba(0, 204, 255, 0.18), rgba(57, 217, 138, 0.12));
+            border: 1px solid rgba(0, 204, 255, 0.25);
         }
 
-        .gallery-card {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(0, 255, 255, 0.2);
-            border-radius: 8px;
-            padding: 8px;
-            text-align: center;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .gallery-card:hover {
-            border-color: #00ffff;
-            transform: translateY(-2px);
-            background: rgba(0, 255, 255, 0.1);
-        }
-
-        .gallery-img {
-            width: 100%;
-            height: 90px;
-            object-fit: cover;
-            border-radius: 6px;
-            background: #1a2230;
-        }
-
-        .gallery-name {
-            font-size: 11px;
-            font-weight: 600;
+        .brand-title {
+            font-weight: 800;
+            line-height: 1.05;
+            font-size: 15px;
             color: #fff;
+        }
+
+        .brand-sub {
+            font: 500 10px Inter, sans-serif;
+            letter-spacing: .14em;
+            color: #91a9b8;
+            text-transform: uppercase;
             margin-top: 4px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
 
-        /* Quiz Tab Styling */
-        .quiz-card {
-            background: rgba(15, 23, 42, 0.9);
-            border: 1px solid rgba(0, 255, 255, 0.4);
-            border-radius: 10px;
-            padding: 14px;
-            text-align: center;
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
-        .quiz-img {
-            width: 110px;
-            height: 110px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid #00ffff;
-            margin: 0 auto 12px auto;
-            display: block;
-            background: #1e293b;
+        .nav-links a {
+            padding: 10px 16px;
+            border-radius: 12px;
+            color: #a9bfcb;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: .2s ease;
         }
 
-        .quiz-options {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-top: 10px;
+        .nav-links a:hover {
+            background: rgba(0, 204, 255, 0.09);
+            color: #e9fbff;
         }
 
-        .quiz-btn {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(0,255,255,0.3);
+        .nav-links a.active {
+            background: linear-gradient(135deg, rgba(0, 180, 219, 0.92), rgba(0, 131, 176, 0.92));
             color: #fff;
-            padding: 8px 4px;
-            border-radius: 6px;
-            font-size: 11px;
+            box-shadow: 0 5px 18px rgba(0, 200, 255, 0.18);
+        }
+
+        .menu-toggle {
+            display: none;
+            width: 42px;
+            height: 42px;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 12px;
+            background: rgba(0, 255, 255, 0.06);
+            color: #00ffff;
+            font-size: 20px;
             cursor: pointer;
-            transition: 0.2s;
         }
 
-        .quiz-btn:hover {
-            background: rgba(0, 255, 255, 0.2);
+        @media (max-width: 820px) {
+            .nav-inner { min-height: 52px; }
+            .menu-toggle { display: block; }
+            .nav-links {
+                display: none;
+                position: absolute;
+                left: 14px;
+                right: 14px;
+                top: 68px;
+                padding: 10px;
+                flex-direction: column;
+                align-items: stretch;
+                background: rgba(7, 20, 31, 0.97);
+                border: 1px solid rgba(0, 255, 255, 0.18);
+                border-radius: 18px;
+                box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+            }
+            .nav-links.open { display: flex; }
+            .nav-links a { padding: 12px 14px; }
         }
 
-        .quiz-feedback {
-            margin-top: 10px;
-            font-weight: bold;
-            font-size: 12px;
-        }
-
+        /* 2D BLOODLINE / GENOGRAM OVERLAY */
         #tree-2d-overlay {
             display: block;
             position: fixed;
@@ -553,9 +209,8 @@
 
         .zoom-controls {
             position: absolute;
-            top: 20px;
+            top: 85px;
             right: 20px;
-            left: 20px;
             z-index: 600;
             display: flex;
             gap: 8px;
@@ -624,7 +279,7 @@
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            padding: 60px 40px;
+            padding: 100px 40px 60px 40px;
             box-sizing: border-box;
         }
 
@@ -737,52 +392,11 @@
             z-index: 1;
         }
 
-        #list-modal {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(15, 23, 42, 0.98);
-            color: #fff;
-            padding: 22px;
-            border-radius: 14px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.9);
-            z-index: 2000;
-            width: 350px;
-            max-height: 75vh;
-            overflow-y: auto;
-            border: 1px solid rgba(0, 255, 255, 0.4);
-            backdrop-filter: blur(14px);
-        }
-
-        #list-modal h3 {
-            margin-top: 0;
-            color: #00ffff;
-            font-size: 16px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 10px;
-        }
-
-        .modal-member-card {
-            padding: 10px 12px;
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 8px;
-            margin-bottom: 8px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .modal-member-card:hover {
-            background: rgba(0, 255, 255, 0.18);
-            border-color: #00ffff;
-        }
-
+        /* POPUP MODAL */
         #popup-modal {
             display: none;
             position: fixed;
-            top: 20px;
+            top: 90px;
             right: 20px;
             background: linear-gradient(145deg, rgba(15, 23, 36, 0.96), rgba(8, 14, 24, 0.98));
             color: #e2e8f0;
@@ -791,7 +405,7 @@
             box-shadow: 0 10px 32px rgba(0, 0, 0, 0.85), 0 0 15px rgba(0, 255, 255, 0.15);
             z-index: 2500;
             width: 330px;
-            max-height: 82vh;
+            max-height: 80vh;
             overflow-y: auto;
             border: 1px solid rgba(0, 255, 255, 0.35);
             backdrop-filter: blur(16px);
@@ -935,11 +549,6 @@
             border: 2px solid #00ffff;
         }
 
-        @page {
-            size: A4 landscape;
-            margin: 0;
-        }
-
         @media print {
             body, html {
                 width: 100vw !important;
@@ -949,7 +558,7 @@
                 color: black !important;
             }
 
-            canvas, #nav-drawer, #menu-toggle-btn, #restore-btn, .zoom-controls, #popup-modal, #list-modal {
+            canvas, .top-navbar, .zoom-controls, #popup-modal {
                 display: none !important;
             }
 
@@ -978,11 +587,6 @@
                 justify-content: center !important;
             }
 
-            .tree-2d-wrapper {
-                transform-origin: center center !important;
-                gap: 50px !important;
-            }
-
             .couple-node-card {
                 border: 1.5px solid #000 !important;
                 background: #ffffff !important;
@@ -1001,21 +605,14 @@
         }
 
         @media (max-width: 600px) {
-            #nav-drawer { width: 85%; max-width: 340px; }
             #popup-modal { 
                 width: calc(100% - 32px) !important;
                 left: 16px !important; right: 16px !important;
-                top: 50% !important; transform: translateY(-50%) !important;
+                top: 80px !important;
             }
-            .zoom-controls { top: 12px; left: 12px; right: 12px; gap: 6px; }
+            .zoom-controls { top: 75px; right: 12px; gap: 6px; }
             .zoom-btn { width: 36px; height: 36px; font-size: 16px; }
             .print-btn { padding: 0 10px; height: 36px; font-size: 12px; }
-            #menu-toggle-btn { padding: 10px 16px; font-size: 13px; top: 12px; left: 12px; }
-            #list-modal { width: calc(100% - 32px) !important; left: 16px !important; right: 16px !important; transform: translateY(-50%) !important; }
-        }
-
-        @media (max-width: 420px) {
-            .print-btn span.btn-label { display: none; }
         }
     </style>
 </head>
@@ -1023,121 +620,28 @@
 
     <div id="app-loading" aria-live="polite">
         <div class="spinner"></div>
-        <div>বংশবৃক্ষ লোড হচ্ছে...</div>
+        <div>৩ডি জেনোগ্রাম মডেল লোড হচ্ছে...</div>
     </div>
 
-    <button id="menu-toggle-btn" onclick="toggleDrawer()" aria-label="মেনু খুলুন">
-        <span>☰</span> <span>মেনু অপশন</span>
-    </button>
-
-    <button id="restore-btn" onclick="toggleDrawer()" aria-label="প্যানেল খুলুন">📋 প্যানেল খুলুন</button>
-
-    <div id="nav-drawer" role="dialog" aria-label="পারিবারিক প্যানেল">
-        <div class="drawer-header">
-            <h2>পারিবারিক প্যানেল</h2>
-            <div class="header-actions">
-                <button class="btn-min" onclick="toggleDrawer()" title="মিনিমাইজ করুন" aria-label="মিনিমাইজ করুন">−</button>
-                <button class="btn-close" onclick="toggleDrawer()" aria-label="প্যানেল বন্ধ করুন">✕</button>
-            </div>
+    <!-- TOP NAVBAR -->
+    <header class="top-navbar">
+        <div class="nav-inner">
+            <a class="brand" href="home.html" aria-label="Family Archive Home">
+                <div class="brand-mark">🌳</div>
+                <div>
+                    <div class="brand-title">পারিবারিক বংশবৃক্ষ</div>
+                    <div class="brand-sub">Family Archive</div>
+                </div>
+            </a>
+            <button class="menu-toggle" id="nav-toggle" aria-label="মেনু" aria-expanded="false">☰</button>
+            <nav class="nav-links" id="nav-links" aria-label="প্রধান নেভিগেশন">
+                <a href="home.html">Home</a>
+                <a href="genogram.html" class="active">Genogram</a>
+                <a href="bloodline.html">Bloodline</a>
+                <a href="about.html">About</a>
+            </nav>
         </div>
-        
-        <div class="drawer-body">
-            <div class="tab-buttons">
-                <button class="tab-btn active" onclick="switchTab('stats-tab', this)">📊 তথ্য</button>
-                <button class="tab-btn" onclick="switchTab('search-tab', this)">🔍 সন্ধান</button>
-                <button class="tab-btn" onclick="switchTab('rel-tab', this)">🔗 সম্পর্ক</button>
-                <button class="tab-btn" onclick="switchTab('bloodline-tab', this)">🩸 ব্লাডলাইন</button>
-                <button class="tab-btn" onclick="switchTab('gallery-tab', this)">📸 অ্যালবাম</button>
-                <button class="tab-btn" onclick="switchTab('quiz-tab', this)">🎮 কুইজ</button>
-            </div>
-
-            <div id="stats-tab" class="tab-content active">
-                <p style="font-size: 11px; color: #94a3b8; margin-bottom: 12px;">
-                    💡 বিস্তারিত তালিকা দেখতে যেকোনো পরিসংখ্যানে ক্লিক করুন:
-                </p>
-
-                <div class="stats-grid">
-                    <div class="stat-box" onclick="showFilteredMemberList('all', 'সকল সদস্যের তালিকা')">
-                        <div class="stat-number" id="stat-total">0</div>
-                        <div class="stat-label">মোট সদস্য</div>
-                    </div>
-                    <div class="stat-box" onclick="showCouplesList()">
-                        <div class="stat-number" id="stat-families">0</div>
-                        <div class="stat-label">পরিবার / দম্পতি</div>
-                    </div>
-                    <div class="stat-box" onclick="showFilteredMemberList('male', 'পুরুষ সদস্যদের তালিকা')">
-                        <div class="stat-number" id="stat-male" style="color: #00ccff;">0</div>
-                        <div class="stat-label">পুরুষ সদস্য</div>
-                    </div>
-                    <div class="stat-box" onclick="showFilteredMemberList('female', 'নারী সদস্যদের তালিকা')">
-                        <div class="stat-number" id="stat-female" style="color: #ff1493;">0</div>
-                        <div class="stat-label">নারী সদস্য</div>
-                    </div>
-                </div>
-
-                <h3 style="margin-top:22px; font-size:14px; color:#00ffff;">🧬 পিতৃকুল জেনারেশন তালিকা</h3>
-                <div id="generation-container"></div>
-            </div>
-
-            <div id="search-tab" class="tab-content">
-                <input type="text" id="search-input" placeholder="🔍 UID, নাম (বাংলা/Eng)..." oninput="debouncedSearch()">
-                <div id="search-results-list"></div>
-            </div>
-
-            <!-- AUTOSEARCH RELATIVE TAB -->
-            <div id="rel-tab" class="tab-content">
-                <div class="select-group">
-                    <label>প্রথম ব্যক্তি (Person A):</label>
-                    <input type="text" id="rel-input-a" class="autocomplete-input" placeholder="টাইপ করুন..." oninput="autoSearchPerson('a')" autocomplete="off">
-                    <input type="hidden" id="rel-person-a">
-                    <div id="dropdown-a" class="autocomplete-dropdown"></div>
-                </div>
-
-                <div class="select-group">
-                    <label>দ্বিতীয় ব্যক্তি (Person B):</label>
-                    <input type="text" id="rel-input-b" class="autocomplete-input" placeholder="টাইপ করুন..." oninput="autoSearchPerson('b')" autocomplete="off">
-                    <input type="hidden" id="rel-person-b">
-                    <div id="dropdown-b" class="autocomplete-dropdown"></div>
-                </div>
-
-                <div id="rel-result">
-                    দুইজন ব্যক্তি নির্বাচন করুন সম্পর্ক জানার জন্য।
-                </div>
-            </div>
-
-            <!-- AUTOSEARCH BLOODLINE TAB -->
-            <div id="bloodline-tab" class="tab-content">
-                <div class="select-group">
-                    <label>মূল ব্যক্তি নির্বাচন করুন:</label>
-                    <input type="text" id="bloodline-input" class="autocomplete-input" placeholder="টাইপ করুন..." oninput="autoSearchPerson('blood')" autocomplete="off">
-                    <input type="hidden" id="bloodline-person">
-                    <div id="dropdown-blood" class="autocomplete-dropdown"></div>
-                </div>
-                <div id="bloodline-result">
-                    ব্যক্তি নির্বাচন করলে তার ২ডি বংশবৃক্ষ স্ক্রিনে ভেসে উঠবে।
-                </div>
-            </div>
-
-            <!-- GALLERY TAB -->
-            <div id="gallery-tab" class="tab-content">
-                <select id="gallery-gen-filter" class="gallery-filter" onchange="renderGallery()">
-                    <option value="all">সকল জেনারেশন</option>
-                </select>
-                <div id="gallery-grid" class="gallery-grid"></div>
-            </div>
-
-            <!-- QUIZ TAB -->
-            <div id="quiz-tab" class="tab-content">
-                <div class="quiz-card">
-                    <h4 style="margin:0 0 10px 0; color:#00ffff; font-size:14px;">আত্মীয়কে চিনুন!</h4>
-                    <img id="quiz-photo" class="quiz-img" src="" alt="Quiz Face">
-                    <div id="quiz-options" class="quiz-options"></div>
-                    <div id="quiz-feedback" class="quiz-feedback"></div>
-                    <button class="print-btn" onclick="startNewQuiz()" style="margin:12px auto 0 auto; height:32px; font-size:11px;">পরবর্তী ছবি ➔</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    </header>
 
     <!-- 2D BLOODLINE OVERLAY -->
     <div id="tree-2d-overlay">
@@ -1147,7 +651,7 @@
             <button class="zoom-btn" onclick="resetZoom()" title="Reset Zoom" aria-label="জুম রিসেট">↺</button>
             <button class="print-btn" id="export-png-btn" onclick="exportTreeAsPNG()" title="PNG হিসেবে ডাউনলোড করুন" aria-label="PNG এক্সপোর্ট">🖼️ <span class="btn-label">PNG</span></button>
             <button class="print-btn" id="export-svg-btn" onclick="exportTreeAsSVG()" title="SVG হিসেবে ডাউনলোড করুন" aria-label="SVG এক্সপোর্ট" style="background: linear-gradient(135deg, #7c3aed, #4c1d95);">🧬 <span class="btn-label">SVG</span></button>
-            <button class="print-btn" id="export-pdf-btn" onclick="exportTreeAsPDF()" title="PDF হিসেবে ডাউনলোড করুন (সুতা/লাইন নিখুঁত থাকবে)" aria-label="PDF এক্সপোর্ট" style="background: linear-gradient(135deg, #dc2626, #7f1d1d);">📄 <span class="btn-label">PDF</span></button>
+            <button class="print-btn" id="export-pdf-btn" onclick="exportTreeAsPDF()" title="PDF হিসেবে ডাউনলোড করুন" aria-label="PDF এক্সপোর্ট" style="background: linear-gradient(135deg, #dc2626, #7f1d1d);">📄 <span class="btn-label">PDF</span></button>
         </div>
 
         <div id="tree-viewport">
@@ -1157,12 +661,7 @@
         </div>
     </div>
 
-    <div id="list-modal">
-        <button class="btn-close" style="float:right;" onclick="closeListModal()">✕</button>
-        <h3 id="list-modal-title">সদস্য তালিকা</h3>
-        <div id="list-modal-body"></div>
-    </div>
-
+    <!-- POPUP MODAL -->
     <div id="popup-modal">
         <div class="popup-header-container">
             <div>
@@ -1217,12 +716,14 @@
         <img id="lightbox-img" src="" alt="Full View">
     </div>
 
+    <!-- EXTERNAL LIBRARIES -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
+    <!-- MAIN 3D MODEL & APP LOGIC -->
     <script type="module">
         import { membersData } from './js/membersData.js';
 
@@ -1235,11 +736,6 @@
         }
 
         const DEFAULT_NO_IMAGE = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 24 24' fill='none' stroke='%2000ffff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='3' width='18' height='18' rx='2' ry='2'/><circle cx='8.5' cy='8.5' r='1.5'/><polyline points='21 15 16 10 5 21'/><line x1='3' y1='3' x2='21' y2='21'/></svg>";
-
-        window.handleImgError = function(img) {
-            img.onerror = null;
-            img.src = DEFAULT_NO_IMAGE;
-        };
 
         window.loadProfilePhoto = function(imgEl, uid) {
             const candidates = [
@@ -1271,61 +767,15 @@
             document.getElementById('image-lightbox').style.display = 'none';
         };
 
-        let isDrawerOpen = false;
-        window.toggleDrawer = function() {
-            const drawer = document.getElementById('nav-drawer');
-            const restoreBtn = document.getElementById('restore-btn');
-            
-            drawer.classList.toggle('open');
-            isDrawerOpen = drawer.classList.contains('open');
-
-            if (isDrawerOpen) {
-                isAnimating = false;
-                restoreBtn.style.display = 'none';
-            } else {
-                restoreBtn.style.display = 'block';
-                if (!isMarbleSelected) {
-                    isAnimating = true;
-                }
-            }
-        };
-
         window.is2DViewActive = function() {
             return document.body.classList.contains('mode-2d');
         };
 
         window.setViewMode = function(mode) {
-            const hasTreeData = document.querySelectorAll('#tree-2d-view .couple-node-card').length > 0;
-
-            if (mode === '2d' && !hasTreeData) {
-                alert('প্রথমে মেনু খুলে "ব্লাডলাইন" ট্যাব থেকে একজন ব্যক্তি নির্বাচন করুন।');
-                return;
-            }
-
             document.body.classList.toggle('mode-2d', mode === '2d');
-
             if (mode === '2d') {
                 clearTimeout(window.setViewMode._lineTimer);
                 window.setViewMode._lineTimer = setTimeout(drawSvgConnections, 470);
-            }
-        };
-
-        window.switchTab = function(tabId, btn) {
-            document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(tb => tb.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            btn.classList.add('active');
-
-            if (tabId === 'gallery-tab') {
-                renderGallery();
-            } else if (tabId === 'quiz-tab') {
-                startNewQuiz();
-            }
-
-            if (tabId !== 'bloodline-tab') {
-                if (is2DViewActive()) setViewMode('3d');
-            } else {
-                calculateBloodline();
             }
         };
 
@@ -1384,231 +834,6 @@
             sprite.position.set(0, 1.4, 0);
             return sprite;
         }
-
-        function initializeStatsAndOptions() {
-            const total = membersData.length;
-            let males = 0;
-            let females = 0;
-            const marriedCouples = new Set();
-            const genCounts = {};
-
-            membersData.forEach((m) => {
-                if (m.gender.includes('Male') || m.gender.includes('পুরুষ') || m.gender === 'M') males++;
-                else if (m.gender.includes('Female') || m.gender.includes('মহিলা') || m.gender === 'F') females++;
-
-                if (m.spouse) {
-                    const spouses = Array.isArray(m.spouse) ? m.spouse : [m.spouse];
-                    spouses.forEach(sUid => {
-                        const pair = [m.uid, sUid].sort().join('-');
-                        marriedCouples.add(pair);
-                    });
-                }
-
-                let gen = m.patrilinealGen;
-                genCounts[gen] = (genCounts[gen] || 0) + 1;
-            });
-
-            document.getElementById('stat-total').innerText = total;
-            document.getElementById('stat-male').innerText = males;
-            document.getElementById('stat-female').innerText = females;
-            document.getElementById('stat-families').innerText = marriedCouples.size;
-
-            const genContainer = document.getElementById('generation-container');
-            genContainer.innerHTML = '';
-
-            const galleryFilter = document.getElementById('gallery-gen-filter');
-            galleryFilter.innerHTML = '<option value="all">সকল জেনারেশন</option>';
-            
-            const genKeys = Object.keys(genCounts).sort((a,b) => a - b);
-            genKeys.forEach(g => {
-                const div = document.createElement('div');
-                div.className = 'gen-item';
-                div.onclick = () => showFilteredMemberList('gen-' + g, `পিতৃকুল জেনারেশন ${g} এর সদস্যগণ`);
-                div.innerHTML = `
-                    <span class="gen-title">পিতৃকুল জেনারেশন ${g}</span>
-                    <span class="gen-count">${genCounts[g]} জন</span>
-                `;
-                genContainer.appendChild(div);
-
-                const opt = document.createElement('option');
-                opt.value = g;
-                opt.innerText = `জেনারেশন ${g}`;
-                galleryFilter.appendChild(opt);
-            });
-        }
-
-        window.autoSearchPerson = function(targetType) {
-            let inputId, hiddenId, dropdownId;
-            if (targetType === 'a') { inputId = 'rel-input-a'; hiddenId = 'rel-person-a'; dropdownId = 'dropdown-a'; }
-            else if (targetType === 'b') { inputId = 'rel-input-b'; hiddenId = 'rel-person-b'; dropdownId = 'dropdown-b'; }
-            else if (targetType === 'blood') { inputId = 'bloodline-input'; hiddenId = 'bloodline-person'; dropdownId = 'dropdown-blood'; }
-
-            const val = document.getElementById(inputId).value.trim().toLowerCase();
-            const dropdown = document.getElementById(dropdownId);
-
-            if (!val) {
-                dropdown.style.display = 'none';
-                document.getElementById(hiddenId).value = '';
-                return;
-            }
-
-            const matches = membersData.filter(m => 
-                m.bnName.toLowerCase().includes(val) ||
-                m.enName.toLowerCase().includes(val) ||
-                m.nick.toLowerCase().includes(val) ||
-                m.uid.toLowerCase().includes(val)
-            );
-
-            dropdown.innerHTML = '';
-            if (matches.length === 0) {
-                dropdown.style.display = 'none';
-                return;
-            }
-
-            matches.forEach(m => {
-                const div = document.createElement('div');
-                div.className = 'autocomplete-item';
-
-                const img = document.createElement('img');
-                img.className = 'avatar-thumb';
-                img.loading = 'lazy';
-                loadProfilePhoto(img, m.uid);
-
-                const span = document.createElement('span');
-                span.innerHTML = `<b>${m.bnName}</b> (${m.nick}) <small style="color:#00ffff">${m.uid}</small>`;
-
-                div.appendChild(img);
-                div.appendChild(span);
-
-                div.onclick = () => {
-                    document.getElementById(inputId).value = `${m.bnName} (${m.nick})`;
-                    document.getElementById(hiddenId).value = m.uid;
-                    dropdown.style.display = 'none';
-
-                    if (targetType === 'a' || targetType === 'b') calculateRelationship();
-                    else if (targetType === 'blood') calculateBloodline();
-                };
-                dropdown.appendChild(div);
-            });
-
-            dropdown.style.display = 'block';
-        };
-
-        window.renderGallery = function() {
-            const filterVal = document.getElementById('gallery-gen-filter').value;
-            const grid = document.getElementById('gallery-grid');
-            grid.innerHTML = '';
-
-            const list = filterVal === 'all' ? membersData : membersData.filter(m => m.patrilinealGen == filterVal);
-
-            list.forEach(m => {
-                const card = document.createElement('div');
-                card.className = 'gallery-card';
-                
-                const img = document.createElement('img');
-                img.className = 'gallery-img';
-                img.loading = 'lazy';
-                
-                let candidates = [
-                    `images/${m.uid}.jpg`,
-                    `images/${m.uid}.jpeg`,
-                    `images/${m.uid}.png`,
-                    `images/${m.uid} 01.jpg`
-                ];
-                let idx = 0;
-
-                function tryNextImage() {
-                    if (idx >= candidates.length) {
-                        card.style.display = 'none';
-                        return;
-                    }
-                    img.src = candidates[idx++];
-                }
-
-                img.onerror = tryNextImage;
-                tryNextImage();
-
-                const name = document.createElement('div');
-                name.className = 'gallery-name';
-                name.innerText = m.bnName;
-
-                card.appendChild(img);
-                card.appendChild(name);
-                card.onclick = () => { focusByUid(m.uid); };
-
-                grid.appendChild(card);
-            });
-        };
-
-        let currentQuizAnswer = null;
-        window.startNewQuiz = function() {
-            const quizImg = document.getElementById('quiz-photo');
-            const optionsDiv = document.getElementById('quiz-options');
-            const feedback = document.getElementById('quiz-feedback');
-            feedback.innerText = '';
-            optionsDiv.innerHTML = '';
-
-            let availableMembers = [...membersData].sort(() => Math.random() - 0.5);
-
-            function tryQuizWithMember(index) {
-                if (index >= availableMembers.length) {
-                    feedback.innerText = '⚠️ ছবিযুক্ত কোনো সদস্য পাওয়া যায়নি।';
-                    quizImg.style.display = 'none';
-                    return;
-                }
-
-                const target = availableMembers[index];
-                let candidates = [
-                    `images/${target.uid}.jpg`,
-                    `images/${target.uid}.jpeg`,
-                    `images/${target.uid}.png`,
-                    `images/${target.uid} 01.jpg`
-                ];
-                let imgIdx = 0;
-
-                function checkNextImage() {
-                    if (imgIdx >= candidates.length) {
-                        tryQuizWithMember(index + 1);
-                        return;
-                    }
-                    quizImg.src = candidates[imgIdx++];
-                }
-
-                quizImg.onerror = checkNextImage;
-                quizImg.onload = () => {
-                    quizImg.style.display = 'block';
-                    currentQuizAnswer = target.uid;
-
-                    const choices = [target];
-                    while (choices.length < 4 && choices.length < membersData.length) {
-                        const rand = membersData[Math.floor(Math.random() * membersData.length)];
-                        if (!choices.includes(rand)) choices.push(rand);
-                    }
-                    choices.sort(() => Math.random() - 0.5);
-
-                    optionsDiv.innerHTML = '';
-                    choices.forEach(opt => {
-                        const btn = document.createElement('button');
-                        btn.className = 'quiz-btn';
-                        btn.innerText = `${opt.bnName} (${opt.nick})`;
-                        btn.onclick = () => {
-                            if (opt.uid === currentQuizAnswer) {
-                                feedback.innerText = '✅ সঠিক উত্তর!';
-                                feedback.style.color = '#00ffcc';
-                            } else {
-                                feedback.innerText = `❌ ভুল! সঠিক: ${target.bnName}`;
-                                feedback.style.color = '#ff4757';
-                            }
-                        };
-                        optionsDiv.appendChild(btn);
-                    });
-                };
-
-                checkNextImage();
-            }
-
-            tryQuizWithMember(0);
-        };
 
         membersData.forEach(data => {
             const marble = new THREE.Mesh(geometry, createMarbleMaterial(data.color));
@@ -1700,7 +925,6 @@
         }
 
         animate();
-        initializeStatsAndOptions();
 
         const loadingEl = document.getElementById('app-loading');
         if (loadingEl) {
@@ -1721,26 +945,11 @@
             setTimeout(drawSvgConnections, 100);
         };
 
-        window.addEventListener('beforeprint', () => {
-            drawSvgConnections();
-        });
-        window.addEventListener('afterprint', () => {
-            drawSvgConnections();
-        });
-
         function setExportButtonsBusy(busy) {
             ['export-png-btn', 'export-svg-btn', 'export-pdf-btn'].forEach(id => {
                 const btn = document.getElementById(id);
                 if (btn) btn.disabled = busy;
             });
-        }
-
-        function getExportFilename(ext) {
-            const hiddenInput = document.getElementById('bloodline-person');
-            const uid = hiddenInput ? hiddenInput.value : '';
-            const m = membersData.find(x => x.uid === uid);
-            const label = m ? m.bnName.replace(/[^\w\u0980-\u09FF]+/g, '_') : 'bloodline-tree';
-            return `${label}.${ext}`;
         }
 
         async function renderTreeToCanvas() {
@@ -1776,33 +985,25 @@
         }
 
         window.exportTreeAsPNG = async function() {
-            if (!is2DViewActive()) {
-                alert('প্রথমে "ব্লাডলাইন" ট্যাব থেকে একজন ব্যক্তি নির্বাচন করুন।');
-                return;
-            }
             setExportButtonsBusy(true);
             try {
                 const canvas = await renderTreeToCanvas();
                 if (!canvas) return;
                 const link = document.createElement('a');
-                link.download = getExportFilename('png');
+                link.download = 'genogram-tree.png';
                 link.href = canvas.toDataURL('image/png');
                 link.click();
             } catch (err) {
                 console.error(err);
-                alert('PNG এক্সপোর্ট ব্যর্থ হয়েছে। আবার চেষ্টা করুন।');
+                alert('PNG এক্সপোর্ট ব্যর্থ হয়েছে।');
             } finally {
                 setExportButtonsBusy(false);
             }
         };
 
         window.exportTreeAsPDF = async function() {
-            if (!is2DViewActive()) {
-                alert('প্রথমে "ব্লাডলাইন" ট্যাব থেকে একজন ব্যক্তি নির্বাচন করুন।');
-                return;
-            }
             if (typeof window.jspdf === 'undefined') {
-                alert('PDF লাইব্রেরি লোড হয়নি। ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।');
+                alert('PDF লাইব্রেরি লোড হয়নি।');
                 return;
             }
             setExportButtonsBusy(true);
@@ -1819,20 +1020,16 @@
                     format: [canvas.width, canvas.height]
                 });
                 pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-                pdf.save(getExportFilename('pdf'));
+                pdf.save('genogram-tree.pdf');
             } catch (err) {
                 console.error(err);
-                alert('PDF এক্সপোর্ট ব্যর্থ হয়েছে। আবার চেষ্টা করুন।');
+                alert('PDF এক্সপোর্ট ব্যর্থ হয়েছে।');
             } finally {
                 setExportButtonsBusy(false);
             }
         };
 
         window.exportTreeAsSVG = async function() {
-            if (!is2DViewActive()) {
-                alert('প্রথমে "ব্লাডলাইন" ট্যাব থেকে একজন ব্যক্তি নির্বাচন করুন।');
-                return;
-            }
             setExportButtonsBusy(true);
             try {
                 const wrapper = document.getElementById('tree-2d-view');
@@ -1886,13 +1083,13 @@
                 const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
                 const url = URL.createObjectURL(blob);
                 const link = document.createElement('a');
-                link.download = getExportFilename('svg');
+                link.download = 'genogram-tree.svg';
                 link.href = url;
                 link.click();
                 setTimeout(() => URL.revokeObjectURL(url), 2000);
             } catch (err) {
                 console.error(err);
-                alert('SVG এক্সপোর্ট ব্যর্থ হয়েছে। আবার চেষ্টা করুন।');
+                alert('SVG এক্সপোর্ট ব্যর্থ হয়েছে।');
             } finally {
                 setExportButtonsBusy(false);
             }
@@ -1949,361 +1146,6 @@
             setViewMode('3d');
         });
 
-        document.getElementById('tree-viewport').addEventListener('wheel', (e) => {
-            if (!e.ctrlKey && !e.metaKey) return;
-            e.preventDefault();
-            zoomTree(e.deltaY < 0 ? 0.1 : -0.1);
-        }, { passive: false });
-
-        (function setupPinchZoom() {
-            const viewport = document.getElementById('tree-viewport');
-            let pinchStartDist = null;
-            let pinchStartZoom = 1;
-
-            function touchDistance(touches) {
-                const dx = touches[0].clientX - touches[1].clientX;
-                const dy = touches[0].clientY - touches[1].clientY;
-                return Math.hypot(dx, dy);
-            }
-
-            viewport.addEventListener('touchstart', (e) => {
-                if (e.touches.length === 2) {
-                    pinchStartDist = touchDistance(e.touches);
-                    pinchStartZoom = currentZoom;
-                }
-            }, { passive: true });
-
-            viewport.addEventListener('touchmove', (e) => {
-                if (e.touches.length === 2 && pinchStartDist) {
-                    e.preventDefault();
-                    const newDist = touchDistance(e.touches);
-                    const ratio = newDist / pinchStartDist;
-                    currentZoom = Math.max(0.4, Math.min(2.2, pinchStartZoom * ratio));
-                    document.getElementById('tree-2d-view').style.transform = `scale(${currentZoom})`;
-                }
-            }, { passive: false });
-
-            viewport.addEventListener('touchend', (e) => {
-                if (e.touches.length < 2) {
-                    pinchStartDist = null;
-                    drawSvgConnections();
-                }
-            }, { passive: true });
-        })();
-
-        function calculateBloodline() {
-            const rootUid = document.getElementById('bloodline-person').value;
-            const resDiv = document.getElementById('bloodline-result');
-            const container2D = document.getElementById('tree-2d-view');
-
-            if (!rootUid) {
-                container2D.innerHTML = '';
-                if (is2DViewActive()) setViewMode('3d');
-                resDiv.innerHTML = 'ব্যক্তি নির্বাচন করলে তার ২ডি বংশবৃক্ষ স্ক্রিনে ভেসে উঠবে।';
-                return;
-            }
-
-            const rootPerson = membersData.find(m => m.uid === rootUid);
-            const relativeGenMap = {};
-            const visited = new Set([rootUid]);
-            const queue = [{ uid: rootUid, relGen: 0, parentUid: null }];
-
-            while (queue.length > 0) {
-                const current = queue.shift();
-                if (!relativeGenMap[current.relGen]) relativeGenMap[current.relGen] = [];
-
-                const personObj = membersData.find(m => m.uid === current.uid);
-                if (personObj) {
-                    relativeGenMap[current.relGen].push({ person: personObj, parentUid: current.parentUid });
-
-                    if (personObj.children) {
-                        personObj.children.forEach(childUid => {
-                            if (!visited.has(childUid)) {
-                                visited.add(childUid);
-                                queue.push({ uid: childUid, relGen: current.relGen + 1, parentUid: current.uid });
-                            }
-                        });
-                    }
-                }
-            }
-
-            container2D.innerHTML = '<svg id="tree-svg-canvas"></svg>';
-
-            const sortedGens = Object.keys(relativeGenMap).sort((a,b) => a - b);
-            sortedGens.forEach(genLevel => {
-                const block = document.createElement('div');
-                block.className = 'gen-2d-block';
-
-                const row = document.createElement('div');
-                row.className = 'nodes-2d-row';
-
-                relativeGenMap[genLevel].forEach(entry => {
-                    const p = entry.person;
-                    const coupleCard = document.createElement('div');
-                    coupleCard.className = `couple-node-card ${p.uid === rootUid ? 'root-card' : ''}`;
-                    coupleCard.setAttribute('data-family-id', p.uid);
-                    if (entry.parentUid) coupleCard.setAttribute('data-parent-id', entry.parentUid);
-
-                    const imgId = `node-img-${p.uid}`;
-
-                    let cardHtml = `
-                        <div class="person-unit" onclick="focusByUid('${p.uid}')">
-                            <img id="${imgId}" class="node-avatar" loading="lazy" src="" alt="Photo">
-                            <span class="card-2d-name">${p.nick}</span>
-                        </div>
-                    `;
-
-                    if (p.spouse) {
-                        const spouses = Array.isArray(p.spouse) ? p.spouse : [p.spouse];
-                        spouses.forEach(sUid => {
-                            const spouseObj = membersData.find(m => m.uid === sUid);
-                            if (spouseObj) {
-                                const spouseImgId = `node-img-${spouseObj.uid}`;
-                                cardHtml += `
-                                    <div class="spouse-divider">💍</div>
-                                    <div class="person-unit spouse-unit" onclick="focusByUid('${spouseObj.uid}')">
-                                        <img id="${spouseImgId}" class="node-avatar" loading="lazy" src="" alt="Photo">
-                                        <span class="card-2d-name">${spouseObj.nick}</span>
-                                    </div>
-                                `;
-                                setTimeout(() => {
-                                    const simg = document.getElementById(spouseImgId);
-                                    if (simg) loadProfilePhoto(simg, spouseObj.uid);
-                                }, 10);
-                            }
-                        });
-                    }
-
-                    coupleCard.innerHTML = cardHtml;
-                    row.appendChild(coupleCard);
-
-                    setTimeout(() => {
-                        const pimg = document.getElementById(imgId);
-                        if (pimg) loadProfilePhoto(pimg, p.uid);
-                    }, 10);
-                });
-
-                block.appendChild(row);
-                container2D.appendChild(block);
-            });
-
-            setViewMode('2d');
-            setTimeout(drawSvgConnections, 150);
-
-            const totalDescendants = visited.size - 1;
-            resDiv.innerHTML = `<strong style="color:#00ffff;">${rootPerson.bnName}</strong>-এর সাপেক্ষে পরবর্তী মোট <b>${totalDescendants} জন</b> বংশধর পাওয়া গেছে।`;
-        }
-
-        window.showFilteredMemberList = function(filterType, title) {
-            document.getElementById('list-modal-title').innerText = title;
-            const body = document.getElementById('list-modal-body');
-            body.innerHTML = '';
-
-            let list = [];
-            if (filterType === 'all') {
-                list = membersData;
-            } else if (filterType === 'male') {
-                list = membersData.filter(m => m.gender.includes('Male') || m.gender.includes('পুরুষ') || m.gender === 'M');
-            } else if (filterType === 'female') {
-                list = membersData.filter(m => m.gender.includes('Female') || m.gender.includes('মহিলা') || m.gender === 'F');
-            } else if (filterType.startsWith('gen-')) {
-                const genNum = parseInt(filterType.split('-')[1]);
-                list = membersData.filter(m => m.patrilinealGen === genNum);
-            }
-
-            if (list.length === 0) {
-                body.innerHTML = '<p style="color:#aaa;">কোনো সদস্য পাওয়া যায়নি।</p>';
-            } else {
-                list.forEach(m => {
-                    const div = document.createElement('div');
-                    div.className = 'modal-member-card';
-                    div.innerHTML = `<strong>${m.bnName}</strong> (${m.nick})<br><small style="color:#00ffff">${m.uid} • Pitri: Gen ${m.patrilinealGen} | Matri: Gen ${m.matrilinealGen}</small>`;
-                    div.onclick = () => {
-                        focusByUid(m.uid);
-                        closeListModal();
-                    };
-                    body.appendChild(div);
-                });
-            }
-
-            document.getElementById('list-modal').style.display = 'block';
-        };
-
-        window.showCouplesList = function() {
-            document.getElementById('list-modal-title').innerText = 'দম্পতি / পরিবার সমূহ';
-            const body = document.getElementById('list-modal-body');
-            body.innerHTML = '';
-
-            const addedPairs = new Set();
-            membersData.forEach(m => {
-                if (m.spouse) {
-                    const spouses = Array.isArray(m.spouse) ? m.spouse : [m.spouse];
-                    spouses.forEach(sUid => {
-                        if (marbleMap[sUid]) {
-                            const pairKey = [m.uid, sUid].sort().join('-');
-                            if (!addedPairs.has(pairKey)) {
-                                addedPairs.add(pairKey);
-                                const spouseObj = marbleMap[sUid].userData;
-                                const div = document.createElement('div');
-                                div.className = 'modal-member-card';
-                                div.innerHTML = `<strong>${m.bnName}</strong> & <strong>${spouseObj.bnName}</strong><br><small style="color:#00ffff">${m.uid} & ${spouseObj.uid}</small>`;
-                                div.onclick = () => {
-                                    focusByUid(m.uid);
-                                    closeListModal();
-                                };
-                                body.appendChild(div);
-                            }
-                        }
-                    });
-                }
-            });
-
-            document.getElementById('list-modal').style.display = 'block';
-        };
-
-        window.closeListModal = function() {
-            document.getElementById('list-modal').style.display = 'none';
-        };
-
-        function calculateRelationship() {
-            const uidA = document.getElementById('rel-person-a').value;
-            const uidB = document.getElementById('rel-person-b').value;
-            const resDiv = document.getElementById('rel-result');
-
-            if (!uidA || !uidB) {
-                resDiv.innerHTML = 'দুইজন ব্যক্তি নির্বাচন করুন সম্পর্ক জানার জন্য।';
-                return;
-            }
-
-            if (uidA === uidB) {
-                resDiv.innerHTML = '⚠️ অনুগ্রহ করে দুইজন ভিন্ন ব্যক্তি নির্বাচন করুন।';
-                return;
-            }
-
-            const graph = {};
-            membersData.forEach(m => { graph[m.uid] = []; });
-
-            membersData.forEach(m => {
-                if (m.spouse) {
-                    const spouses = Array.isArray(m.spouse) ? m.spouse : [m.spouse];
-                    spouses.forEach(sUid => {
-                        graph[m.uid].push({ target: sUid, relation: "স্বামী/স্ত্রী" });
-                    });
-                }
-                if (m.father) {
-                    graph[m.uid].push({ target: m.father, relation: "পিতা" });
-                    const isMale = m.gender.includes("Male") || m.gender.includes("পুরুষ") || m.gender === "M";
-                    graph[m.father].push({ target: m.uid, relation: isMale ? "পুত্র" : "কন্যা" });
-                }
-                if (m.mother) {
-                    graph[m.uid].push({ target: m.mother, relation: "মাতা" });
-                    const isMale = m.gender.includes("Male") || m.gender.includes("পুরুষ") || m.gender === "M";
-                    graph[m.mother].push({ target: m.uid, relation: isMale ? "পুত্র" : "কন্যা" });
-                }
-            });
-
-            const queue = [[{ uid: uidA, rel: "" }]];
-            const visited = new Set([uidA]);
-            let foundPath = null;
-
-            while (queue.length > 0) {
-                const path = queue.shift();
-                const lastNode = path[path.length - 1].uid;
-
-                if (lastNode === uidB) {
-                    foundPath = path;
-                    break;
-                }
-
-                if (graph[lastNode]) {
-                    for (let edge of graph[lastNode]) {
-                        if (!visited.has(edge.target)) {
-                            visited.add(edge.target);
-                            queue.push([...path, { uid: edge.target, rel: edge.relation }]);
-                        }
-                    }
-                }
-            }
-
-            if (foundPath) {
-                let html = `<strong style="color:#00ffff;">সম্পর্কের সংযোগপথ (${foundPath.length - 1} ধাপ):</strong>`;
-                html += `<div class="rel-flow-container">`;
-
-                for (let i = 0; i < foundPath.length; i++) {
-                    const person = membersData.find(m => m.uid === foundPath[i].uid);
-                    const imgId = `rel-img-${person.uid}-${i}`;
-
-                    if (i > 0) {
-                        html += `<div class="rel-flow-arrow">➔ [${foundPath[i].rel}] ➔</div>`;
-                    }
-
-                    html += `
-                        <div class="rel-flow-card" onclick="focusByUid('${person.uid}')" style="cursor:pointer;">
-                            <img id="${imgId}" class="avatar-thumb" loading="lazy" src="" alt="Photo">
-                            <div>
-                                <b style="color:#fff;">${person.bnName}</b> (${person.nick})<br>
-                                <small style="color:#00ffff;">${person.uid}</small>
-                            </div>
-                        </div>
-                    `;
-
-                    setTimeout(() => {
-                        const el = document.getElementById(imgId);
-                        if (el) loadProfilePhoto(el, person.uid);
-                    }, 10);
-                }
-
-                html += `</div>`;
-                resDiv.innerHTML = html;
-            } else {
-                resDiv.innerHTML = '❌ কোনো প্রত্যক্ষ বা পরোক্ষ পারিবারিক সম্পর্ক খুঁজে পাওয়া যায়নি।';
-            }
-        }
-
-        let searchDebounceTimer = null;
-        window.debouncedSearch = function() {
-            clearTimeout(searchDebounceTimer);
-            searchDebounceTimer = setTimeout(handleSearch, 180);
-        };
-
-        function handleSearch() {
-            const query = document.getElementById('search-input').value.trim().toLowerCase();
-            const resultsContainer = document.getElementById('search-results-list');
-            resultsContainer.innerHTML = '';
-
-            if (!query) return;
-
-            const matched = membersData.filter(m => 
-                m.uid.toLowerCase().includes(query) ||
-                m.bnName.toLowerCase().includes(query) ||
-                m.enName.toLowerCase().includes(query) ||
-                m.nick.toLowerCase().includes(query)
-            );
-
-            if (matched.length > 0) {
-                matched.forEach(item => {
-                    const div = document.createElement('div');
-                    div.className = 'search-item';
-
-                    const img = document.createElement('img');
-                    img.className = 'avatar-thumb';
-                    img.loading = 'lazy';
-                    loadProfilePhoto(img, item.uid);
-
-                    const textDiv = document.createElement('div');
-                    textDiv.innerHTML = `<strong>${item.bnName}</strong> (${item.uid})<br><small style="color:#aaa">${item.enName}</small>`;
-
-                    div.appendChild(img);
-                    div.appendChild(textDiv);
-
-                    div.onclick = () => { focusByUid(item.uid); };
-                    resultsContainer.appendChild(div);
-                });
-            } else {
-                resultsContainer.innerHTML = `<div class="search-item" style="color: #ff4757;">কোন তথ্য পাওয়া যায়নি</div>`;
-            }
-        }
-
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
         let touchStartX = 0, touchStartY = 0;
@@ -2314,7 +1156,7 @@
         });
 
         window.addEventListener('pointerup', (event) => {
-            if (event.target.closest('#popup-modal') || event.target.closest('#nav-drawer') || event.target.closest('#menu-toggle-btn') || event.target.closest('#restore-btn') || event.target.closest('#list-modal') || event.target.closest('#image-lightbox') || event.target.closest('#tree-2d-overlay')) return;
+            if (event.target.closest('.top-navbar') || event.target.closest('#popup-modal') || event.target.closest('#image-lightbox') || event.target.closest('#tree-2d-overlay')) return;
 
             const deltaX = Math.abs(event.clientX - touchStartX);
             const deltaY = Math.abs(event.clientY - touchStartY);
@@ -2430,8 +1272,6 @@
         }
 
         window.focusByUid = function(uid) {
-            const drawer = document.getElementById('nav-drawer');
-            if (drawer.classList.contains('open')) toggleDrawer();
             if (is2DViewActive()) setViewMode('3d');
             if (marbleMap[uid]) selectMarble(marbleMap[uid]);
         };
@@ -2503,15 +1343,24 @@
             setTimeout(() => { isAnimating = true; }, 500);
         };
 
+        // Mobile Navbar Toggle Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const navToggle = document.getElementById('nav-toggle');
+            const navLinks = document.getElementById('nav-links');
+            if (navToggle && navLinks) {
+                navToggle.addEventListener('click', () => {
+                    const open = navLinks.classList.toggle('open');
+                    navToggle.setAttribute('aria-expanded', String(open));
+                });
+            }
+        });
+
         window.addEventListener('keydown', (e) => {
             if (e.key !== 'Escape') return;
             const lightbox = document.getElementById('image-lightbox');
-            const listModal = document.getElementById('list-modal');
             const popup = document.getElementById('popup-modal');
             if (lightbox.style.display === 'flex') { closeLightbox(); return; }
-            if (listModal.style.display === 'block') { closeListModal(); return; }
             if (popup.style.display === 'block') { closePopup(); return; }
-            if (document.getElementById('nav-drawer').classList.contains('open')) { toggleDrawer(); }
         });
 
         window.addEventListener('resize', () => {
