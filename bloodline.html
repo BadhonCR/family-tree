@@ -1186,5 +1186,37 @@
             }
         });
     </script>
+<!-- PROFESSIONAL FOOTER -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-mark">🌳</div>
+      <div>
+        <strong>পারিবারিক বংশবৃক্ষ</strong>
+        <span>Family Archive</span>
+      </div>
+    </div>
+    <p>পারিবারিক বংশবৃক্ষ একটি আধুনিক ডিজিটাল আর্কাইভ যা আমাদের রক্তেরই ধারা ও শিকড়কে ভবিষ্যৎ প্রজন্মের জন্য সুরক্ষিত রাখতে নিবেদিত।</p>
+    <div class="footer-links">
+      <a href="home.html">Home</a>
+      <a href="genogram.html">Genogram</a>
+      <a href="bloodline.html">Bloodline</a>
+      <a href="about.html">About</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div>© Family Archive · All rights reserved.</div>
+    <div>Digital Genealogy System</div>
+  </div>
+</footer>
+
+<script>
+const menu = document.getElementById('menu');
+const navLinks = document.getElementById('navLinks');
+if (menu && navLinks) {
+  menu.addEventListener('click', () => navLinks.classList.toggle('open'));
+  navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+}
+</script>
 </body>
 </html>
