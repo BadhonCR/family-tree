@@ -242,7 +242,7 @@
         .quiz-head h2 { margin: 6px 0 7px; font-size: clamp(21px, 3vw, 29px); line-height: 1.25; color: #fff; }
         .quiz-head p { max-width: 680px; color: #94a3b8; font-size: 13px; margin: 0; }
         
-        /* Bloodline selector in quiz head */
+        /* Bloodline filter in quiz head */
         .bloodline-filter-box {
             background: rgba(7, 20, 31, .8); border: 1px solid rgba(0, 255, 255, 0.25);
             padding: 8px 14px; border-radius: 12px; min-width: 260px;
@@ -521,7 +521,7 @@
             </div>
             
             <div class="bloodline-filter-box">
-                <label for="quiz-bloodline-select">🎯 Bloodline ফিল্টার করুন:</label>
+                <label for="quiz-bloodline-input">🎯 Bloodline ফিল্টার করুন:</label>
                 <div class="member-picker" id="picker-quiz-bloodline" style="margin:0;">
                     <div class="member-search-wrap">
                         <span class="search-icon">⌕</span>
@@ -539,14 +539,14 @@
                 <div class="quiz-icon">🖼️</div>
                 <h3>ছবি দেখে নাম শনাক্ত করুন</h3>
                 <p>নির্বাচিত bloodline-এর সদস্যের ছবি দেখুন এবং সঠিক নামটি চিহ্নিত করুন।</p>
-                <span class="quiz-tag">ছবি → নাম · ১০ প্রশ্ন</span>
+                <span class="quiz-tag">ছবি → নাম · ৫ প্রশ্ন</span>
                 <span class="quiz-arrow">→</span>
             </button>
             <button class="quiz-launch" data-start-quiz="relation">
                 <div class="quiz-icon">🧬</div>
                 <h3>সম্পর্ক শনাক্ত করো</h3>
-                <p>সদস্যের ছবি ও নাম দেখে তার পিতা, মাতা, স্বামী বা স্ত্রী কে তা শনাক্ত করুন।</p>
-                <span class="quiz-tag">ছবি + নাম → পিতা/মাতা/স্বামী/স্ত্রী</span>
+                <p>সদস্যের ছবি ও নাম দেখে তার পিতা, মাতা বা দাম্পত্য সঙ্গীকে শনাক্ত করুন।</p>
+                <span class="quiz-tag">ছবি + নাম → পিতা/মাতা/দাম্পত্য সঙ্গী · ৫ প্রশ্ন</span>
                 <span class="quiz-arrow">→</span>
             </button>
         </div>
@@ -1045,7 +1045,6 @@
 
             const shuffle = a => a.slice().sort(() => Math.random() - .5);
             const byUid = uid => membersData.find(m => m.uid === uid);
-            const name = uid => byUid(uid)?.bnName || 'তথ্য নেই';
 
             const photoCandidates = uid => [
                 `images/${uid}.jpg`,
@@ -1081,7 +1080,6 @@
                 return checked.filter(Boolean);
             }
 
-            // Get descendants of a root bloodline member
             function getBloodlineDescendants(rootUid) {
                 if (!rootUid) return membersData;
                 const descendants = new Set([rootUid]);
@@ -1099,6 +1097,67 @@
                     }
                 }
                 return membersData.filter(m => descendants.has(m.uid));
+            }
+
+            async function populateValidBloodlines() {
+                const optionsContainer = document.getElementById('quiz-bloodline-options');
+                if (!optionsContainer) return;
+
+                const candidateRoots = membersData.filter(m => m.children && m.children.length > 0);
+                const validRoots = [];
+
+                for (const root of candidateRoots) {
+                    const familyPool = getBloodlineDescendants(root.uid);
+                    const photoMembers = await getPhotoMembers(familyPool);
+                    if (photoMembers.length >= 4) {
+                        validRoots.push(root);
+                    }
+                }
+
+                validRoots.sort((a, b) => (a.bnName || '').localeCompare(b.bnName || '', 'bn'));
+
+                optionsContainer.innerHTML = '';
+                
+                const allOpt = document.createElement('div');
+                allOpt.className = 'member-option';
+                allOpt.innerHTML = `<div class="member-option-text"><strong>সকল রক্তধারা (All)</strong></div>`;
+                allOpt.onclick = () => {
+                    document.getElementById('quiz-bloodline-input').value = 'সকল রক্তধারা (All)';
+                    document.getElementById('quiz-bloodline-uid').value = '';
+                    optionsContainer.classList.remove('open');
+                    document.getElementById('quiz-bloodline-clear').style.display = 'none';
+                };
+                optionsContainer.appendChild(allOpt);
+
+                validRoots.forEach(m => {
+                    const item = document.createElement('div');
+                    item.className = 'member-option';
+                    item.dataset.uid = m.uid;
+
+                    const img = document.createElement('img');
+                    img.className = 'member-option-avatar';
+                    loadProfilePhoto(img, m.uid);
+
+                    const text = document.createElement('div');
+                    text.className = 'member-option-text';
+                    text.innerHTML = `<strong>${m.bnName}${m.nick ? ` (${m.nick})` : ''}</strong><small>${m.enName || ''}</small>`;
+
+                    const badge = document.createElement('span');
+                    badge.className = 'member-option-badge';
+                    badge.textContent = m.uid;
+
+                    item.appendChild(img);
+                    item.appendChild(text);
+                    item.appendChild(badge);
+
+                    item.onclick = () => {
+                        document.getElementById('quiz-bloodline-input').value = `${m.bnName}${m.nick ? ` (${m.nick})` : ''}`;
+                        document.getElementById('quiz-bloodline-uid').value = m.uid;
+                        optionsContainer.classList.remove('open');
+                        document.getElementById('quiz-bloodline-clear').style.display = 'block';
+                    };
+                    optionsContainer.appendChild(item);
+                });
             }
 
             function esc(s) {
@@ -1122,15 +1181,14 @@
                 const photoPool = await getPhotoMembers(bloodlinePool);
 
                 if (type === 'photo') {
-                    questions = shuffle(photoPool).slice(0, Math.min(10, photoPool.length));
+                    questions = shuffle(photoPool).slice(0, Math.min(5, photoPool.length));
                 } else {
-                    // For relation quiz, target must have at least one valid relation (father/mother/spouse)
                     const relationPool = photoPool.filter(m => m.father || m.mother || m.spouse);
-                    questions = shuffle(relationPool).slice(0, Math.min(10, relationPool.length));
+                    questions = shuffle(relationPool).slice(0, Math.min(5, relationPool.length));
                 }
 
                 if (questions.length < 4) {
-                    body.innerHTML = `<div class="quiz-result"><div class="quiz-question-label">NOT ENOUGH DATA</div><h3>পর্যাপ্ত ডেটা পাওয়া যায়নি</h3><p>এই Bloodline-এ কুইজের জন্য অন্তত ৪ জন ছবিযুক্ত উপযুক্ত সদস্য প্রয়োজন। ফিল্টার পরিবর্তন করে চেষ্টা করুন।</p><button id="quiz-retry">বন্ধ করুন</button></div>`;
+                    body.innerHTML = `<div class="quiz-result"><div class="quiz-question-label">NOT ENOUGH DATA</div><h3>পর্যাপ্ত ডেটা পাওয়া যায়নি</h3><p>এই Bloodline-এ কুইজের জন্য অন্তত ৪ জন উপযুক্ত সদস্যের তথ্য প্রয়োজন।</p><button id="quiz-retry">বন্ধ করুন</button></div>`;
                     document.getElementById('quiz-retry').onclick = close;
                     return;
                 }
@@ -1165,7 +1223,6 @@
                     `;
                     body.querySelectorAll('.quiz-option').forEach((b,i) => b.onclick = () => answerPhoto(i, opts, m));
                 } else {
-                    // Relation Quiz: Randomly ask Father, Mother, or Spouse
                     const relTypes = [];
                     if (m.father) relTypes.push('father');
                     if (m.mother) relTypes.push('mother');
@@ -1178,7 +1235,7 @@
                     let questionText = "";
                     if (targetRel === 'father') questionText = `${m.bnName}-এর পিতাকে শনাক্ত করুন:`;
                     else if (targetRel === 'mother') questionText = `${m.bnName}-এর মাতাকে শনাক্ত করুন:`;
-                    else questionText = `${m.bnName}-এর স্বামী/স্ত্রী কে?`;
+                    else questionText = `${m.bnName}-এর দাম্পত্য সঙ্গীকে শনাক্ত করুন:`;
 
                     const correctObj = byUid(targetUid);
                     const wrongOpts = shuffle(membersData.filter(x => x.uid !== targetUid && x.uid !== m.uid)).slice(0, 3);
@@ -1204,7 +1261,7 @@
                         <div class="quiz-feedback" id="quiz-feedback"></div>
                         <div class="quiz-footer"><span style="font-size:10px;color:#64748b;">সঠিক উত্তর = +১</span><button class="quiz-next" id="quiz-next">পরের প্রশ্ন →</button></div>
                     `;
-                    body.querySelectorAll('.quiz-option').forEach((b,i) => b.onclick = () => answerRelation(i, opts, targetUid, targetRel));
+                    body.querySelectorAll('.quiz-option').forEach((b,i) => b.onclick = () => answerRelation(i, opts, targetUid));
                 }
 
                 document.getElementById('quiz-next').onclick = () => { index++; render(); };
@@ -1229,7 +1286,7 @@
                 document.getElementById('quiz-next').style.display = 'inline-block';
             }
 
-            function answerRelation(i, opts, targetUid, targetRel) {
+            function answerRelation(i, opts, targetUid) {
                 if (locked) return; locked = true;
                 const chosen = opts[i];
                 const correct = chosen && chosen.uid === targetUid;
@@ -1260,6 +1317,8 @@
                 modal.classList.remove('open');
                 modal.setAttribute('aria-hidden','true');
             }
+
+            setTimeout(populateValidBloodlines, 200);
 
             document.querySelectorAll('[data-start-quiz]').forEach(b => b.onclick = () => open(b.dataset.startQuiz));
             document.getElementById('quiz-close').onclick = close;
