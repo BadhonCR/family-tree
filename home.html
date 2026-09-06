@@ -1108,8 +1108,16 @@
 
                 for (const root of candidateRoots) {
                     const familyPool = getBloodlineDescendants(root.uid);
+                    
+                    // উভয় প্রকার কুইজের জন্যই ফিল্টার চেক:
+                    // ১. 'ছবি দেখে নাম শনাক্ত করুন' কুইজের জন্য পর্যাপ্ত ছবিওয়ালা সদস্য আছে কি না
                     const photoMembers = await getPhotoMembers(familyPool);
-                    if (photoMembers.length >= 4) {
+                    
+                    // ২. 'সম্পর্ক শনাক্ত করো' কুইজের জন্য পিতা, মাতা বা দাম্পত্য সঙ্গীযুক্ত পর্যাপ্ত সদস্য আছে কি না
+                    const relationMembers = photoMembers.filter(m => m.father || m.mother || m.spouse);
+
+                    // যদি দুটো কুইজের জন্যই পর্যাপ্ত (কমপক্ষে ৪ টি করে) প্রশ্ন বা সদস্য পাওয়া যায়
+                    if (photoMembers.length >= 4 && relationMembers.length >= 4) {
                         validRoots.push(root);
                     }
                 }
