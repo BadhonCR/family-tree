@@ -126,7 +126,8 @@ export const rawMembersData = [
     { uid: "FT-170", bnName: "শ্রেয়া রানী রায়", enName: "Nupur Rani Royy", nick: "নুপুর", gender: "Female", color: 0xff69b4, spouse: null, father: "FT-161", mother: null, children: [], description: "" },
     { uid: "FT-171", bnName: "শ্রুতি রানী রায়", enName: "Payel Rani Roy", nick: "পায়েল", gender: "Female", color: 0xff69b4, spouse: null, father: "FT-161", mother: null, children: [], description: "" },
     { uid: "FT-172", bnName: "মৌমিতা রায় মৌ", enName: "Mou Rani Roy", nick: "মৌ", gender: "Female", color: 0xff69b4, spouse: null, father: null, mother: "FT-165", children: [], description: "" },
-    { uid: "FT-173", bnName: "ঝুমুর রানী রায়ৌ", enName: "Jhumur Rani Roy", nick: "ঝুমুর", gender: "Female", color: 0xff69b4, spouse: null, father:"FT-163", mother: "FT-164", children: [], description: "" },
+    { uid: "FT-173", bnName: "সন্দিপ রায়", enName: "Shondip Roy", nick: "সন্দিপ", gender: "Male", color: 0x0055ff, spouse: null, father: null, mother: "FT-165", children: [], description: "" },
+    { uid: "FT-174", bnName: "ঝুমুর রানী রায়ৌ", enName: "Jhumur Rani Roy", nick: "ঝুমুর", gender: "Female", color: 0xff69b4, spouse: null, father:"FT-163", mother: "FT-164", children: [], description: "" },
 
     // FT-259 to FT-310
     { uid: "FT-259", bnName: "কানাই চন্দ্র রায়", enName: "Kanai Chandra Roy", nick: "কানাই", gender: "Male", color: 0x0055ff, spouse: "FT-260", father: null, mother: null, children: ["FT-261", "FT-262"], description: "" },
