@@ -126,11 +126,11 @@ export const rawMembersData = [
     { uid: "FT-166", bnName: "অজয়", enName: "Ajoy", nick: "অজয়", gender: "Male", color: 0x0055ff, spouse: "FT-165", father: null, mother: null, children: ["FT-172", "FT-173"], description: "" },
     { uid: "FT-167", bnName: "সুফলা রানী রায়", enName: "Suphala Rani Roy", nick: "সুফলা", gender: "Female", color: 0xff1493, spouse: "FT-168", father: "FT-159", mother: null, children: [], description: "" },
     { uid: "FT-168", bnName: "বিপ্লব রায়", enName: "Biplop Roy", nick: "বিপ্লব", gender: "Male", color: 0x0055ff, spouse:"FT-167", father: null, mother: null, children: [], description: "" },
-    { uid: "FT-169", bnName: "টুম্পা রানী রায়", enName: "Tumpa Rani Roy", nick: "টুম্পা", gender: "Female", color: 0xff69b4, spouse: null, father: "FT-161", mother: null, children: [], description: "" },
-    { uid: "FT-170", bnName: "শ্রেয়া রানী রায়", enName: "Shreya Rani Roy", nick: "নুপুর", gender: "Female", color: 0xff69b4, spouse: null, father: "FT-161", mother: null, children: [], description: "" },
-    { uid: "FT-171", bnName: "শ্রুতি রানী রায়", enName: "Shruti Rani Roy", nick: "পায়েল", gender: "Female", color: 0xff69b4, spouse: null, father: "FT-161", mother: null, children: [], description: "" },
-    { uid: "FT-172", bnName: "মৌমিতা রায় মৌ", enName: "Moumita Rani Roy", nick: "মৌ", gender: "Female", color: 0xff69b4, spouse: null, father: null, mother: "FT-165", children: [], description: "" },
-    { uid: "FT-173", bnName: "সন্দিপ রায়", enName: "Shondip Roy", nick: "সন্দিপ", gender: "Male", color: 0x0055ff, spouse: null, father: null, mother: "FT-165", children: [], description: "" },
+    { uid: "FT-169", bnName: "টুম্পা রানী রায়", enName: "Tumpa Rani Roy", nick: "টুম্পা", gender: "Female", color: 0xff69b4, spouse: null, father: "FT-161", mother: "FT-162", children: [], description: "" },
+    { uid: "FT-170", bnName: "শ্রেয়া রানী রায়", enName: "Shreya Rani Roy", nick: "নুপুর", gender: "Female", color: 0xff69b4, spouse: null, father: "FT-161", mother: "FT-162", children: [], description: "" },
+    { uid: "FT-171", bnName: "শ্রুতি রানী রায়", enName: "Shruti Rani Roy", nick: "পায়েল", gender: "Female", color: 0xff69b4, spouse: null, father: "FT-161", mother: "FT-162", children: [], description: "" },
+    { uid: "FT-172", bnName: "মৌমিতা রায় মৌ", enName: "Moumita Rani Roy", nick: "মৌ", gender: "Female", color: 0xff69b4, spouse: null, father: "FT-166", mother: "FT-165", children: [], description: "" },
+    { uid: "FT-173", bnName: "সন্দিপ রায়", enName: "Shondip Roy", nick: "সন্দিপ", gender: "Male", color: 0x0055ff, spouse: null, father: "FT-166", mother: "FT-165", children: [], description: "" },
     { uid: "FT-174", bnName: "ঝুমুর রানী রায়", enName: "Jhumur Rani Roy", nick: "ঝুমুর", gender: "Female", color: 0xff69b4, spouse: null, father:"FT-163", mother: "FT-164", children: [], description: "" },
 
     // FT-259 to FT-310
