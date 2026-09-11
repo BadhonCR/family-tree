@@ -91,8 +91,8 @@ export const rawMembersData = [
     { uid: "FT-122", bnName: "দক্ষিণামোহন", enName: "Dakshinamohan", nick: "দক্ষিণামোহন", gender: "Male", color: 0x0055ff, spouse: null, father: "FT-120", mother: null, children: ["FT-134", "FT-136"], description: "" },
     { uid: "FT-124", bnName: "নবগোপাল", enName: "Nabo Gopal", nick: "নবগোপাল", gender: "Male", color: 0x0055ff, spouse: null, father: "FT-120", mother: null, children: ["FT-138", "FT-143"], description: "" },
     { uid: "FT-126", bnName: "অন্নদামোহন", enName: "Annadamohan", nick: "অন্নদামোহন", gender: "Male", color: 0x0055ff, spouse: null, father: "FT-120", mother: null, children: [], description: "" },
-    { uid: "FT-128", bnName: "অম্বিকা", enName: "Ambika", nick: "অম্বিকা", gender: "Male", color: 0x0055ff, spouse: "FT-139", father: "FT-120", mother: null, children: ["FT-159"], description: "" },
-    { uid: "FT-139", bnName: "মালতি", enName: "Maloti", nick: "মালতি", gender: "Female", color: 0xff1493, spouse: "FT-128", father: null, mother: null, children: ["FT-159"], description: "" },
+    { uid: "FT-128", bnName: "অম্বিকা", enName: "Ambika", nick: "অম্বিকা", gender: "Male", color: 0x0055ff, spouse: "FT-129", father: "FT-120", mother: null, children: ["FT-159"], description: "" },
+    { uid: "FT-129", bnName: "মালতি", enName: "Maloti", nick: "মালতি", gender: "Female", color: 0xff1493, spouse: "FT-128", father: null, mother: null, children: ["FT-159"], description: "" },
     { uid: "FT-130", bnName: "মেয়ে ১", enName: "UnKnown Girl 1", nick: "মেয়ে ১", gender: "Female", color: 0xff1493, spouse: null, father: "FT-120", mother: null, children: [], description: "" },
     { uid: "FT-132", bnName: "মেয়ে ২", enName: "UnKnown Girl 2", nick: "মেয়ে ২", gender: "Female", color: 0xff1493, spouse: null, father: "FT-120", mother: null, children: [], description: "" },
     { uid: "FT-134", bnName: "কালিপদ", enName: "Kalipada", nick: "কালিপদ", gender: "Male", color: 0x0055ff, spouse: null, father: "FT-122", mother: null, children: [], description: "" },
@@ -118,7 +118,7 @@ export const rawMembersData = [
     { uid: "FT-157", bnName: "অর্ঘ চন্দ্র রায়", enName: "Argho Roy", nick: "অর্ঘ", gender: "Male", color: 0x00ccff, spouse: null, father: "FT-156", mother: "FT-149", children: [], description: "" },
      
     // FT-159 to FT-170
-    { uid: "FT-159", bnName: "হেমেন চন্দ্র রায়", enName: "Heman Chandra Roy", nick: "হেমেন", gender: "Male", color: 0x0055ff, spouse: "FT-160", father: "FT-128", mother: "FT-139", children: ["FT-161", "FT-163", "FT-165", "FT-167"], description: "" },
+    { uid: "FT-159", bnName: "হেমেন চন্দ্র রায়", enName: "Heman Chandra Roy", nick: "হেমেন", gender: "Male", color: 0x0055ff, spouse: "FT-160", father: "FT-128", mother: "FT-129", children: ["FT-161", "FT-163", "FT-165", "FT-167"], description: "" },
     { uid: "FT-160", bnName: "যশোদা", enName: "Yashoda", nick: "যশোদা", gender: "Female", color: 0xff1493, spouse: "FT-159", father: null, mother: null, children: ["FT-161", "FT-163", "FT-165", "FT-167"], description: "" },
     { uid: "FT-161", bnName: "উত্তম চন্দ্র রায়", enName: "Uttom Chandra Roy", nick: "উত্তম", gender: "Male", color: 0x0055ff, spouse: "FT-162", father: "FT-159", mother: "FT-160", children: ["FT-169", "FT-170", "FT-171"], description: "" },
     { uid: "FT-162", bnName: "সুচিত্রা রায়", enName: "Suchitra Roy", nick: "সুচিত্রা", gender: "Female", color: 0xff1493, spouse: "FT-161", father: null, mother: null, children: ["FT-169", "FT-170", "FT-171"], description: "স্বামীর বোন ও তার একই নাম।" },
