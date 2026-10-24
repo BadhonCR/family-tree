@@ -140,7 +140,7 @@ export const rawMembersData = [
     { uid: "FT-259", bnName: "কানাই চন্দ্র রায়", enName: "Kanai Chandra Roy", nick: "কানাই", gender: "Male", color: 0x0055ff, spouse: "FT-260", father: null, mother: null, children: ["FT-261", "FT-262"], description: "" },
     { uid: "FT-260", bnName: "ঋতুমাযী রানী রায়", enName: "Ritumayee Rani Roy", nick: "ঋতুমাযী", gender: "Female", color: 0xff1493, spouse: "FT-259", father: null, mother: null, children: ["FT-261", "FT-262"], description: "" },
     { uid: "FT-261", bnName: "মনাই চন্দ্র রায়", enName: "Monai Chandra Roy", nick: "মনাই", gender: "Male", color: 0x0055ff, spouse: "FT-263", father: "FT-259", mother: "FT-260", children: ["FT-264", "FT-265", "FT-016"], description: "" },
-    { uid: "FT-262", bnName: "বিষ্ণুর দাদু", enName: "Vishnu's grandfather", nick: "বিষ্ণুর দাদু", gender: "Male", color: 0x0055ff, spouse: null, father: "FT-259", mother: "FT-260", children: [], description: "" },
+    { uid: "FT-262", bnName: "মাটিয়া", enName: "Matia", nick: "মাটিয়া", gender: "Male", color: 0x0055ff, spouse: null, father: "FT-259", mother: "FT-260", children: [], description: "" },
     { uid: "FT-263", bnName: "সুকুময়ী বর্মনী", enName: "Sukumayee Burmani", nick: "সুকুময়ী", gender: "Female", color: 0xff1493, spouse: "FT-261", father: null, mother: null, children: ["FT-264", "FT-265", "FT-016"], description: "" },
     { uid: "FT-264", bnName: "মহিম চন্দ্র রায়", enName: "Mahim Chandra Roy", nick: "মহিম", gender: "Male", color: 0x0055ff, spouse: null, father: "FT-261", mother: "FT-263", children: ["FT-268", "FT-269"], description: "" },
     { uid: "FT-265", bnName: "অক্ষয় চন্দ্র রায়", enName: "Akshay Chandra Roy", nick: "অক্ষয়", gender: "Male", color: 0x0055ff, spouse: "FT-290", father: "FT-261", mother: "FT-263", children: ["FT-291", "FT-292", "FT-293"], description: "" },
@@ -170,7 +170,19 @@ export const rawMembersData = [
     { uid: "FT-306", bnName: "সেজুতি রানী রায়", enName: "Sejuti Rani Roy", nick: "সেজুতি", gender: "Female", color: 0xff69b4, spouse: null, father: "FT-304", mother: "FT-305", children: [], description: "" },
     { uid: "FT-308", bnName: "জার্মান চন্দ্র রায়", enName: "German Chandra Roy", nick: "জার্মান", gender: "Male", color: 0x00ccff, spouse: "FT-309", father: "FT-293", mother: "FT-294", children: ["FT-310"], description: "" },
     { uid: "FT-309", bnName: "কলি রানী রায়", enName: "Koli Rani Roy", nick: "কলি", gender: "Female", color: 0xff1493, spouse: "FT-308", father: null, mother: null, children: ["FT-310"], description: "" },
-    { uid: "FT-310", bnName: "মাধুর্য চন্দ্র রায়", enName: "Madhurya Chandra Roy", nick: "মাধুর্য", gender: "Male", color: 0x3366ff, spouse: null, father: "FT-308", mother: "FT-309", children: [], description: "" }
+    { uid: "FT-310", bnName: "মাধুর্য চন্দ্র রায়", enName: "Madhurya Chandra Roy", nick: "মাধুর্য", gender: "Male", color: 0x3366ff, spouse: null, father: "FT-308", mother: "FT-309", children: [], description: "" },
+
+
+    { uid: "FT-313", bnName: "মাটিয়ার স্ত্রী", enName: "Matia Wife", nick: "মাটিয়ার স্ত্রী", gender: "Female", color: 0xff1493, spouse: "FT-262", father: null, mother: null, children: ["FT-314"], description: "" },
+    { uid: "FT-314", bnName: "যাদব রায়", enName: "Jadav Roy", nick: "যাদব", gender: "Male", color: 0x0055ff, spouse: "FT-315", father: ["FT-262"], mother: ["FT-313"], children: ["FT-316"], description: "" },
+    { uid: "FT-315", bnName: "ননী বালা", enName: "Noni Bala", nick: "ননী বালা", gender: "Female", color: 0xff1493, spouse: "FT-314", father: null, mother: null, children: ["FT-316"], description: "" },
+    { uid: "FT-316", bnName: "বিষ্ণু রায়", enName: "Vishnu Roy", nick: "বিষ্ণু", gender: "Male", color: 0x0055ff, spouse: "FT-317", father: "FT-314", mother: "FT-315", children: ["FT-318", "FT-319"], description: "" },
+    { uid: "FT-317", bnName: "সীতা রানী", enName: "Noni Bala", nick: "সীতা", gender: "Female", color: 0xff1493, spouse: "FT-316", father: null, mother: null, children: ["FT-318", "FT-319"], description: "" },
+    { uid: "FT-318", bnName: "শুভ রায়", enName: "Shuvo Roy", nick: "শুভ", gender: "Male", color: 0x0055ff, spouse: null, father: ["FT-316"], mother: ["FT-317"], children: null, description: "কিশোর বয়সে দুরারোগ্য রোগে মৃত্যু।" },
+    { uid: "FT-319", bnName: "শতাব্দী রানী", enName: "Shatabdi Rani", nick: "শতাব্দী", gender: "Female", color: 0xff1493, spouse: "FT-320", father: ["FT-316"], mother: ["FT-317"]l, children: ["FT-321"], description: "" },
+    { uid: "FT-320", bnName: "শতাব্দী স্বামী", enName: "Shatabdi Husband", nick: "শতাব্দী স্বামী", gender: "Male", color: 0x0055ff, spouse: "FT-319", father: null, mother: null, children: ["FT-321"], description: "" },
+    { uid: "FT-321", bnName: "পাঞ্চালী রানী", enName: "Panchali Rani", nick: "পাঞ্চালী", gender: "Female", color: 0xff1493, spouse: null, father: ["FT-320"], mother: ["FT-319"]l, children: null, description: "" },
+
 ];
 
 // জেনারেশন স্বয়ংক্রিয়ভাবে হিসাব করার হেল্পার ফাংশন
