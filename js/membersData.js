@@ -190,62 +190,66 @@ function processMembersData(data) {
     const memberDict = {};
     data.forEach(m => { memberDict[m.uid] = m; });
 
-    // ক্যাশিংয়ের জন্য মেমো অবজেক্ট
-    const paternalMemo = {};
-    const maternalMemo = {};
-
-    function getPaternalGen(uid, visited = new Set()) {
-        if (!uid || !memberDict[uid]) return 0;
-        if (paternalMemo[uid] !== undefined) return paternalMemo[uid];
-        if (visited.has(uid)) return 1; // সাইকেল প্রতিরোধে
-
+    // ১. যেকোনো নোডের জন্য রুট (পিতামাতা) থেকে প্রকৃত জেনারেশন লেভেল বের করার ফাংশন
+    function calculateGen(uid, visited = new Set()) {
+        if (!uid || !memberDict[uid] || visited.has(uid)) return 1;
         visited.add(uid);
-        const m = memberDict[uid];
 
-        let gen = 1;
+        const m = memberDict[uid];
+        let pGen = 0;
+        let mGen = 0;
+
+        // বাবার দিক থেকে জেনারেশন
         if (m.father && memberDict[m.father]) {
-            gen = getPaternalGen(m.father, new Set(visited)) + 1;
-        } else if (m.spouse) {
-            const spouseUid = Array.isArray(m.spouse) ? m.spouse[0] : m.spouse;
-            if (memberDict[spouseUid] && memberDict[spouseUid].father) {
-                gen = getPaternalGen(spouseUid, new Set(visited));
-            }
+            pGen = calculateGen(m.father, new Set(visited));
         }
 
-        paternalMemo[uid] = gen;
-        return gen;
-    }
-
-    function getMaternalGen(uid, visited = new Set()) {
-        if (!uid || !memberDict[uid]) return 0;
-        if (maternalMemo[uid] !== undefined) return maternalMemo[uid];
-        if (visited.has(uid)) return 1; // সাইকেল প্রতিরোধে
-
-        visited.add(uid);
-        const m = memberDict[uid];
-
-        let gen = 1;
+        // মায়ের দিক থেকে জেনারেশন
         if (m.mother && memberDict[m.mother]) {
-            gen = getMaternalGen(m.mother, new Set(visited)) + 1;
-        } else if (m.spouse) {
+            mGen = calculateGen(m.mother, new Set(visited));
+        }
+
+        const maxParentGen = Math.max(pGen, mGen);
+
+        // যদি নিজের পিতামাতা থাকে, তবে পিতামাতার জেনারেশন + ১
+        if (maxParentGen > 0) {
+            return maxParentGen + 1;
+        }
+
+        // যদি পিতা/মাতা না থাকে কিন্তু স্বামী/স্ত্রী থাকে
+        if (m.spouse) {
             const spouseUid = Array.isArray(m.spouse) ? m.spouse[0] : m.spouse;
-            if (memberDict[spouseUid] && memberDict[spouseUid].mother) {
-                gen = getMaternalGen(spouseUid, new Set(visited));
+            const spouseObj = memberDict[spouseUid];
+            if (spouseObj && (spouseObj.father || spouseObj.mother)) {
+                return calculateGen(spouseUid, new Set(visited));
             }
         }
 
-        maternalMemo[uid] = gen;
-        return gen;
+        return 1;
     }
 
-    // ১. প্রথম ধাপে জেনারেশন বের করা
+    // ২. প্রতিটি সদস্যের জেনারেশন অ্যাসাইন করা
     data.forEach(m => {
-        m.patrilinealGen = getPaternalGen(m.uid);
-        m.matrilinealGen = getMaternalGen(m.uid);
-        m.generation = Math.max(m.patrilinealGen, m.matrilinealGen) || 1;
+        m.generation = calculateGen(m.uid);
     });
 
-    // ২. দ্বিতীয় ধাপে রেন্ডারিং সহজ করতে পিতা-মাতা উভয়ের `children` অ্যারে স্বয়ংক্রিয়ভাবে সিঙ্ক করা (Optional কিন্তু সুবিধাজনক)
+    // ৩. Spouse দের জেনারেশন হুবহু এক রাখা (যাতে গাছ বাঁকা না দেখায়)
+    data.forEach(m => {
+        if (m.spouse) {
+            const spouseUid = Array.isArray(m.spouse) ? m.spouse[0] : m.spouse;
+            const spouse = memberDict[spouseUid];
+            if (spouse && spouse.generation) {
+                // যে পিতামাতার সন্তান, তার জেনারেশনকে প্রাধান্য দেওয়া
+                if ((m.father || m.mother) && (!spouse.father && !spouse.mother)) {
+                    spouse.generation = m.generation;
+                } else if ((spouse.father || spouse.mother) && (!m.father && !m.mother)) {
+                    m.generation = spouse.generation;
+                }
+            }
+        }
+    });
+
+    // ৪. পিতা-মাতার children অ্যারেতে সন্তানের ইউআইডি নিশ্চিত করা
     data.forEach(m => {
         if (m.father && memberDict[m.father]) {
             const fatherObj = memberDict[m.father];
