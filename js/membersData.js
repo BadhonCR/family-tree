@@ -5,6 +5,7 @@ export const rawMembersData = [
     { uid: "FT-002", bnName: "ফেন্সি রানি রায়", enName: "Fency Rani Roy", nick: "কনিকা", gender: "Female", color: 0xff1493, spouse: "FT-001", father: "FT-021", mother: "FT-079", children: ["FT-003", "FT-004"], description: "" },
     { uid: "FT-003", bnName: "বাঁধন চন্দ্র রায়", enName: "Badhon Chandra Roy", nick: "বাঁধন", gender: "Male", color: 0x00ccff, spouse: null, father: "FT-001", mother: "FT-002", children: [], description: "" },
     { uid: "FT-004", bnName: "লাবণ্য চন্দ্র রায়", enName: "Labonno Chandra Roy", nick: "লাবণ্য", gender: "Male", color: 0x3366ff, spouse: null, father: "FT-001", mother: "FT-002", children: [], description: "" },
+   
     { uid: "FT-006", bnName: "গোলাপ চন্দ্র রায়", enName: "Golap Chandra Roy", nick: "গোলাপ", gender: "Male", color: 0x0055ff, spouse: "FT-007", father: null, mother: null, children: ["FT-008", "FT-009"], description: "" },
     { uid: "FT-007", bnName: "মনিকা রানী রায়", enName: "Monika Rani Roy", nick: "মনিকা", gender: "Female", color: 0xff1493, spouse: "FT-006", father: "FT-021", mother: "FT-079", children: ["FT-008", "FT-009"], description: "" },
     { uid: "FT-008", bnName: "ওম চন্দ্র রায়", enName: "Om Chandra Roy", nick: "ওম", gender: "Male", color: 0x00ccff, spouse: null, father: "FT-006", mother: "FT-007", children: [], description: "" },
@@ -98,11 +99,11 @@ export const rawMembersData = [
     { uid: "FT-126", bnName: "অন্নদামোহন রায়", enName: "Annadamohan Roy", nick: "অন্নদামোহন", gender: "Male", color: 0x0055ff, spouse: "FT-127", father: "FT-120", mother: "FT-121", children: [], description: "MBBS Doctor from Kalkata" },
     { uid: "FT-127", bnName: "লীলাবতী রানী", enName: "Lilaboti Rani", nick: "লীলাবতী", gender: "Female", color: 0xff1493, spouse: "FT-126", father: null, mother: null, children: [], description: "" },
    
-    { uid: "FT-128", bnName: "অম্বিকা চরণ রায়", enName: "Ambika Charan Roy", nick: "অম্বিকা", gender: "Male", color: 0x0055ff, spouse: ["FT-129", "FT-130"],, father: "FT-120", mother: "FT-121", children: ["FT-159"], description: "" },
+    { uid: "FT-128", bnName: "অম্বিকা চরণ রায়", enName: "Ambika Charan Roy", nick: "অম্বিকা", gender: "Male", color: 0x0055ff, spouse: ["FT-129", "FT-130"], father: "FT-120", mother: "FT-121", children: ["FT-159"], description: "" },
     { uid: "FT-129", bnName: "শ্যামাময়ী", enName: "Shamamoyi", nick: "শ্যামাময়ী", gender: "Female", color: 0xff1493, spouse: "FT-128", father: null, mother: null, children: [], description: "" },
     { uid: "FT-130", bnName: "মালতি রানী", enName: "Maloti Rani", nick: "মালতি", gender: "Female", color: 0xff1493, spouse: "FT-128", father: null, mother: null, children: ["FT-159"], description: "" },
    
-    { uid: "FT-130", bnName: "মেয়ে ১", enName: "UnKnown Girl 1", nick: "মেয়ে ১", gender: "Female", color: 0xff1493, spouse: null, father: "FT-120", mother: "FT-121", children: [], description: "" },
+    { uid: "FT-131", bnName: "মেয়ে ১", enName: "UnKnown Girl 1", nick: "মেয়ে ১", gender: "Female", color: 0xff1493, spouse: null, father: "FT-120", mother: "FT-121", children: [], description: "" },
     { uid: "FT-132", bnName: "মেয়ে ২", enName: "UnKnown Girl 2", nick: "মেয়ে ২", gender: "Female", color: 0xff1493, spouse: "FT-133", father: "FT-120", mother: "FT-121", children: [], description: "পোদ্দারপাড়ায় বিয়ে হয়। তার চার ছেলে।" },
     { uid: "FT-133", bnName: "খরগ বাবু", enName: "Kharga Babu", nick: "খরগ বাবু", gender: "Male", color: 0x0055ff, spouse: "FT-132", father: null, mother: null, children: [], description: "পোদ্দারপাড়ায় বাড়ি। তার চার ছেলে।" },
   
