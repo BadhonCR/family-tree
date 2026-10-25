@@ -679,13 +679,14 @@
 
         /* Generic Bloodline/Member Search Component (Bloodline.html style) */
         let sortedMembers = [];
+        let validBloodlineRoots = []; // কুইজের জন্য যাচাইকৃত bloodline root তালিকা (async ভরাট হয়)
         function bengaliNameSort(a, b) {
             const an = (a.bnName || '').trim();
             const bn = (b.bnName || '').trim();
             return an.localeCompare(bn, 'bn', { sensitivity: 'base', numeric: true });
         }
 
-        function createCustomPicker({ inputId, clearId, optionsId, hiddenId, onSelect, onClear }) {
+        function createCustomPicker({ inputId, clearId, optionsId, hiddenId, onSelect, onClear, getList, allLabel }) {
             const input = document.getElementById(inputId);
             const clear = document.getElementById(clearId);
             const options = document.getElementById(optionsId);
@@ -694,8 +695,9 @@
 
             function filter(query) {
                 const q = query.trim().toLocaleLowerCase('bn-BD');
-                if (!q) return sortedMembers;
-                return sortedMembers.filter(m => {
+                const base = getList ? getList() : sortedMembers;
+                if (!q) return base;
+                return base.filter(m => {
                     const haystack = [m.bnName, m.enName, m.nick, m.uid].filter(Boolean).join(' ').toLocaleLowerCase('bn-BD');
                     return haystack.includes(q);
                 });
@@ -703,8 +705,27 @@
 
             function renderOptions(list) {
                 options.innerHTML = '';
+
+                // "সকল" অপশন (শুধু যে picker-এ allLabel দেওয়া আছে এবং সার্চ বক্স খালি)
+                const showAll = !!allLabel && !input.value.trim();
+                if (showAll) {
+                    const allItem = document.createElement('div');
+                    allItem.className = 'member-option';
+                    allItem.innerHTML = `<div class="member-option-text"><strong>${allLabel}</strong></div>`;
+                    allItem.addEventListener('mousedown', e => {
+                        e.preventDefault();
+                        input.value = '';
+                        if (hidden) hidden.value = '';
+                        clear.style.display = 'none';
+                        options.classList.remove('open');
+                        highlightedIndex = -1;
+                        if (onClear) onClear();
+                    });
+                    options.appendChild(allItem);
+                }
+
                 if (!list.length) {
-                    options.innerHTML = '<div class="picker-empty">কোনো সদস্য পাওয়া যায়নি</div>';
+                    if (!showAll) options.innerHTML = '<div class="picker-empty">কোনো সদস্য পাওয়া যায়নি</div>';
                     return;
                 }
 
@@ -754,6 +775,12 @@
             });
 
             input.addEventListener('input', () => {
+                highlightedIndex = -1;
+                // টাইপ করা শুরু করলে আগের নির্বাচন বাতিল (পুরোনো UID যেন থেকে না যায়)
+                if (hidden && hidden.value) {
+                    hidden.value = '';
+                    if (onClear) onClear();
+                }
                 renderOptions(filter(input.value));
                 options.classList.add('open');
                 clear.style.display = input.value ? 'block' : 'none';
@@ -769,9 +796,8 @@
                     highlightedIndex = Math.max(highlightedIndex - 1, 0);
                 } else if (e.key === 'Enter' && highlightedIndex >= 0 && items[highlightedIndex]) {
                     e.preventDefault();
-                    const uid = items[highlightedIndex].dataset.uid;
-                    const m = membersData.find(x => x.uid === uid);
-                    if (m) select(m);
+                    // প্রতিটি আইটেমের নিজস্ব mousedown হ্যান্ডলার আছে ("সকল" অপশনসহ)
+                    items[highlightedIndex].dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }));
                     return;
                 } else if (e.key === 'Escape') {
                     options.classList.remove('open');
@@ -780,6 +806,7 @@
                     return;
                 }
                 items.forEach((el, i) => el.classList.toggle('highlighted', i === highlightedIndex));
+                if (items[highlightedIndex]) items[highlightedIndex].scrollIntoView({ block: 'nearest' });
             });
 
             clear.addEventListener('click', () => {
@@ -1002,6 +1029,8 @@
                 clearId: 'quiz-bloodline-clear',
                 optionsId: 'quiz-bloodline-options',
                 hiddenId: 'quiz-bloodline-uid',
+                getList: () => validBloodlineRoots,
+                allLabel: 'সকল রক্তধারা (All)',
                 onSelect: () => {},
                 onClear: () => {}
             });
@@ -1100,9 +1129,6 @@
             }
 
             async function populateValidBloodlines() {
-                const optionsContainer = document.getElementById('quiz-bloodline-options');
-                if (!optionsContainer) return;
-
                 const candidateRoots = membersData.filter(m => m.children && m.children.length > 0);
                 const validRoots = [];
 
@@ -1124,48 +1150,9 @@
 
                 validRoots.sort((a, b) => (a.bnName || '').localeCompare(b.bnName || '', 'bn'));
 
-                optionsContainer.innerHTML = '';
-                
-                const allOpt = document.createElement('div');
-                allOpt.className = 'member-option';
-                allOpt.innerHTML = `<div class="member-option-text"><strong>সকল রক্তধারা (All)</strong></div>`;
-                allOpt.onclick = () => {
-                    document.getElementById('quiz-bloodline-input').value = 'সকল রক্তধারা (All)';
-                    document.getElementById('quiz-bloodline-uid').value = '';
-                    optionsContainer.classList.remove('open');
-                    document.getElementById('quiz-bloodline-clear').style.display = 'none';
-                };
-                optionsContainer.appendChild(allOpt);
-
-                validRoots.forEach(m => {
-                    const item = document.createElement('div');
-                    item.className = 'member-option';
-                    item.dataset.uid = m.uid;
-
-                    const img = document.createElement('img');
-                    img.className = 'member-option-avatar';
-                    loadProfilePhoto(img, m.uid);
-
-                    const text = document.createElement('div');
-                    text.className = 'member-option-text';
-                    text.innerHTML = `<strong>${m.bnName}${m.nick ? ` (${m.nick})` : ''}</strong><small>${m.enName || ''}</small>`;
-
-                    const badge = document.createElement('span');
-                    badge.className = 'member-option-badge';
-                    badge.textContent = m.uid;
-
-                    item.appendChild(img);
-                    item.appendChild(text);
-                    item.appendChild(badge);
-
-                    item.onclick = () => {
-                        document.getElementById('quiz-bloodline-input').value = `${m.bnName}${m.nick ? ` (${m.nick})` : ''}`;
-                        document.getElementById('quiz-bloodline-uid').value = m.uid;
-                        optionsContainer.classList.remove('open');
-                        document.getElementById('quiz-bloodline-clear').style.display = 'block';
-                    };
-                    optionsContainer.appendChild(item);
-                });
+                // তালিকাটি picker (createCustomPicker) নিজেই রেন্ডার করে —
+                // আগে এখানে সরাসরি DOM বানানো হতো, কিন্তু ফোকাস করলেই picker তা মুছে সব সদস্য দেখাত।
+                validBloodlineRoots = validRoots;
             }
 
             function esc(s) {
@@ -1209,7 +1196,7 @@
                 const m = questions[index];
 
                 if (type === 'photo') {
-                    const opts = shuffle([m, ...shuffle(membersData.filter(x => x.uid !== m.uid)).slice(0, 3)]);
+                    const opts = shuffle([m, ...shuffle(membersData.filter(x => x.uid !== m.uid && (x.bnName || '').trim() !== (m.bnName || '').trim())).slice(0, 3)]);
                     body.innerHTML = `
                         <div class="quiz-progress"><span>QUESTION ${index+1} / ${questions.length}</span><span>স্কোর: ${score}</span></div>
                         <div class="quiz-progressbar"><i style="width:${(index/questions.length)*100}%"></i></div>
@@ -1246,7 +1233,7 @@
                     else questionText = `${m.bnName}-এর দাম্পত্য সঙ্গীকে শনাক্ত করুন:`;
 
                     const correctObj = byUid(targetUid);
-                    const wrongOpts = shuffle(membersData.filter(x => x.uid !== targetUid && x.uid !== m.uid)).slice(0, 3);
+                    const wrongOpts = shuffle(membersData.filter(x => x.uid !== targetUid && x.uid !== m.uid && (!correctObj || (x.bnName || '').trim() !== (correctObj.bnName || '').trim()))).slice(0, 3);
                     const opts = shuffle([correctObj, ...wrongOpts]);
 
                     body.innerHTML = `
