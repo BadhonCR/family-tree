@@ -158,7 +158,7 @@ export const rawMembersData = [
     { uid: "FT-285", bnName: "বিদ্যুৎ চন্দ্র রায়", enName: "Bidyut Chandra Roy", nick: "বিদ্যুৎ", gender: "Male", color: 0x3366ff, spouse: null, father: "FT-273", mother: "FT-283", children: [], description: "" },
     { uid: "FT-290", bnName: "ব্রজবালা", enName: "Vrajbala", nick: "ব্রজবালা", gender: "Female", color: 0xff1493, spouse: "FT-265", father: null, mother: null, children: ["FT-291", "FT-292", "FT-293"], description: "" },
     { uid: "FT-291", bnName: "শ্যামলী রানী", enName: "Shyamli Rani", nick: "শ্যামলী", gender: "Female", color: 0xff1493, spouse: "FT-295", father: "FT-265", mother: "FT-290", children: ["FT-296", "FT-297", "FT-298"], description: "" },
-    { uid: "FT-292", bnName: "অমল চন্দ্র রায়", enName: "Amal Chandra Roy", nick: "অমল", gender: "Female", color: 0xff1493, spouse: null, father: "FT-265", mother: "FT-290", children: [], description: "" },
+    { uid: "FT-292", bnName: "অমল চন্দ্র রায়", enName: "Amal Chandra Roy", nick: "অমল", gender: "Male", color: 0xff1493, spouse: null, father: "FT-265", mother: "FT-290", children: [], description: "" },
     { uid: "FT-293", bnName: "অপূর্ব চন্দ্র রায়", enName: "Apurba Chandra Roy", nick: "অপূর্ব", gender: "Male", color: 0x0055ff, spouse: "FT-294", father: "FT-265", mother: "FT-290", children: ["FT-304", "FT-308"], description: "" },
     { uid: "FT-294", bnName: "শান্তি রানী", enName: "Shanti Rani", nick: "শান্তি", gender: "Female", color: 0xff1493, spouse: "FT-293", father: null, mother: null, children: ["FT-304", "FT-308"], description: "" },
     { uid: "FT-295", bnName: "মনভোলা", enName: "Manabhola", nick: "মনভোলা", gender: "Male", color: 0x0055ff, spouse: "FT-291", father: null, mother: null, children: ["FT-296", "FT-297", "FT-298"], description: "" },
@@ -177,7 +177,7 @@ export const rawMembersData = [
     { uid: "FT-314", bnName: "যাদব রায়", enName: "Jadav Roy", nick: "যাদব", gender: "Male", color: 0x0055ff, spouse: "FT-315", father: "FT-262", mother: "FT-313", children: ["FT-316"], description: "" },
     { uid: "FT-315", bnName: "ননী বালা", enName: "Noni Bala", nick: "ননী বালা", gender: "Female", color: 0xff1493, spouse: "FT-314", father: null, mother: null, children: ["FT-316"], description: "" },
     { uid: "FT-316", bnName: "বিষ্ণু রায়", enName: "Vishnu Roy", nick: "বিষ্ণু", gender: "Male", color: 0x0055ff, spouse: "FT-317", father: "FT-314", mother: "FT-315", children: ["FT-318", "FT-319"], description: "" },
-    { uid: "FT-317", bnName: "সীতা রানী", enName: "Noni Bala", nick: "সীতা", gender: "Female", color: 0xff1493, spouse: "FT-316", father: null, mother: null, children: ["FT-318", "FT-319"], description: "" },
+    { uid: "FT-317", bnName: "সীতা রানী", enName: "Sita Rani", nick: "সীতা", gender: "Female", color: 0xff1493, spouse: "FT-316", father: null, mother: null, children: ["FT-318", "FT-319"], description: "" },
     { uid: "FT-318", bnName: "শুভ রায়", enName: "Shuvo Roy", nick: "শুভ", gender: "Male", color: 0x0055ff, spouse: null, father: "FT-316", mother: "FT-317", children: [], description: "কিশোর বয়সে দুরারোগ্য রোগে মৃত্যু।" },
     { uid: "FT-319", bnName: "শতাব্দী রানী", enName: "Shatabdi Rani", nick: "শতাব্দী", gender: "Female", color: 0xff1493, spouse: "FT-320", father: "FT-316", mother: "FT-317", children: ["FT-321"], description: "" },
     { uid: "FT-320", bnName: "শতাব্দী স্বামী", enName: "Shatabdi Husband", nick: "শতাব্দী স্বামী", gender: "Male", color: 0x0055ff, spouse: "FT-319", father: null, mother: null, children: ["FT-321"], description: "" },
@@ -247,6 +247,46 @@ function processMembersData(data) {
                 }
             }
         }
+    });
+
+    // ৩.৫ পিতৃকুল (Patrilineal) ও মাতৃকুল (Matrilineal) জেনারেশন ইনডেক্স
+    //  - পিতৃকুল: বাবার ধারা ধরে গণনা (বাবা না থাকলে মা, তারপর স্বামী/স্ত্রীর সাথে মিলিয়ে নেওয়া হয়)
+    //  - মাতৃকুল: মায়ের ধারা ধরে গণনা (মা না থাকলে বাবা, তারপর স্বামী/স্ত্রীর সাথে মিলিয়ে নেওয়া হয়)
+    //  home.html / genogram.html / bloodline.html এই দুটি ফিল্ড (patrilinealGen, matrilinealGen) ব্যবহার করে।
+    function buildLineGen(primaryKey, fallbackKey) {
+        const memo = {};
+        function gen(uid, trail) {
+            if (memo[uid]) return memo[uid];
+            const m = memberDict[uid];
+            if (!m || trail.has(uid)) return 1;
+            trail.add(uid);
+
+            let g = 1;
+            if (m[primaryKey] && memberDict[m[primaryKey]]) {
+                g = gen(m[primaryKey], trail) + 1;
+            } else if (m[fallbackKey] && memberDict[m[fallbackKey]]) {
+                g = gen(m[fallbackKey], trail) + 1;
+            } else if (m.spouse) {
+                // পিতামাতার তথ্যহীন সদস্য (যেমন বিয়ের সূত্রে আসা) → স্বামী/স্ত্রীর লেভেলে বসানো
+                const spouseUids = Array.isArray(m.spouse) ? m.spouse : [m.spouse];
+                const anchor = spouseUids
+                    .map(id => memberDict[id])
+                    .find(sp => sp && (sp.father || sp.mother));
+                if (anchor) g = gen(anchor.uid, trail);
+            }
+
+            trail.delete(uid);
+            memo[uid] = g;
+            return g;
+        }
+        return uid => gen(uid, new Set());
+    }
+
+    const calcPatrilinealGen = buildLineGen('father', 'mother');
+    const calcMatrilinealGen = buildLineGen('mother', 'father');
+    data.forEach(m => {
+        m.patrilinealGen = calcPatrilinealGen(m.uid);
+        m.matrilinealGen = calcMatrilinealGen(m.uid);
     });
 
     // ৪. পিতা-মাতার children অ্যারেতে সন্তানের ইউআইডি নিশ্চিত করা
