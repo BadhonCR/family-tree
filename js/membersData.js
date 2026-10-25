@@ -190,38 +190,75 @@ function processMembersData(data) {
     const memberDict = {};
     data.forEach(m => { memberDict[m.uid] = m; });
 
+    // ক্যাশিংয়ের জন্য মেমো অবজেক্ট
+    const paternalMemo = {};
+    const maternalMemo = {};
+
     function getPaternalGen(uid, visited = new Set()) {
-        if (visited.has(uid)) return 1;
+        if (!uid || !memberDict[uid]) return 0;
+        if (paternalMemo[uid] !== undefined) return paternalMemo[uid];
+        if (visited.has(uid)) return 1; // সাইকেল প্রতিরোধে
+
         visited.add(uid);
         const m = memberDict[uid];
-        if (!m) return 1;
 
-        if (m.father) return getPaternalGen(m.father, new Set(visited)) + 1;
-        if (m.spouse) {
+        let gen = 1;
+        if (m.father && memberDict[m.father]) {
+            gen = getPaternalGen(m.father, new Set(visited)) + 1;
+        } else if (m.spouse) {
             const spouseUid = Array.isArray(m.spouse) ? m.spouse[0] : m.spouse;
-            if (memberDict[spouseUid] && memberDict[spouseUid].father) return getPaternalGen(spouseUid, new Set(visited));
+            if (memberDict[spouseUid] && memberDict[spouseUid].father) {
+                gen = getPaternalGen(spouseUid, new Set(visited));
+            }
         }
-        return 1;
+
+        paternalMemo[uid] = gen;
+        return gen;
     }
 
     function getMaternalGen(uid, visited = new Set()) {
-        if (visited.has(uid)) return 1;
+        if (!uid || !memberDict[uid]) return 0;
+        if (maternalMemo[uid] !== undefined) return maternalMemo[uid];
+        if (visited.has(uid)) return 1; // সাইকেল প্রতিরোধে
+
         visited.add(uid);
         const m = memberDict[uid];
-        if (!m) return 1;
 
-        if (m.mother) return getMaternalGen(m.mother, new Set(visited)) + 1;
-        if (m.spouse) {
+        let gen = 1;
+        if (m.mother && memberDict[m.mother]) {
+            gen = getMaternalGen(m.mother, new Set(visited)) + 1;
+        } else if (m.spouse) {
             const spouseUid = Array.isArray(m.spouse) ? m.spouse[0] : m.spouse;
-            if (memberDict[spouseUid] && memberDict[spouseUid].mother) return getMaternalGen(spouseUid, new Set(visited));
+            if (memberDict[spouseUid] && memberDict[spouseUid].mother) {
+                gen = getMaternalGen(spouseUid, new Set(visited));
+            }
         }
-        return 1;
+
+        maternalMemo[uid] = gen;
+        return gen;
     }
 
+    // ১. প্রথম ধাপে জেনারেশন বের করা
     data.forEach(m => {
         m.patrilinealGen = getPaternalGen(m.uid);
         m.matrilinealGen = getMaternalGen(m.uid);
-        m.generation = Math.max(m.patrilinealGen, m.matrilinealGen);
+        m.generation = Math.max(m.patrilinealGen, m.matrilinealGen) || 1;
+    });
+
+    // ২. দ্বিতীয় ধাপে রেন্ডারিং সহজ করতে পিতা-মাতা উভয়ের `children` অ্যারে স্বয়ংক্রিয়ভাবে সিঙ্ক করা (Optional কিন্তু সুবিধাজনক)
+    data.forEach(m => {
+        if (m.father && memberDict[m.father]) {
+            const fatherObj = memberDict[m.father];
+            if (!fatherObj.children.includes(m.uid)) {
+                fatherObj.children.push(m.uid);
+            }
+        }
+        if (m.mother && memberDict[m.mother]) {
+            const motherObj = memberDict[m.mother];
+            if (!motherObj.children.includes(m.uid)) {
+                motherObj.children.push(m.uid);
+            }
+        }
     });
 
     return data;
