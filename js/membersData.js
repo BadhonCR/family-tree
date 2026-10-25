@@ -31,7 +31,7 @@ export const rawMembersData = [
     { uid: "FT-030", bnName: "দিলীপ চন্দ্র রায়", enName: "Dilip Chandra Roy", nick: "দিলীপ", gender: "Male", color: 0x00ccff, spouse: null, father: "FT-028", mother: "FT-018", children: [], description: "" },
     { uid: "FT-031", bnName: "নিত্যানন্দ বর্মন", enName: "Nityananda Barman", nick: "নিত্যা", gender: "Male", color: 0x00ccff, spouse: null, father: "FT-028", mother: "FT-018", children: [], description: "" },
     { uid: "FT-032", bnName: "মনজু রানী রায়", enName: "Manju Rani Roy", nick: "টুকটুকি", gender: "Female", color: 0xff69b4, spouse: null, father: "FT-028", mother: "FT-018", children: [], description: "" },
-    { uid: "FT-033", bnName: "মানিক চন্দ্র রায়", enName: "Manik Chandra Roy", nick: "মানিক", gender: "Male", color: 0x00ccff, spouse: null, father: "FT-028", mother: "FT-018", children: [], description: "" },
+    { uid: "FT-033", bnName: "মানিক বর্মন", enName: "Manik Barman", nick: "মানিক", gender: "Male", color: 0x00ccff, spouse: null, father: "FT-028", mother: "FT-018", children: [], description: "" },
     
     { uid: "FT-036", bnName: "ভোলা কাজ্জি", enName: "Vola Kagozi", nick: "ভোলা", gender: "Male", color: 0x0055ff, spouse: "FT-019", father: null, mother: null, children: ["FT-037", "FT-040"], description: "" },
     { uid: "FT-037", bnName: "বিপুল রায়", enName: "Bepul Roy", nick: "বিপুল", gender: "Male", color: 0x00ccff, spouse: "FT-038", father: "FT-036", mother: "FT-019", children: ["FT-039"], description: "" },
@@ -114,7 +114,7 @@ export const rawMembersData = [
     { uid: "FT-152", bnName: "রৌদ্র রায়", enName: "Ruddra Roy", nick: "রৌদ্র", gender: "Male", color: 0x00ccff, spouse: null, father: "FT-150", mother: "FT-147", children: [], description: "" },
     { uid: "FT-153", bnName: "সুরেশ চন্দ্র রায়", enName: "Suresh Chandra Roy", nick: "সুরেশ", gender: "Male", color: 0x0055ff, spouse: "FT-148", father: null, mother: null, children: ["FT-154", "FT-155"], description: "" },
     { uid: "FT-154", bnName: "শুরঞ্জনা রানী রায়", enName: "Suranjana Rani Roy", nick: "শুরঞ্জনা", gender: "Female", color: 0xff1493, spouse: null, father: "FT-153", mother: "FT-148", children: [], description: "" },
-    { uid: "FT-155", bnName: "স্বপ্নার ছেলে", enName: "Son of Sapna", nick: "স্বপ্নার ছেলে", gender: "Male", color: 0x00ccff, spouse: null, father: "FT-153", mother: "FT-148", children: [], description: "" },
+    { uid: "FT-155", bnName: "সজাগ চন্দ্র রায়", enName: "Sajak Chandra Roy", nick: "সজাগ", gender: "Male", color: 0x00ccff, spouse: null, father: "FT-153", mother: "FT-148", children: [], description: "" },
     { uid: "FT-156", bnName: "দেবার্শীষ চন্দ্র রায়", enName: "Debashish Chandra Roy", nick: "দেবার্শীষ", gender: "Male", color: 0x00ccff, spouse: "FT-149", father: null, mother: null, children: ["FT-157"], description: "" },
     { uid: "FT-157", bnName: "অর্ঘ চন্দ্র রায়", enName: "Argho Roy", nick: "অর্ঘ", gender: "Male", color: 0x00ccff, spouse: null, father: "FT-156", mother: "FT-149", children: [], description: "" },
      
