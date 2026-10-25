@@ -877,6 +877,14 @@
 
         const threads = connections.map(pair => createThread(pair[0].position, pair[1].position));
 
+        // জেনারেশন অনুযায়ী গ্রুপ একবারই তৈরি হবে (আগে প্রতি ফ্রেমে হচ্ছিল)
+        const genGroups = {};
+        membersData.forEach(m => {
+            const g = m.patrilinealGen ?? m.generation ?? 1;
+            if (!genGroups[g]) genGroups[g] = [];
+            genGroups[g].push(m.uid);
+        });
+
         let angle = 0;
         function animate(time) {
             requestAnimationFrame(animate);
@@ -887,12 +895,6 @@
 
             if (isAnimating) {
                 angle += 0.002;
-
-                const genGroups = {};
-                membersData.forEach(m => {
-                    if (!genGroups[m.patrilinealGen]) genGroups[m.patrilinealGen] = [];
-                    genGroups[m.patrilinealGen].push(m.uid);
-                });
 
                 Object.keys(genGroups).forEach(genStr => {
                     const gen = parseInt(genStr);
@@ -1166,7 +1168,7 @@
             mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
             raycaster.setFromCamera(mouse, camera);
-            const intersects = raycaster.intersectObjects(clickableMarbles);
+            const intersects = raycaster.intersectObjects(clickableMarbles.filter(m => m.visible));
 
             if (intersects.length > 0) {
                 selectMarble(intersects[0].object);
@@ -1200,7 +1202,7 @@
         function fadeOutMarble(mesh, duration = 800) {
             new TWEEN.Tween(mesh.material)
                 .to({ opacity: 0 }, duration)
-                .onComplete(() => { mesh.visible = false; })
+                .onComplete(() => { if (mesh.material.opacity <= 0.01) mesh.visible = false; })
                 .start();
 
             if (mesh.children[0]) {
