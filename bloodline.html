@@ -57,7 +57,7 @@
 
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* ===== TOP NAVBAR (HOME.HTML STYLE) ===== */
+        /* ===== TOP NAVBAR ===== */
         .top-navbar { display: none !important; }
         .nav {
             position: sticky; 
@@ -175,7 +175,7 @@
             flex-direction: column;
             gap: 6px;
             flex: 1;
-            min-width: 240px;
+            min-width: 220px;
         }
 
         .select-group label { font-size: 13px; color: #94a3b8; font-weight: 600; }
@@ -198,7 +198,7 @@
         }
 
         .native-select-hidden { display: none !important; }
-        .member-picker { min-width: min(100%, 360px); position: relative; }
+        .member-picker { min-width: min(100%, 340px); position: relative; }
         .member-search-wrap { position: relative; }
         .member-search-input { padding: 11px 42px 11px 40px; cursor: text; }
         .search-icon {
@@ -240,7 +240,7 @@
         .picker-empty { padding: 18px 10px; text-align: center; color: #64748b; font-size: 12px; }
         .picker-hint { margin-top: 5px; color: #64748b; font-size: 10px; }
 
-        /* Export Buttons Toolbar */
+        /* Toolbar Controls */
         .export-controls {
             display: flex;
             gap: 8px;
@@ -252,7 +252,7 @@
             background: rgba(15, 23, 42, 0.85);
             color: #00ffff;
             border: 1px solid rgba(0, 255, 255, 0.4);
-            padding: 8px 12px;
+            padding: 8px 14px;
             height: 38px;
             border-radius: 8px;
             display: flex;
@@ -276,12 +276,66 @@
             transform: none;
         }
 
-        .btn-png { background: linear-gradient(135deg, #00b4db, #0083b0); color: white; border: none; }
-        .btn-svg { background: linear-gradient(135deg, #7c3aed, #4c1d95); color: white; border: none; }
-        .btn-pdf { background: linear-gradient(135deg, #dc2626, #7f1d1d); color: white; border: none; }
+        /* EXPORT DROPDOWN MENU STYLES */
+        .dropdown-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .btn-export-main {
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            color: #ffffff;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0, 114, 255, 0.35);
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: calc(100% + 6px);
+            background: rgba(11, 23, 38, 0.96);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 12px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+            min-width: 170px;
+            z-index: 1500;
+            backdrop-filter: blur(12px);
+            overflow: hidden;
+            padding: 5px 0;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+            animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 10px 16px;
+            background: transparent;
+            border: none;
+            color: #edf8ff;
+            font-size: 13px;
+            font-weight: 600;
+            text-align: left;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(0, 204, 255, 0.15);
+            color: #00ffff;
+        }
+
         .btn-print { background: linear-gradient(135deg, #059669, #047857); color: white; border: none; }
 
-        /* 2D Tree Canvas View */
+        /* 2D Tree Canvas View Container */
         #tree-2d-viewport {
             width: 100%;
             min-height: 600px;
@@ -306,7 +360,7 @@
             gap: 60px;
             min-width: max-content;
             margin: 0 auto;
-            padding: 20px 20px 60px 20px;
+            padding: 20px 20px 80px 20px;
         }
 
         .gen-2d-block { display: flex; flex-direction: column; align-items: center; width: 100%; position: relative; }
@@ -356,53 +410,84 @@
             z-index: 1;
         }
 
-        /* Export Watermark Footer Element */
+        /* MODERN & ENHANCED WATERMARK FOOTER */
         .export-watermark-footer {
             display: none;
             position: absolute;
-            bottom: 12px;
-            right: 20px;
+            bottom: 16px;
+            right: 24px;
             text-align: right;
             font-size: 11px;
-            line-height: 1.4;
             z-index: 10;
-            padding: 6px 12px;
-            border-radius: 6px;
-            backdrop-filter: blur(4px);
+            padding: 8px 14px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            line-height: 1.5;
         }
 
-        /* Export Themes (Black & White vs Color) */
+        .export-watermark-footer .wm-title {
+            font-weight: 700;
+            font-size: 10px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+            opacity: 0.8;
+        }
+
+        .export-watermark-footer .wm-row {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 6px;
+        }
+
+        /* EXPORT THEME MODES */
+
+        /* 1. BLACK & WHITE MODE MODIFICATIONS */
         .export-bw #tree-2d-viewport {
             background: #ffffff !important;
-            border-color: #ccc;
+            border-color: #d1d5db;
         }
         .export-bw .couple-node-card {
             background: #ffffff !important;
-            border: 2px solid #000000 !important;
+            border: 2px solid #1e293b !important;
             box-shadow: none !important;
         }
         .export-bw .card-2d-name {
-            color: #000000 !important;
+            color: #0f172a !important;
         }
         .export-bw .node-avatar {
-            border: 1.5px solid #000000 !important;
+            border: 1.5px solid #334155 !important;
             filter: grayscale(100%);
         }
+        
+        /* BW Mode: Light circle background with crisp white icon for missing photo */
+        .export-bw .node-avatar.no-img {
+            filter: none !important;
+            background-color: #475569 !important; /* Soft dark gray circle */
+            border-color: #1e293b !important;
+        }
+
         .export-bw .spouse-divider {
-            color: #000000 !important;
+            color: #334155 !important;
         }
         .export-bw #tree-svg-canvas path {
-            stroke: #000000 !important;
+            stroke: #1e293b !important;
         }
         .export-bw .export-watermark-footer {
-            color: #222222 !important;
-            background: rgba(240, 240, 240, 0.85) !important;
-            border: 1px solid #ccc !important;
+            color: #0f172a !important;
+            background: rgba(241, 245, 249, 0.95) !important;
+            border: 1px solid #cbd5e1 !important;
         }
+
+        /* 2. COLOR MODE MODIFICATIONS */
         .export-color .export-watermark-footer {
-            color: #00ffff !important;
-            background: rgba(8, 14, 24, 0.85) !important;
+            color: #edf8ff !important;
+            background: rgba(8, 20, 32, 0.88) !important;
             border: 1px solid rgba(0, 255, 255, 0.3) !important;
+        }
+        .export-color .export-watermark-footer .wm-title {
+            color: #00ffff;
         }
 
         /* Profile Popup Modal */
@@ -552,7 +637,7 @@
         <div>২ডি ব্লাডলাইন প্রসেস হচ্ছে...</div>
     </div>
 
-    <!-- TOP NAVBAR (HOME STYLE) -->
+    <!-- TOP NAVBAR -->
     <header class="nav">
         <div class="nav-inner">
             <a class="brand" href="home.html" aria-label="Family Archive Home">
@@ -593,23 +678,33 @@
                 <div class="picker-hint">নাম, ডাকনাম বা UID লিখে সদস্য খুঁজে নির্বাচন করুন</div>
             </div>
 
-            <!-- EXPORT THEME SELECTOR -->
+            <!-- EXPORT COLOR MODE SELECTOR -->
             <div class="select-group" style="max-width: 170px; min-width: 140px;">
-                <label for="export-theme">এক্সপোর্ট কালার মোড:</label>
+                <label for="export-theme">এক্সপোর্ট থিম:</label>
                 <select id="export-theme" class="custom-select">
-                    <option value="color">🎨 Color</option>
+                    <option value="color">🎨 Color Mode</option>
                     <option value="bw">🔳 Black & White</option>
                 </select>
             </div>
 
-            <!-- ZOOM & EXPORT TOOLBAR -->
+            <!-- ZOOM & COMBINED EXPORT MENU TOOLBAR -->
             <div class="export-controls">
                 <button class="action-btn" id="zoom-in-btn" title="Zoom In">➕</button>
                 <button class="action-btn" id="zoom-out-btn" title="Zoom Out">➖</button>
                 <button class="action-btn" id="zoom-reset-btn" title="Reset Zoom">↺</button>
-                <button class="action-btn btn-png" id="export-png-btn">🖼️ PNG</button>
-                <button class="action-btn btn-svg" id="export-svg-btn">🧬 SVG</button>
-                <button class="action-btn btn-pdf" id="export-pdf-btn">📄 A4 PDF</button>
+                
+                <!-- COMBINED EXPORT DROPDOWN BUTTON -->
+                <div class="dropdown-wrapper">
+                    <button class="action-btn btn-export-main" id="export-dropdown-toggle">
+                        📥 Export Menu ▼
+                    </button>
+                    <div class="dropdown-menu" id="export-dropdown-menu">
+                        <button class="dropdown-item" id="export-png-btn">🖼️ PNG Image</button>
+                        <button class="dropdown-item" id="export-svg-btn">🧬 SVG Vector</button>
+                        <button class="dropdown-item" id="export-pdf-btn">📄 A4 PDF File</button>
+                    </div>
+                </div>
+
                 <button class="action-btn btn-print" id="print-btn" title="Print Tree">🖨️ প্রিন্ট</button>
             </div>
         </section>
@@ -619,10 +714,11 @@
             <div id="tree-2d-view" class="tree-2d-wrapper">
                 <svg id="tree-svg-canvas"></svg>
             </div>
-            <!-- Watermark Footer for Exports -->
+            <!-- Enhanced Watermark Footer -->
             <div id="export-watermark" class="export-watermark-footer">
-                <div><strong>সর্বশেষ হালনাগাদ:</strong> <span id="wm-datetime"></span></div>
-                <div><strong>ওয়েবসাইট:</strong> <span id="wm-url"></span></div>
+                <div class="wm-title">Digital Family Archive</div>
+                <div class="wm-row">🗓️ <strong>সর্বশেষ হালনাগাদ:</strong> <span id="wm-datetime"></span></div>
+                <div class="wm-row">🌐 <strong>ওয়েবসাইট:</strong> <span id="wm-url"></span></div>
             </div>
         </section>
 
@@ -694,7 +790,11 @@
 
         let currentZoom = 1;
 
-        const DEFAULT_NO_IMAGE = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 24 24' fill='none' stroke='%2000ffff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='3' width='18' height='18' rx='2' ry='2'/><circle cx='8.5' cy='8.5' r='1.5'/><polyline points='21 15 16 10 5 21'/><line x1='3' y1='3' x2='21' y2='21'/></svg>";
+        // Color Mode SVG Placeholder (Cyan line on dark background)
+        const DEFAULT_NO_IMAGE_COLOR = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 24 24' fill='none' stroke='%2000ffff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='8' r='4'/><path d='M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2'/></svg>";
+
+        // Black & White Mode SVG Placeholder (Clean Crisp White Icon inside Circle)
+        const DEFAULT_NO_IMAGE_BW = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='8' r='4'/><path d='M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2'/></svg>";
 
         function loadProfilePhoto(imgEl, uid) {
             const candidates = [
@@ -707,7 +807,9 @@
             function tryNext() {
                 if (i >= candidates.length) {
                     imgEl.onerror = null;
-                    imgEl.src = DEFAULT_NO_IMAGE;
+                    const isBW = document.body.classList.contains('export-bw');
+                    imgEl.src = isBW ? DEFAULT_NO_IMAGE_BW : DEFAULT_NO_IMAGE_COLOR;
+                    imgEl.classList.add('no-img');
                     return;
                 }
                 imgEl.src = candidates[i++];
@@ -842,7 +944,7 @@
             svg.setAttribute('height', wrapper.scrollHeight || wrapper.offsetHeight);
 
             const isBW = document.body.classList.contains('export-bw');
-            const strokeColor = isBW ? '#000000' : '#00ffff';
+            const strokeColor = isBW ? '#1e293b' : '#00ffff';
 
             const cards = document.querySelectorAll('.couple-node-card');
             cards.forEach(parentCard => {
@@ -886,9 +988,9 @@
             setTimeout(drawSvgConnections, 100);
         }
 
-        /* ----- EXPORT HELPERS ----- */
+        /* ----- EXPORT HELPERS & A4 RATIO CANVAS RENDER ----- */
         function setExportButtonsBusy(busy) {
-            ['export-png-btn', 'export-svg-btn', 'export-pdf-btn', 'print-btn'].forEach(id => {
+            ['export-png-btn', 'export-svg-btn', 'export-pdf-btn', 'print-btn', 'export-dropdown-toggle'].forEach(id => {
                 const btn = document.getElementById(id);
                 if (btn) btn.disabled = busy;
             });
@@ -908,7 +1010,7 @@
             const timeStr = now.toLocaleTimeString('bn-BD', { hour: '2-digit', minute: '2-digit', hour12: true });
             
             document.getElementById('wm-datetime').innerText = `${dateStr}, ${timeStr}`;
-            document.getElementById('wm-url').innerText = window.location.href || 'https://familytree.archive';
+            document.getElementById('wm-url').innerText = window.location.host || 'familytree.archive';
         }
 
         async function renderTreeToCanvas() {
@@ -930,20 +1032,55 @@
             await new Promise(r => setTimeout(r, 80));
 
             const isBW = document.body.classList.contains('export-bw');
-            const canvas = await html2canvas(viewport, {
+            
+            // Standard html2canvas capture
+            const rawCanvas = await html2canvas(viewport, {
                 backgroundColor: isBW ? '#ffffff' : '#0f172a',
                 scale: 2,
                 useCORS: true,
                 logging: false
             });
 
+            // A4 Landscape Aspect Ratio Fitting (1.414 : 1)
+            const targetRatio = 1.41421356; // Standard A4 Landscape Aspect Ratio
+            const rawWidth = rawCanvas.width;
+            const rawHeight = rawCanvas.height;
+            const currentRatio = rawWidth / rawHeight;
+
+            let finalWidth = rawWidth;
+            let finalHeight = rawHeight;
+
+            if (currentRatio < targetRatio) {
+                // Adjust width to match 1.414 ratio
+                finalWidth = Math.round(rawHeight * targetRatio);
+            } else {
+                // Adjust height to match 1.414 ratio
+                finalHeight = Math.round(rawWidth / targetRatio);
+            }
+
+            // Create container canvas fitting exactly A4 1.414 ratio
+            const fittedCanvas = document.createElement('canvas');
+            fittedCanvas.width = finalWidth;
+            fittedCanvas.height = finalHeight;
+            const ctx = fittedCanvas.getContext('2d');
+
+            // Fill Background
+            ctx.fillStyle = isBW ? '#ffffff' : '#0f172a';
+            ctx.fillRect(0, 0, finalWidth, finalHeight);
+
+            // Center content inside A4 Ratio Canvas
+            const offsetX = Math.round((finalWidth - rawWidth) / 2);
+            const offsetY = Math.round((finalHeight - rawHeight) / 2);
+            ctx.drawImage(rawCanvas, offsetX, offsetY);
+
             watermark.style.display = 'none';
             wrapper.style.transform = `scale(${savedZoom})`;
             drawSvgConnections();
-            return canvas;
+
+            return fittedCanvas;
         }
 
-        /* ----- EXPORT FUNCTIONS (PNG, SVG, A4 PDF, PRINT) ----- */
+        /* ----- EXPORT FUNCTIONS (PNG, SVG, A4 PDF) ----- */
         async function exportTreeAsPNG() {
             const uid = document.getElementById('member-select').value;
             if (!uid) { alert('প্রথমে একজন সদস্য নির্বাচন করুন।'); return; }
@@ -961,6 +1098,7 @@
                 alert('PNG এক্সপোর্ট ব্যর্থ হয়েছে।');
             } finally {
                 setExportButtonsBusy(false);
+                closeDropdownMenu();
             }
         }
 
@@ -981,38 +1119,22 @@
                 const { jsPDF } = window.jspdf;
                 const imgData = canvas.toDataURL('image/png');
                 
-                // A4 Landscape PDF Configuration (297mm x 210mm)
+                // Pure A4 Landscape PDF Document (297mm x 210mm)
                 const pdf = new jsPDF({
                     orientation: 'landscape',
                     unit: 'mm',
                     format: 'a4'
                 });
 
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-                const pdfHeight = pdf.internal.pageSize.getHeight();
-                
-                const canvasAspect = canvas.width / canvas.height;
-                const pageAspect = pdfWidth / pdfHeight;
-
-                let printW, printH;
-                if (canvasAspect > pageAspect) {
-                    printW = pdfWidth - 20; // 10mm margins
-                    printH = printW / canvasAspect;
-                } else {
-                    printH = pdfHeight - 20; // 10mm margins
-                    printW = printH * canvasAspect;
-                }
-
-                const xX = (pdfWidth - printW) / 2;
-                const yY = (pdfHeight - printH) / 2;
-
-                pdf.addImage(imgData, 'PNG', xX, yY, printW, printH);
+                // Perfect 1:1 Page Fit for A4 Landscape
+                pdf.addImage(imgData, 'PNG', 0, 0, 297, 210);
                 pdf.save(getExportFilename('pdf'));
             } catch (err) {
                 console.error(err);
                 alert('A4 PDF এক্সপোর্ট ব্যর্থ হয়েছে।');
             } finally {
                 setExportButtonsBusy(false);
+                closeDropdownMenu();
             }
         }
 
@@ -1088,7 +1210,14 @@
                 alert('SVG এক্সপোর্ট ব্যর্থ হয়েছে।');
             } finally {
                 setExportButtonsBusy(false);
+                closeDropdownMenu();
             }
+        }
+
+        /* ----- DROPDOWN HELPER ----- */
+        function closeDropdownMenu() {
+            const menu = document.getElementById('export-dropdown-menu');
+            if (menu) menu.classList.remove('show');
         }
 
         /* ----- PROFILE POPUP UI LOGIC ----- */
@@ -1313,22 +1442,42 @@
                 items.forEach((el, i) => el.classList.toggle('highlighted', i === highlightedIndex));
             });
             memberClear.addEventListener('click', clearMemberSelection);
+
+            // Export Dropdown Menu Toggle
+            const dropdownToggle = document.getElementById('export-dropdown-toggle');
+            const dropdownMenu = document.getElementById('export-dropdown-menu');
+
+            dropdownToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dropdownMenu.classList.toggle('show');
+            });
+
             document.addEventListener('click', e => {
                 if (!e.target.closest('.member-picker')) {
                     memberOptions.classList.remove('open');
                     memberSearch.setAttribute('aria-expanded', 'false');
                 }
+                if (!e.target.closest('.dropdown-wrapper')) {
+                    closeDropdownMenu();
+                }
             });
 
             // Theme Switcher Logic
             document.getElementById('export-theme').addEventListener('change', (e) => {
-                if (e.target.value === 'bw') {
+                const isBW = e.target.value === 'bw';
+                if (isBW) {
                     document.body.classList.remove('export-color');
                     document.body.classList.add('export-bw');
                 } else {
                     document.body.classList.remove('export-bw');
                     document.body.classList.add('export-color');
                 }
+
+                // Update missing images according to mode
+                document.querySelectorAll('.node-avatar.no-img').forEach(img => {
+                    img.src = isBW ? DEFAULT_NO_IMAGE_BW : DEFAULT_NO_IMAGE_COLOR;
+                });
+
                 drawSvgConnections();
             });
 
@@ -1353,6 +1502,7 @@
                 if (e.key === 'Escape') {
                     closeLightbox();
                     closePopup();
+                    closeDropdownMenu();
                 }
             });
 
