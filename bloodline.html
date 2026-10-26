@@ -175,7 +175,7 @@
             flex-direction: column;
             gap: 6px;
             flex: 1;
-            min-width: 260px;
+            min-width: 240px;
         }
 
         .select-group label { font-size: 13px; color: #94a3b8; font-weight: 600; }
@@ -198,7 +198,7 @@
         }
 
         .native-select-hidden { display: none !important; }
-        .member-picker { min-width: min(100%, 420px); position: relative; }
+        .member-picker { min-width: min(100%, 360px); position: relative; }
         .member-search-wrap { position: relative; }
         .member-search-input { padding: 11px 42px 11px 40px; cursor: text; }
         .search-icon {
@@ -243,7 +243,7 @@
         /* Export Buttons Toolbar */
         .export-controls {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
             align-items: center;
         }
@@ -252,7 +252,7 @@
             background: rgba(15, 23, 42, 0.85);
             color: #00ffff;
             border: 1px solid rgba(0, 255, 255, 0.4);
-            padding: 8px 16px;
+            padding: 8px 12px;
             height: 38px;
             border-radius: 8px;
             display: flex;
@@ -279,6 +279,7 @@
         .btn-png { background: linear-gradient(135deg, #00b4db, #0083b0); color: white; border: none; }
         .btn-svg { background: linear-gradient(135deg, #7c3aed, #4c1d95); color: white; border: none; }
         .btn-pdf { background: linear-gradient(135deg, #dc2626, #7f1d1d); color: white; border: none; }
+        .btn-print { background: linear-gradient(135deg, #059669, #047857); color: white; border: none; }
 
         /* 2D Tree Canvas View */
         #tree-2d-viewport {
@@ -292,6 +293,7 @@
             padding: 40px;
             box-sizing: border-box;
             box-shadow: inset 0 0 55px rgba(0, 0, 0, .25), 0 14px 35px rgba(0, 0, 0, .25);
+            transition: background 0.3s ease;
         }
 
         .tree-2d-wrapper {
@@ -304,7 +306,7 @@
             gap: 60px;
             min-width: max-content;
             margin: 0 auto;
-            padding: 20px;
+            padding: 20px 20px 60px 20px;
         }
 
         .gen-2d-block { display: flex; flex-direction: column; align-items: center; width: 100%; position: relative; }
@@ -352,6 +354,55 @@
             height: 100%;
             pointer-events: none;
             z-index: 1;
+        }
+
+        /* Export Watermark Footer Element */
+        .export-watermark-footer {
+            display: none;
+            position: absolute;
+            bottom: 12px;
+            right: 20px;
+            text-align: right;
+            font-size: 11px;
+            line-height: 1.4;
+            z-index: 10;
+            padding: 6px 12px;
+            border-radius: 6px;
+            backdrop-filter: blur(4px);
+        }
+
+        /* Export Themes (Black & White vs Color) */
+        .export-bw #tree-2d-viewport {
+            background: #ffffff !important;
+            border-color: #ccc;
+        }
+        .export-bw .couple-node-card {
+            background: #ffffff !important;
+            border: 2px solid #000000 !important;
+            box-shadow: none !important;
+        }
+        .export-bw .card-2d-name {
+            color: #000000 !important;
+        }
+        .export-bw .node-avatar {
+            border: 1.5px solid #000000 !important;
+            filter: grayscale(100%);
+        }
+        .export-bw .spouse-divider {
+            color: #000000 !important;
+        }
+        .export-bw #tree-svg-canvas path {
+            stroke: #000000 !important;
+        }
+        .export-bw .export-watermark-footer {
+            color: #222222 !important;
+            background: rgba(240, 240, 240, 0.85) !important;
+            border: 1px solid #ccc !important;
+        }
+        .export-color .export-watermark-footer {
+            color: #00ffff !important;
+            background: rgba(8, 14, 24, 0.85) !important;
+            border: 1px solid rgba(0, 255, 255, 0.3) !important;
         }
 
         /* Profile Popup Modal */
@@ -483,10 +534,18 @@
             .export-controls { grid-template-columns: repeat(2, 1fr); }
         }
 
+        @media print {
+            .nav, .control-card, .site-footer, #popup-modal, #image-lightbox { display: none !important; }
+            #tree-2d-viewport { border: none !important; box-shadow: none !important; background: white !important; padding: 0 !important; }
+            .couple-node-card { border-color: #000 !important; background: #fff !important; color: #000 !important; }
+            .card-2d-name { color: #000 !important; }
+            #tree-svg-canvas path { stroke: #000 !important; }
+        }
+
         html { scroll-behavior: smooth; }
     </style>
 </head>
-<body>
+<body class="export-color">
 
     <div id="app-loading" aria-live="polite">
         <div class="spinner"></div>
@@ -534,6 +593,15 @@
                 <div class="picker-hint">নাম, ডাকনাম বা UID লিখে সদস্য খুঁজে নির্বাচন করুন</div>
             </div>
 
+            <!-- EXPORT THEME SELECTOR -->
+            <div class="select-group" style="max-width: 170px; min-width: 140px;">
+                <label for="export-theme">এক্সপোর্ট কালার মোড:</label>
+                <select id="export-theme" class="custom-select">
+                    <option value="color">🎨 Color</option>
+                    <option value="bw">🔳 Black & White</option>
+                </select>
+            </div>
+
             <!-- ZOOM & EXPORT TOOLBAR -->
             <div class="export-controls">
                 <button class="action-btn" id="zoom-in-btn" title="Zoom In">➕</button>
@@ -541,7 +609,8 @@
                 <button class="action-btn" id="zoom-reset-btn" title="Reset Zoom">↺</button>
                 <button class="action-btn btn-png" id="export-png-btn">🖼️ PNG</button>
                 <button class="action-btn btn-svg" id="export-svg-btn">🧬 SVG</button>
-                <button class="action-btn btn-pdf" id="export-pdf-btn">📄 PDF</button>
+                <button class="action-btn btn-pdf" id="export-pdf-btn">📄 A4 PDF</button>
+                <button class="action-btn btn-print" id="print-btn" title="Print Tree">🖨️ প্রিন্ট</button>
             </div>
         </section>
 
@@ -549,6 +618,11 @@
         <section id="tree-2d-viewport">
             <div id="tree-2d-view" class="tree-2d-wrapper">
                 <svg id="tree-svg-canvas"></svg>
+            </div>
+            <!-- Watermark Footer for Exports -->
+            <div id="export-watermark" class="export-watermark-footer">
+                <div><strong>সর্বশেষ হালনাগাদ:</strong> <span id="wm-datetime"></span></div>
+                <div><strong>ওয়েবসাইট:</strong> <span id="wm-url"></span></div>
             </div>
         </section>
 
@@ -767,6 +841,9 @@
             svg.setAttribute('width', wrapper.scrollWidth || wrapper.offsetWidth);
             svg.setAttribute('height', wrapper.scrollHeight || wrapper.offsetHeight);
 
+            const isBW = document.body.classList.contains('export-bw');
+            const strokeColor = isBW ? '#000000' : '#00ffff';
+
             const cards = document.querySelectorAll('.couple-node-card');
             cards.forEach(parentCard => {
                 const parentId = parentCard.getAttribute('data-family-id');
@@ -786,7 +863,7 @@
                         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
                         const d = `M ${startX} ${startY} C ${startX} ${midY}, ${endX} ${midY}, ${endX} ${endY}`;
                         path.setAttribute('d', d);
-                        path.setAttribute('stroke', '#00ffff');
+                        path.setAttribute('stroke', strokeColor);
                         path.setAttribute('stroke-width', '2.5');
                         path.setAttribute('fill', 'none');
                         path.setAttribute('opacity', '0.9');
@@ -809,9 +886,9 @@
             setTimeout(drawSvgConnections, 100);
         }
 
-        /* ----- EXPORT FUNCTIONS (PNG, SVG, PDF) ----- */
+        /* ----- EXPORT HELPERS ----- */
         function setExportButtonsBusy(busy) {
-            ['export-png-btn', 'export-svg-btn', 'export-pdf-btn'].forEach(id => {
+            ['export-png-btn', 'export-svg-btn', 'export-pdf-btn', 'print-btn'].forEach(id => {
                 const btn = document.getElementById(id);
                 if (btn) btn.disabled = busy;
             });
@@ -825,30 +902,48 @@
             return `${label}.${ext}`;
         }
 
+        function updateWatermarkInfo() {
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('bn-BD', { year: 'numeric', month: 'long', day: 'numeric' });
+            const timeStr = now.toLocaleTimeString('bn-BD', { hour: '2-digit', minute: '2-digit', hour12: true });
+            
+            document.getElementById('wm-datetime').innerText = `${dateStr}, ${timeStr}`;
+            document.getElementById('wm-url').innerText = window.location.href || 'https://familytree.archive';
+        }
+
         async function renderTreeToCanvas() {
+            const viewport = document.getElementById('tree-2d-viewport');
             const wrapper = document.getElementById('tree-2d-view');
+            const watermark = document.getElementById('export-watermark');
+
             if (typeof html2canvas === 'undefined') {
                 alert('এক্সপোর্ট লাইব্রেরি লোড হয়নি। ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।');
                 return null;
             }
 
+            updateWatermarkInfo();
+            watermark.style.display = 'block';
+
             const savedZoom = currentZoom;
             wrapper.style.transform = 'scale(1)';
             drawSvgConnections();
-            await new Promise(r => setTimeout(r, 60));
+            await new Promise(r => setTimeout(r, 80));
 
-            const canvas = await html2canvas(wrapper, {
-                backgroundColor: '#0f172a',
+            const isBW = document.body.classList.contains('export-bw');
+            const canvas = await html2canvas(viewport, {
+                backgroundColor: isBW ? '#ffffff' : '#0f172a',
                 scale: 2,
                 useCORS: true,
                 logging: false
             });
 
+            watermark.style.display = 'none';
             wrapper.style.transform = `scale(${savedZoom})`;
             drawSvgConnections();
             return canvas;
         }
 
+        /* ----- EXPORT FUNCTIONS (PNG, SVG, A4 PDF, PRINT) ----- */
         async function exportTreeAsPNG() {
             const uid = document.getElementById('member-select').value;
             if (!uid) { alert('প্রথমে একজন সদস্য নির্বাচন করুন।'); return; }
@@ -885,17 +980,37 @@
 
                 const { jsPDF } = window.jspdf;
                 const imgData = canvas.toDataURL('image/png');
-                const isLandscape = canvas.width >= canvas.height;
+                
+                // A4 Landscape PDF Configuration (297mm x 210mm)
                 const pdf = new jsPDF({
-                    orientation: isLandscape ? 'landscape' : 'portrait',
-                    unit: 'px',
-                    format: [canvas.width, canvas.height]
+                    orientation: 'landscape',
+                    unit: 'mm',
+                    format: 'a4'
                 });
-                pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = pdf.internal.pageSize.getHeight();
+                
+                const canvasAspect = canvas.width / canvas.height;
+                const pageAspect = pdfWidth / pdfHeight;
+
+                let printW, printH;
+                if (canvasAspect > pageAspect) {
+                    printW = pdfWidth - 20; // 10mm margins
+                    printH = printW / canvasAspect;
+                } else {
+                    printH = pdfHeight - 20; // 10mm margins
+                    printW = printH * canvasAspect;
+                }
+
+                const xX = (pdfWidth - printW) / 2;
+                const yY = (pdfHeight - printH) / 2;
+
+                pdf.addImage(imgData, 'PNG', xX, yY, printW, printH);
                 pdf.save(getExportFilename('pdf'));
             } catch (err) {
                 console.error(err);
-                alert('PDF এক্সপোর্ট ব্যর্থ হয়েছে।');
+                alert('A4 PDF এক্সপোর্ট ব্যর্থ হয়েছে।');
             } finally {
                 setExportButtonsBusy(false);
             }
@@ -907,6 +1022,10 @@
 
             setExportButtonsBusy(true);
             try {
+                updateWatermarkInfo();
+                const watermark = document.getElementById('export-watermark');
+                watermark.style.display = 'block';
+
                 const wrapper = document.getElementById('tree-2d-view');
                 const savedZoom = currentZoom;
                 wrapper.style.transform = 'scale(1)';
@@ -922,6 +1041,7 @@
                 const clone = wrapper.cloneNode(true);
                 clone.style.transform = 'none';
 
+                const isBW = document.body.classList.contains('export-bw');
                 const svgNS = 'http://www.w3.org/2000/svg';
                 const svgRoot = document.createElementNS(svgNS, 'svg');
                 svgRoot.setAttribute('xmlns', svgNS);
@@ -932,7 +1052,7 @@
                 const bg = document.createElementNS(svgNS, 'rect');
                 bg.setAttribute('width', '100%');
                 bg.setAttribute('height', '100%');
-                bg.setAttribute('fill', '#0f172a');
+                bg.setAttribute('fill', isBW ? '#ffffff' : '#0f172a');
                 svgRoot.appendChild(bg);
 
                 const styleEl = document.createElementNS(svgNS, 'style');
@@ -950,6 +1070,7 @@
                 fo.appendChild(foDiv);
                 svgRoot.appendChild(fo);
 
+                watermark.style.display = 'none';
                 wrapper.style.transform = `scale(${savedZoom})`;
                 drawSvgConnections();
 
@@ -1199,6 +1320,18 @@
                 }
             });
 
+            // Theme Switcher Logic
+            document.getElementById('export-theme').addEventListener('change', (e) => {
+                if (e.target.value === 'bw') {
+                    document.body.classList.remove('export-color');
+                    document.body.classList.add('export-bw');
+                } else {
+                    document.body.classList.remove('export-bw');
+                    document.body.classList.add('export-color');
+                }
+                drawSvgConnections();
+            });
+
             document.getElementById('member-select').onchange = render2DTreeView;
             document.getElementById('zoom-in-btn').onclick = () => zoomTree(0.1);
             document.getElementById('zoom-out-btn').onclick = () => zoomTree(-0.1);
@@ -1207,6 +1340,7 @@
             document.getElementById('export-png-btn').onclick = exportTreeAsPNG;
             document.getElementById('export-svg-btn').onclick = exportTreeAsSVG;
             document.getElementById('export-pdf-btn').onclick = exportTreeAsPDF;
+            document.getElementById('print-btn').onclick = () => window.print();
 
             document.getElementById('close-popup-btn').onclick = closePopup;
             document.getElementById('image-lightbox').onclick = closeLightbox;
