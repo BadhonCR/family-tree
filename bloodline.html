@@ -163,6 +163,7 @@
             justify-content: space-between;
             box-shadow: 0 12px 35px rgba(0, 0, 0, .22);
             position: relative;
+            z-index: 30; /* ড্রপডাউন যেন ক্যানভাসের উপরে থাকে */
         }
 
         .control-card::before {
@@ -333,8 +334,6 @@
             color: #00ffff;
         }
 
-        .btn-print { background: linear-gradient(135deg, #059669, #047857); color: white; border: none; }
-
         /* 2D Tree Canvas View Container */
         #tree-2d-viewport {
             width: 100%;
@@ -348,6 +347,7 @@
             box-sizing: border-box;
             box-shadow: inset 0 0 55px rgba(0, 0, 0, .25), 0 14px 35px rgba(0, 0, 0, .25);
             transition: background 0.3s ease;
+            isolation: isolate; /* ভিতরের z-index বাইরে ছড়াবে না */
         }
 
         .tree-2d-wrapper {
@@ -410,37 +410,6 @@
             z-index: 1;
         }
 
-        /* MODERN & ENHANCED WATERMARK FOOTER */
-        .export-watermark-footer {
-            display: none;
-            position: absolute;
-            bottom: 16px;
-            right: 24px;
-            text-align: right;
-            font-size: 11px;
-            z-index: 10;
-            padding: 8px 14px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            line-height: 1.5;
-        }
-
-        .export-watermark-footer .wm-title {
-            font-weight: 700;
-            font-size: 10px;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            margin-bottom: 2px;
-            opacity: 0.8;
-        }
-
-        .export-watermark-footer .wm-row {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            gap: 6px;
-        }
-
         /* EXPORT THEME MODES */
 
         /* 1. BLACK & WHITE MODE MODIFICATIONS */
@@ -474,22 +443,6 @@
         .export-bw #tree-svg-canvas path {
             stroke: #1e293b !important;
         }
-        .export-bw .export-watermark-footer {
-            color: #0f172a !important;
-            background: rgba(241, 245, 249, 0.95) !important;
-            border: 1px solid #cbd5e1 !important;
-        }
-
-        /* 2. COLOR MODE MODIFICATIONS */
-        .export-color .export-watermark-footer {
-            color: #edf8ff !important;
-            background: rgba(8, 20, 32, 0.88) !important;
-            border: 1px solid rgba(0, 255, 255, 0.3) !important;
-        }
-        .export-color .export-watermark-footer .wm-title {
-            color: #00ffff;
-        }
-
         /* Profile Popup Modal */
         #popup-modal {
             display: none;
@@ -608,6 +561,9 @@
             .select-group { min-width: 0; width: 100%; }
             .export-controls { justify-content: stretch; display: grid; grid-template-columns: repeat(3, 1fr); }
             .action-btn { justify-content: center; padding: 8px 10px; }
+            .dropdown-wrapper { grid-column: 1 / -1; display: block; }
+            .btn-export-main { width: 100%; }
+            .dropdown-menu { left: 0; right: 0; min-width: 0; }
             #tree-2d-viewport { min-height: 480px; padding: 20px; }
             .member-options { max-height: 260px; }
             .footer-inner { grid-template-columns: 1fr; gap: 18px; }
@@ -617,14 +573,6 @@
 
         @media (max-width: 390px) {
             .export-controls { grid-template-columns: repeat(2, 1fr); }
-        }
-
-        @media print {
-            .nav, .control-card, .site-footer, #popup-modal, #image-lightbox { display: none !important; }
-            #tree-2d-viewport { border: none !important; box-shadow: none !important; background: white !important; padding: 0 !important; }
-            .couple-node-card { border-color: #000 !important; background: #fff !important; color: #000 !important; }
-            .card-2d-name { color: #000 !important; }
-            #tree-svg-canvas path { stroke: #000 !important; }
         }
 
         html { scroll-behavior: smooth; }
@@ -705,7 +653,6 @@
                     </div>
                 </div>
 
-                <button class="action-btn btn-print" id="print-btn" title="Print Tree">🖨️ প্রিন্ট</button>
             </div>
         </section>
 
@@ -713,12 +660,6 @@
         <section id="tree-2d-viewport">
             <div id="tree-2d-view" class="tree-2d-wrapper">
                 <svg id="tree-svg-canvas"></svg>
-            </div>
-            <!-- Enhanced Watermark Footer -->
-            <div id="export-watermark" class="export-watermark-footer">
-                <div class="wm-title">Digital Family Archive</div>
-                <div class="wm-row">🗓️ <strong>সর্বশেষ হালনাগাদ:</strong> <span id="wm-datetime"></span></div>
-                <div class="wm-row">🌐 <strong>ওয়েবসাইট:</strong> <span id="wm-url"></span></div>
             </div>
         </section>
 
@@ -932,13 +873,16 @@
             setTimeout(drawSvgConnections, 150);
         }
 
-        function drawSvgConnections() {
-            const svg = document.getElementById('tree-svg-canvas');
-            const wrapper = document.getElementById('tree-2d-view');
-            
-            if (!svg || !wrapper) return;
+        function drawSvgConnections(root, zoom) {
+            // root: যে ট্রি-র কানেকশন আঁকা হবে (ডিফল্ট: লাইভ ভিউ), zoom: তার স্কেল
+            const wrapper = (root instanceof Element) ? root : document.getElementById('tree-2d-view');
+            const z = (typeof zoom === 'number') ? zoom : currentZoom;
+            if (!wrapper) return;
+
+            const svg = wrapper.querySelector('svg');
+            if (!svg) return;
             svg.innerHTML = '';
-            
+
             const wRect = wrapper.getBoundingClientRect();
             svg.setAttribute('width', wrapper.scrollWidth || wrapper.offsetWidth);
             svg.setAttribute('height', wrapper.scrollHeight || wrapper.offsetHeight);
@@ -946,20 +890,20 @@
             const isBW = document.body.classList.contains('export-bw');
             const strokeColor = isBW ? '#1e293b' : '#00ffff';
 
-            const cards = document.querySelectorAll('.couple-node-card');
+            const cards = wrapper.querySelectorAll('.couple-node-card');
             cards.forEach(parentCard => {
                 const parentId = parentCard.getAttribute('data-family-id');
-                const childrenCards = document.querySelectorAll(`.couple-node-card[data-parent-id="${parentId}"]`);
+                const childrenCards = wrapper.querySelectorAll(`.couple-node-card[data-parent-id="${parentId}"]`);
 
                 if (childrenCards.length > 0) {
                     const pRect = parentCard.getBoundingClientRect();
-                    const startX = (pRect.left + pRect.width / 2 - wRect.left) / currentZoom;
-                    const startY = (pRect.bottom - wRect.top) / currentZoom;
+                    const startX = (pRect.left + pRect.width / 2 - wRect.left) / z;
+                    const startY = (pRect.bottom - wRect.top) / z;
 
                     childrenCards.forEach(childCard => {
                         const cRect = childCard.getBoundingClientRect();
-                        const endX = (cRect.left + cRect.width / 2 - wRect.left) / currentZoom;
-                        const endY = (cRect.top - wRect.top) / currentZoom;
+                        const endX = (cRect.left + cRect.width / 2 - wRect.left) / z;
+                        const endY = (cRect.top - wRect.top) / z;
                         const midY = startY + (endY - startY) / 2;
 
                         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
@@ -975,7 +919,8 @@
             });
         }
 
-        /* ----- ZOOM LOGIC ----- */
+        
+/* ----- ZOOM LOGIC ----- */
         function zoomTree(delta) {
             currentZoom = Math.max(0.4, Math.min(2.2, currentZoom + delta));
             document.getElementById('tree-2d-view').style.transform = `scale(${currentZoom})`;
@@ -988,12 +933,17 @@
             setTimeout(drawSvgConnections, 100);
         }
 
-        /* ----- EXPORT HELPERS & A4 RATIO CANVAS RENDER ----- */
+        /* ----- EXPORT ENGINE (A4 ratio, auto orientation) ----- */
+        const A4_RATIO = Math.SQRT2;
+        const EXPORT_BTN_LABEL = '📥 Export Menu ▼';
+
         function setExportButtonsBusy(busy) {
-            ['export-png-btn', 'export-svg-btn', 'export-pdf-btn', 'print-btn', 'export-dropdown-toggle'].forEach(id => {
+            ['export-png-btn', 'export-svg-btn', 'export-pdf-btn', 'export-dropdown-toggle'].forEach(id => {
                 const btn = document.getElementById(id);
                 if (btn) btn.disabled = busy;
             });
+            const toggle = document.getElementById('export-dropdown-toggle');
+            if (toggle) toggle.textContent = busy ? '⏳ প্রস্তুত হচ্ছে...' : EXPORT_BTN_LABEL;
         }
 
         function getExportFilename(ext) {
@@ -1004,80 +954,164 @@
             return `${label}.${ext}`;
         }
 
-        function updateWatermarkInfo() {
+        function getExportPalette() {
+            return document.body.classList.contains('export-bw')
+                ? { bw: true,  bg1: '#ffffff', bg2: '#ffffff', text: '#64748b', line: 'rgba(100,116,139,0.35)' }
+                : { bw: false, bg1: '#0f172a', bg2: '#020617', text: '#91a9b8', line: 'rgba(0,255,255,0.22)' };
+        }
+
+        // একটি সরল লাইন: সর্বশেষ হালনাগাদ • ওয়েবলিংক
+        function getExportFooterText() {
             const now = new Date();
             const dateStr = now.toLocaleDateString('bn-BD', { year: 'numeric', month: 'long', day: 'numeric' });
             const timeStr = now.toLocaleTimeString('bn-BD', { hour: '2-digit', minute: '2-digit', hour12: true });
-            
-            document.getElementById('wm-datetime').innerText = `${dateStr}, ${timeStr}`;
-            document.getElementById('wm-url').innerText = window.location.host || 'familytree.archive';
+            const link = window.location.host || 'familytree.archive';
+            return `সর্বশেষ হালনাগাদ: ${dateStr}, ${timeStr}   •   ${link}`;
+        }
+
+        function triggerDownload(blob, filename) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 4000);
+        }
+
+        function canvasToBlob(canvas) {
+            return new Promise((resolve, reject) => {
+                canvas.toBlob(b => b ? resolve(b) : reject(new Error('toBlob failed')), 'image/png');
+            });
+        }
+
+        /* লাইভ ভিউ (জুম/স্ক্রল) স্পর্শ না করে, স্কেল ১:১ এ একটি অফস্ক্রিন কপি তৈরি করে */
+        async function buildExportStage() {
+            const wrapper = document.getElementById('tree-2d-view');
+            const stage = document.createElement('div');
+            stage.style.cssText = 'position:absolute;top:0;left:-100000px;width:max-content;pointer-events:none;';
+
+            const clone = wrapper.cloneNode(true);
+            clone.removeAttribute('id');
+            clone.style.transform = 'none';
+            clone.style.transition = 'none';
+            clone.style.margin = '0';
+            clone.style.padding = '24px';
+            clone.querySelectorAll('img').forEach(img => { img.loading = 'eager'; });
+
+            stage.appendChild(clone);
+            document.body.appendChild(stage);
+
+            await Promise.all([...clone.querySelectorAll('img')].map(img =>
+                img.complete ? Promise.resolve() : new Promise(r => { img.onload = img.onerror = r; })
+            ));
+            await new Promise(r => requestAnimationFrame(() => r()));
+
+            drawSvgConnections(clone, 1);
+
+            return { stage, clone, w: Math.ceil(clone.scrollWidth), h: Math.ceil(clone.scrollHeight) };
+        }
+
+        /* কনটেন্ট (cw × ch) কে A4 অনুপাতে (১.৪১৪:১) বসানোর লেআউট — landscape/portrait নিজে থেকেই বেছে নেয় */
+        function computeExportLayout(cw, ch, minLong) {
+            const layoutFor = (m, footerH) => {
+                const needW = cw + 2 * m;
+                const needH = ch + 2 * m + footerH;
+                const cands = [true, false].map(landscape => {
+                    const r = landscape ? A4_RATIO : 1 / A4_RATIO;
+                    let W, H;
+                    if (needW / needH < r) { H = needH; W = H * r; } else { W = needW; H = W / r; }
+                    const long = Math.max(W, H);
+                    if (long < minLong) { const k = minLong / long; W *= k; H *= k; }
+                    return { landscape, W, H, area: W * H };
+                });
+                cands.sort((a, b) => {
+                    const diff = (a.area - b.area) / Math.min(a.area, b.area);
+                    if (Math.abs(diff) < 0.005) return (a.landscape === (cw >= ch)) ? -1 : 1;
+                    return a.area - b.area;
+                });
+                return cands[0];
+            };
+
+            let m = Math.max(cw, ch) * 0.03;
+            let footerH = Math.max(cw, ch) * 0.035;
+            let best = layoutFor(m, footerH);
+            for (let i = 0; i < 3; i++) {
+                const unit = Math.max(best.W, best.H);
+                m = unit * 0.03;
+                footerH = unit * 0.035;
+                best = layoutFor(m, footerH);
+            }
+            const W = Math.round(best.W);
+            const H = Math.round(best.H);
+            return {
+                W, H, landscape: best.landscape, m, footerH,
+                x: Math.round((W - cw) / 2),
+                y: Math.round((H - footerH - ch) / 2)
+            };
         }
 
         async function renderTreeToCanvas() {
-            const viewport = document.getElementById('tree-2d-viewport');
-            const wrapper = document.getElementById('tree-2d-view');
-            const watermark = document.getElementById('export-watermark');
-
             if (typeof html2canvas === 'undefined') {
                 alert('এক্সপোর্ট লাইব্রেরি লোড হয়নি। ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।');
                 return null;
             }
 
-            updateWatermarkInfo();
-            watermark.style.display = 'block';
+            const pal = getExportPalette();
+            const { stage, clone, w, h } = await buildExportStage();
 
-            const savedZoom = currentZoom;
-            wrapper.style.transform = 'scale(1)';
-            drawSvgConnections();
-            await new Promise(r => setTimeout(r, 80));
-
-            const isBW = document.body.classList.contains('export-bw');
-            
-            // Standard html2canvas capture
-            const rawCanvas = await html2canvas(viewport, {
-                backgroundColor: isBW ? '#ffffff' : '#0f172a',
-                scale: 2,
-                useCORS: true,
-                logging: false
-            });
-
-            // A4 Landscape Aspect Ratio Fitting (1.414 : 1)
-            const targetRatio = 1.41421356; // Standard A4 Landscape Aspect Ratio
-            const rawWidth = rawCanvas.width;
-            const rawHeight = rawCanvas.height;
-            const currentRatio = rawWidth / rawHeight;
-
-            let finalWidth = rawWidth;
-            let finalHeight = rawHeight;
-
-            if (currentRatio < targetRatio) {
-                // Adjust width to match 1.414 ratio
-                finalWidth = Math.round(rawHeight * targetRatio);
-            } else {
-                // Adjust height to match 1.414 ratio
-                finalHeight = Math.round(rawWidth / targetRatio);
+            let raw, S;
+            try {
+                S = Math.max(0.25, Math.min(2, 6000 / Math.max(w, h)));
+                raw = await html2canvas(clone, {
+                    backgroundColor: null,
+                    scale: S,
+                    useCORS: true,
+                    logging: false,
+                    windowWidth: Math.max(window.innerWidth, w + 50),
+                    windowHeight: Math.max(window.innerHeight, h + 50)
+                });
+            } finally {
+                stage.remove();
             }
 
-            // Create container canvas fitting exactly A4 1.414 ratio
-            const fittedCanvas = document.createElement('canvas');
-            fittedCanvas.width = finalWidth;
-            fittedCanvas.height = finalHeight;
-            const ctx = fittedCanvas.getContext('2d');
+            const L = computeExportLayout(raw.width, raw.height, 1500 * S);
+            const canvas = document.createElement('canvas');
+            canvas.width = L.W;
+            canvas.height = L.H;
+            const ctx = canvas.getContext('2d');
 
-            // Fill Background
-            ctx.fillStyle = isBW ? '#ffffff' : '#0f172a';
-            ctx.fillRect(0, 0, finalWidth, finalHeight);
+            // ব্যাকগ্রাউন্ড
+            if (pal.bw) {
+                ctx.fillStyle = '#ffffff';
+            } else {
+                const g = ctx.createRadialGradient(L.W / 2, L.H / 2, 0, L.W / 2, L.H / 2, Math.hypot(L.W, L.H) / 2);
+                g.addColorStop(0, pal.bg1);
+                g.addColorStop(1, pal.bg2);
+                ctx.fillStyle = g;
+            }
+            ctx.fillRect(0, 0, L.W, L.H);
 
-            // Center content inside A4 Ratio Canvas
-            const offsetX = Math.round((finalWidth - rawWidth) / 2);
-            const offsetY = Math.round((finalHeight - rawHeight) / 2);
-            ctx.drawImage(rawCanvas, offsetX, offsetY);
+            // বংশবৃক্ষ (মাঝখানে)
+            ctx.drawImage(raw, L.x, L.y);
 
-            watermark.style.display = 'none';
-            wrapper.style.transform = `scale(${savedZoom})`;
-            drawSvgConnections();
+            // সরল ফুটার: হালকা রেখা + এক লাইন টেক্সট
+            const stripTop = L.H - L.footerH;
+            ctx.strokeStyle = pal.line;
+            ctx.lineWidth = Math.max(1, L.W / 1800);
+            ctx.beginPath();
+            ctx.moveTo(L.m, stripTop);
+            ctx.lineTo(L.W - L.m, stripTop);
+            ctx.stroke();
 
-            return fittedCanvas;
+            ctx.fillStyle = pal.text;
+            ctx.font = `${L.footerH * 0.3}px ${getComputedStyle(document.body).fontFamily}`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(getExportFooterText(), L.W / 2, stripTop + L.footerH / 2);
+
+            return { canvas, landscape: L.landscape };
         }
 
         /* ----- EXPORT FUNCTIONS (PNG, SVG, A4 PDF) ----- */
@@ -1087,12 +1121,9 @@
 
             setExportButtonsBusy(true);
             try {
-                const canvas = await renderTreeToCanvas();
-                if (!canvas) return;
-                const link = document.createElement('a');
-                link.download = getExportFilename('png');
-                link.href = canvas.toDataURL('image/png');
-                link.click();
+                const result = await renderTreeToCanvas();
+                if (!result) return;
+                triggerDownload(await canvasToBlob(result.canvas), getExportFilename('png'));
             } catch (err) {
                 console.error(err);
                 alert('PNG এক্সপোর্ট ব্যর্থ হয়েছে।');
@@ -1113,21 +1144,18 @@
 
             setExportButtonsBusy(true);
             try {
-                const canvas = await renderTreeToCanvas();
-                if (!canvas) return;
+                const result = await renderTreeToCanvas();
+                if (!result) return;
 
                 const { jsPDF } = window.jspdf;
-                const imgData = canvas.toDataURL('image/png');
-                
-                // Pure A4 Landscape PDF Document (297mm x 210mm)
                 const pdf = new jsPDF({
-                    orientation: 'landscape',
+                    orientation: result.landscape ? 'landscape' : 'portrait',
                     unit: 'mm',
                     format: 'a4'
                 });
-
-                // Perfect 1:1 Page Fit for A4 Landscape
-                pdf.addImage(imgData, 'PNG', 0, 0, 297, 210);
+                const pw = result.landscape ? 297 : 210;
+                const ph = result.landscape ? 210 : 297;
+                pdf.addImage(result.canvas.toDataURL('image/png'), 'PNG', 0, 0, pw, ph, undefined, 'FAST');
                 pdf.save(getExportFilename('pdf'));
             } catch (err) {
                 console.error(err);
@@ -1138,83 +1166,129 @@
             }
         }
 
+        // ছবিগুলো SVG ফাইলের ভিতরেই বসিয়ে দেয় (ব্যর্থ হলে পূর্ণ লিংক রাখে)
+        function inlineImagesForSvg(root) {
+            root.querySelectorAll('img').forEach(img => {
+                const abs = img.src;
+                if (!abs || abs.startsWith('data:')) return;
+                try {
+                    const max = 160;
+                    const k = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+                    const c = document.createElement('canvas');
+                    c.width = Math.max(1, Math.round(img.naturalWidth * k));
+                    c.height = Math.max(1, Math.round(img.naturalHeight * k));
+                    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+                    img.setAttribute('src', c.toDataURL('image/png'));
+                } catch (e) {
+                    img.setAttribute('src', abs);
+                }
+            });
+        }
+
         async function exportTreeAsSVG() {
             const uid = document.getElementById('member-select').value;
             if (!uid) { alert('প্রথমে একজন সদস্য নির্বাচন করুন।'); return; }
 
             setExportButtonsBusy(true);
+            let stage = null;
             try {
-                updateWatermarkInfo();
-                const watermark = document.getElementById('export-watermark');
-                watermark.style.display = 'block';
+                const pal = getExportPalette();
+                const built = await buildExportStage();
+                stage = built.stage;
+                const { clone, w, h } = built;
 
-                const wrapper = document.getElementById('tree-2d-view');
-                const savedZoom = currentZoom;
-                wrapper.style.transform = 'scale(1)';
-                drawSvgConnections();
-                await new Promise(r => setTimeout(r, 60));
-
-                const width = wrapper.scrollWidth;
-                const height = wrapper.scrollHeight;
+                const L = computeExportLayout(w, h, 1500);
+                const svgNS = 'http://www.w3.org/2000/svg';
+                const fontFamily = getComputedStyle(document.body).fontFamily;
 
                 let styleText = '';
                 document.querySelectorAll('style').forEach(s => { styleText += s.textContent + '\n'; });
 
-                const clone = wrapper.cloneNode(true);
-                clone.style.transform = 'none';
+                const treeCopy = clone.cloneNode(true);
+                inlineImagesForSvg(treeCopy);
 
-                const isBW = document.body.classList.contains('export-bw');
-                const svgNS = 'http://www.w3.org/2000/svg';
                 const svgRoot = document.createElementNS(svgNS, 'svg');
                 svgRoot.setAttribute('xmlns', svgNS);
-                svgRoot.setAttribute('width', width);
-                svgRoot.setAttribute('height', height);
-                svgRoot.setAttribute('viewBox', `0 0 ${width} ${height}`);
+                svgRoot.setAttribute('width', L.W);
+                svgRoot.setAttribute('height', L.H);
+                svgRoot.setAttribute('viewBox', `0 0 ${L.W} ${L.H}`);
 
+                // ব্যাকগ্রাউন্ড
                 const bg = document.createElementNS(svgNS, 'rect');
-                bg.setAttribute('width', '100%');
-                bg.setAttribute('height', '100%');
-                bg.setAttribute('fill', isBW ? '#ffffff' : '#0f172a');
+                bg.setAttribute('width', L.W);
+                bg.setAttribute('height', L.H);
+                if (pal.bw) {
+                    bg.setAttribute('fill', '#ffffff');
+                } else {
+                    const defs = document.createElementNS(svgNS, 'defs');
+                    const grad = document.createElementNS(svgNS, 'radialGradient');
+                    grad.setAttribute('id', 'page-bg');
+                    grad.setAttribute('cx', '0.5'); grad.setAttribute('cy', '0.5'); grad.setAttribute('r', '0.707');
+                    [[0, pal.bg1], [1, pal.bg2]].forEach(([o, c]) => {
+                        const stop = document.createElementNS(svgNS, 'stop');
+                        stop.setAttribute('offset', o);
+                        stop.setAttribute('stop-color', c);
+                        grad.appendChild(stop);
+                    });
+                    defs.appendChild(grad);
+                    svgRoot.appendChild(defs);
+                    bg.setAttribute('fill', 'url(#page-bg)');
+                }
                 svgRoot.appendChild(bg);
 
                 const styleEl = document.createElementNS(svgNS, 'style');
                 styleEl.textContent = styleText;
                 svgRoot.appendChild(styleEl);
 
+                // বংশবৃক্ষ (মাঝখানে)
                 const fo = document.createElementNS(svgNS, 'foreignObject');
-                fo.setAttribute('x', '0');
-                fo.setAttribute('y', '0');
-                fo.setAttribute('width', width);
-                fo.setAttribute('height', height);
+                fo.setAttribute('x', L.x);
+                fo.setAttribute('y', L.y);
+                fo.setAttribute('width', w);
+                fo.setAttribute('height', h);
                 const foDiv = document.createElement('div');
                 foDiv.setAttribute('xmlns', 'http://www.w3.org/1999/xhtml');
-                foDiv.appendChild(clone);
+                // থিম ক্লাস (export-bw / export-color) না থাকলে B&W স্টাইল কাজ করে না
+                foDiv.className = pal.bw ? 'export-bw' : 'export-color';
+                foDiv.style.cssText = `width:${w}px;height:${h}px;font-family:${fontFamily};`;
+                foDiv.appendChild(treeCopy);
                 fo.appendChild(foDiv);
                 svgRoot.appendChild(fo);
 
-                watermark.style.display = 'none';
-                wrapper.style.transform = `scale(${savedZoom})`;
-                drawSvgConnections();
+                // সরল ফুটার
+                const stripTop = L.H - L.footerH;
+                const line = document.createElementNS(svgNS, 'line');
+                line.setAttribute('x1', L.m); line.setAttribute('x2', L.W - L.m);
+                line.setAttribute('y1', stripTop); line.setAttribute('y2', stripTop);
+                line.setAttribute('stroke', pal.line);
+                line.setAttribute('stroke-width', Math.max(1, L.W / 1800));
+                svgRoot.appendChild(line);
 
-                const serializer = new XMLSerializer();
-                const svgString = '<?xml version="1.0" standalone="no"?>\n' + serializer.serializeToString(svgRoot);
-                const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.download = getExportFilename('svg');
-                link.href = url;
-                link.click();
-                setTimeout(() => URL.revokeObjectURL(url), 2000);
+                const text = document.createElementNS(svgNS, 'text');
+                text.setAttribute('x', L.W / 2);
+                text.setAttribute('y', stripTop + L.footerH / 2);
+                text.setAttribute('text-anchor', 'middle');
+                text.setAttribute('dominant-baseline', 'central');
+                text.setAttribute('fill', pal.text);
+                text.setAttribute('font-size', L.footerH * 0.3);
+                text.setAttribute('font-family', fontFamily);
+                text.textContent = getExportFooterText();
+                svgRoot.appendChild(text);
+
+                const svgString = '<?xml version="1.0" standalone="no"?>\n' + new XMLSerializer().serializeToString(svgRoot);
+                triggerDownload(new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' }), getExportFilename('svg'));
             } catch (err) {
                 console.error(err);
                 alert('SVG এক্সপোর্ট ব্যর্থ হয়েছে।');
             } finally {
+                if (stage) stage.remove();
                 setExportButtonsBusy(false);
                 closeDropdownMenu();
             }
         }
 
-        /* ----- DROPDOWN HELPER ----- */
+        
+/* ----- DROPDOWN HELPER ----- */
         function closeDropdownMenu() {
             const menu = document.getElementById('export-dropdown-menu');
             if (menu) menu.classList.remove('show');
@@ -1489,7 +1563,6 @@
             document.getElementById('export-png-btn').onclick = exportTreeAsPNG;
             document.getElementById('export-svg-btn').onclick = exportTreeAsSVG;
             document.getElementById('export-pdf-btn').onclick = exportTreeAsPDF;
-            document.getElementById('print-btn').onclick = () => window.print();
 
             document.getElementById('close-popup-btn').onclick = closePopup;
             document.getElementById('image-lightbox').onclick = closeLightbox;
