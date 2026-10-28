@@ -132,6 +132,10 @@
             padding: 18px 16px; text-align: center; backdrop-filter: blur(8px); transition: 0.25s ease;
         }
 
+        .stat-card { cursor: pointer; user-select: none; }
+        .stat-card:focus-visible { outline: 2px solid #00ffff; outline-offset: 2px; }
+        .stat-hint { font-size: 10px; color: #58e1ff; opacity: .55; margin-top: 6px; transition: .2s; }
+        .stat-card:hover .stat-hint { opacity: 1; }
         .stat-card:hover {
             border-color: #00ffff; transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0, 255, 255, 0.15);
         }
@@ -142,7 +146,7 @@
         /* Main Layout */
         .main-layout {
             max-width: 1180px; margin: 0 auto; padding: 0 16px 50px;
-            display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+            display: grid; grid-template-columns: 1fr; gap: 24px; max-width: 760px;
         }
 
         .card-section {
@@ -378,7 +382,61 @@
             font: 500 11px Inter, sans-serif;
         }
 
+        /* Compact quick search (hero) */
+        .quick-search { max-width: 400px; margin: 0 auto 28px; text-align: left; }
+        .quick-search .member-picker { margin-bottom: 0; }
+        .quick-search .member-search-input {
+            padding: 8px 36px 8px 38px; font-size: 13px; border-radius: 999px;
+            background: rgba(7, 20, 31, .55);
+        }
+        .quick-search .search-icon { left: 15px; font-size: 16px; }
+
+        /* Stat list modal */
+        #list-modal {
+            display: none; position: fixed; inset: 0; z-index: 3000; background: rgba(0,0,0,.7);
+            backdrop-filter: blur(8px); align-items: center; justify-content: center; padding: 14px;
+        }
+        #list-modal.open { display: flex; }
+        .list-dialog {
+            width: min(560px, 100%); max-height: 88vh; display: flex; flex-direction: column;
+            border: 1px solid rgba(0,255,255,.25); border-radius: 20px;
+            background: linear-gradient(145deg, rgba(15,23,36,.98), rgba(6,10,18,.99));
+            box-shadow: 0 30px 90px rgba(0,0,0,.65);
+        }
+        .list-dialog-head {
+            display: flex; align-items: center; justify-content: space-between; gap: 15px;
+            padding: 16px 20px; border-bottom: 1px solid rgba(0,255,255,.12);
+        }
+        .list-dialog-head h3 { margin: 0; color: #00ffff; font-size: 18px; }
+        .list-dialog-head small { color: #64748b; font-size: 12px; }
+        .list-filter { padding: 12px 16px 4px; }
+        .list-filter input {
+            width: 100%; background: rgba(7,20,31,.65); color: #fff; border: 1px solid var(--line);
+            padding: 9px 14px; border-radius: 10px; font-size: 13px; outline: none;
+        }
+        .list-filter input:focus { border-color: rgba(0,204,255,.65); }
+        .list-body { padding: 12px 16px 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+        .list-empty { text-align: center; color: #64748b; font-size: 13px; padding: 24px 0; }
+        .couple-row {
+            display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,.03);
+            border: 1px solid rgba(255,255,255,.06); padding: 8px; border-radius: 12px;
+        }
+        .couple-person {
+            flex: 1; min-width: 0; display: flex; align-items: center; gap: 9px; padding: 6px 8px;
+            border-radius: 9px; cursor: pointer; border: 1px solid transparent; transition: .2s;
+        }
+        .couple-person:hover { background: rgba(0,255,255,.1); border-color: #00ffff; }
+        .couple-person .member-info { min-width: 0; }
+        .couple-person .member-info strong { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .couple-person .avatar-thumb { width: 34px; height: 34px; }
+        .couple-sep { color: #ff6b9d; font-size: 14px; flex-shrink: 0; }
+
+        /* Profile popup backdrop (click outside = close) */
+        #popup-backdrop { display: none; position: fixed; inset: 0; z-index: 3400; background: rgba(0,0,0,.45); }
+
         @media (max-width: 820px) {
+            .couple-row { flex-direction: column; align-items: stretch; }
+            .couple-sep { align-self: center; }
             .main-layout { grid-template-columns: 1fr; }
             .quiz-grid { grid-template-columns: 1fr; }
             .quiz-options { grid-template-columns: 1fr; }
@@ -429,52 +487,46 @@
     <section class="hero-banner">
         <h1 class="hero-title">স্বাগতম <span>পারিবারিক আর্কাইভে</span></h1>
         <p class="hero-subtitle">আপনার পরিবারের শিকড়, ঐতিহ্য ও রক্তেরই ধারা ডিজিটাল বংশবৃক্ষে সংরক্ষণ করুন।</p>
+
+        <!-- COMPACT QUICK SEARCH -->
+        <div class="quick-search">
+            <div class="member-picker" id="picker-search-main">
+                <div class="member-search-wrap">
+                    <span class="search-icon">⌕</span>
+                    <input id="search-main-input" class="member-search-input" type="text" placeholder="দ্রুত সদস্য সন্ধান — নাম, ডাকনাম বা UID" autocomplete="off" aria-label="দ্রুত সদস্য সন্ধান">
+                    <button type="button" id="search-main-clear" class="member-clear" aria-label="মুছে ফেলুন">×</button>
+                    <div id="search-main-options" class="member-options"></div>
+                </div>
+            </div>
+        </div>
     </section>
 
     <!-- QUICK STATS -->
     <section class="stats-grid">
-        <div class="stat-card">
+        <div class="stat-card" role="button" tabindex="0" data-stat="total" aria-label="মোট সদস্যের তালিকা দেখুন">
             <div class="stat-number" id="stat-total">0</div>
             <div class="stat-label">মোট সদস্য</div>
+            <div class="stat-hint">তালিকা দেখুন ›</div>
         </div>
-        <div class="stat-card">
+        <div class="stat-card" role="button" tabindex="0" data-stat="male" aria-label="পুরুষ সদস্যের তালিকা দেখুন">
             <div class="stat-number" id="stat-male" style="color: #00ccff;">0</div>
             <div class="stat-label">পুরুষ সদস্য</div>
+            <div class="stat-hint">তালিকা দেখুন ›</div>
         </div>
-        <div class="stat-card">
+        <div class="stat-card" role="button" tabindex="0" data-stat="female" aria-label="নারী সদস্যের তালিকা দেখুন">
             <div class="stat-number" id="stat-female" style="color: #ff1493;">0</div>
             <div class="stat-label">নারী সদস্য</div>
+            <div class="stat-hint">তালিকা দেখুন ›</div>
         </div>
-        <div class="stat-card">
+        <div class="stat-card" role="button" tabindex="0" data-stat="families" aria-label="পরিবার বা দম্পতির তালিকা দেখুন">
             <div class="stat-number" id="stat-families" style="color: #ffda79;">0</div>
             <div class="stat-label">পরিবার/দম্পতি</div>
+            <div class="stat-hint">তালিকা দেখুন ›</div>
         </div>
     </section>
 
     <!-- MAIN DASHBOARD CONTENT -->
     <main class="main-layout">
-
-        <!-- SEARCH SECTION -->
-        <section class="card-section">
-            <div class="section-header">
-                🔍 দ্রুত সদস্য সন্ধান
-            </div>
-            
-            <div class="member-picker" id="picker-search-main">
-                <div class="member-search-wrap">
-                    <span class="search-icon">⌕</span>
-                    <input id="search-main-input" class="member-search-input" type="text" placeholder="সদস্যের নাম, ডাকনাম বা UID দিয়ে খুঁজুন..." autocomplete="off">
-                    <button type="button" id="search-main-clear" class="member-clear" aria-label="মুছে ফেলুন">×</button>
-                    <div id="search-main-options" class="member-options"></div>
-                </div>
-            </div>
-
-            <div id="results-list" class="results-list">
-                <p style="font-size: 13px; color: #94a3b8; text-align: center; padding-top: 20px;">
-                    সদস্যদের বিস্তারিত দেখতে উপরে অনুসন্ধান করুন বা ড্রপডাউন ব্যবহার করুন।
-                </p>
-            </div>
-        </section>
 
         <!-- RELATIONSHIP CALCULATOR SECTION -->
         <section class="card-section">
@@ -562,6 +614,21 @@
             <div class="quiz-body" id="quiz-body"></div>
         </div>
     </div>
+
+    <!-- STAT LIST MODAL -->
+    <div id="list-modal" aria-hidden="true">
+        <div class="list-dialog" role="dialog" aria-modal="true" aria-labelledby="list-title">
+            <div class="list-dialog-head">
+                <div><h3 id="list-title"></h3><small id="list-count"></small></div>
+                <button class="quiz-close" id="list-close" aria-label="বন্ধ করুন">×</button>
+            </div>
+            <div class="list-filter"><input id="list-filter-input" type="text" placeholder="এই তালিকায় খুঁজুন..." autocomplete="off"></div>
+            <div class="list-body" id="list-body"></div>
+        </div>
+    </div>
+
+    <!-- PROFILE POPUP BACKDROP (বাইরে ক্লিক করলে পপ-আপ বন্ধ) -->
+    <div id="popup-backdrop"></div>
 
     <!-- PROFILE POPUP MODAL -->
     <div id="popup-modal">
@@ -655,38 +722,147 @@
             document.getElementById('image-lightbox').style.display = 'none';
         }
 
-        /* Stats Calculation */
-        function calculateStats() {
-            let total = membersData.length;
-            let males = 0, females = 0;
-            const couples = new Set();
+        /* Stats & Lists */
+        const memberMap = new Map(membersData.map(m => [m.uid, m]));
+        const isMale = m => String(m.gender || '').includes('Male') || m.gender === 'M';
+        const isFemale = m => String(m.gender || '').includes('Female') || m.gender === 'F';
 
+        function getCouples() {
+            const seen = new Set(), out = [];
             membersData.forEach(m => {
-                if (m.gender.includes('Male') || m.gender === 'M') males++;
-                else if (m.gender.includes('Female') || m.gender === 'F') females++;
+                if (!m.spouse) return;
+                (Array.isArray(m.spouse) ? m.spouse : [m.spouse]).forEach(sUid => {
+                    const other = memberMap.get(sUid);
+                    if (!other) return;
+                    const key = [m.uid, other.uid].sort().join('-');
+                    if (seen.has(key)) return;
+                    seen.add(key);
+                    // পুরুষ আগে, নারী পরে
+                    out.push(isFemale(m) && isMale(other) ? [other, m] : [m, other]);
+                });
+            });
+            return out.sort((x, y) => bengaliNameSort(x[0], y[0]));
+        }
 
-                if (m.spouse) {
-                    const spouses = Array.isArray(m.spouse) ? m.spouse : [m.spouse];
-                    spouses.forEach(sUid => couples.add([m.uid, sUid].sort().join('-')));
+        function calculateStats() {
+            document.getElementById('stat-total').innerText = membersData.length;
+            document.getElementById('stat-male').innerText = membersData.filter(isMale).length;
+            document.getElementById('stat-female').innerText = membersData.filter(m => !isMale(m) && isFemale(m)).length;
+            document.getElementById('stat-families').innerText = getCouples().length;
+        }
+
+        const listModal = document.getElementById('list-modal');
+        const listBody = document.getElementById('list-body');
+        const listFilterInput = document.getElementById('list-filter-input');
+        let currentList = null; // { kind, title, items }
+
+        const memberHaystack = m => [m.bnName, m.enName, m.nick, m.uid].filter(Boolean).join(' ').toLocaleLowerCase('bn-BD');
+
+        function makeAvatar(uid) {
+            const img = document.createElement('img');
+            img.className = 'avatar-thumb';
+            img.loading = 'lazy';
+            img.alt = '';
+            loadProfilePhoto(img, uid);
+            return img;
+        }
+
+        function makePersonInfo(m) {
+            const info = document.createElement('div');
+            info.className = 'member-info';
+            const strong = document.createElement('strong');
+            strong.textContent = m.bnName + (m.nick ? ` (${m.nick})` : '');
+            const small = document.createElement('small');
+            small.textContent = `${m.uid} • Gen ${m.patrilinealGen}`;
+            info.append(strong, small);
+            return info;
+        }
+
+        function renderStatList() {
+            if (!currentList) return;
+            const q = listFilterInput.value.trim().toLocaleLowerCase('bn-BD');
+            const isCouple = currentList.kind === 'families';
+            const all = currentList.items;
+            const items = !q ? all : all.filter(it => (isCouple ? it : [it]).some(m => memberHaystack(m).includes(q)));
+
+            listBody.innerHTML = '';
+            document.getElementById('list-count').textContent = (isCouple ? `${items.length} টি দম্পতি` : `${items.length} জন`) +
+                (q ? ` (মোট ${all.length})` : '');
+
+            if (!items.length) {
+                const empty = document.createElement('div');
+                empty.className = 'list-empty';
+                empty.textContent = 'কোনো ফলাফল পাওয়া যায়নি';
+                listBody.appendChild(empty);
+                return;
+            }
+
+            const frag = document.createDocumentFragment();
+            items.forEach(it => {
+                if (isCouple) {
+                    const row = document.createElement('div');
+                    row.className = 'couple-row';
+                    it.forEach((m, i) => {
+                        if (i === 1) {
+                            const sep = document.createElement('span');
+                            sep.className = 'couple-sep';
+                            sep.textContent = '❤';
+                            row.appendChild(sep);
+                        }
+                        const person = document.createElement('div');
+                        person.className = 'couple-person';
+                        person.append(makeAvatar(m.uid), makePersonInfo(m));
+                        person.onclick = () => window.showProfileByUid(m.uid);
+                        row.appendChild(person);
+                    });
+                    frag.appendChild(row);
+                } else {
+                    const row = document.createElement('div');
+                    row.className = 'member-item';
+                    row.append(makeAvatar(it.uid), makePersonInfo(it));
+                    row.onclick = () => window.showProfileByUid(it.uid);
+                    frag.appendChild(row);
                 }
             });
+            listBody.appendChild(frag);
+        }
 
-            document.getElementById('stat-total').innerText = total;
-            document.getElementById('stat-male').innerText = males;
-            document.getElementById('stat-female').innerText = females;
-            document.getElementById('stat-families').innerText = couples.size;
+        function openStatList(kind) {
+            const sorted = [...membersData].sort(bengaliNameSort);
+            const cfg = {
+                total:    { title: 'মোট সদস্য',      items: sorted },
+                male:     { title: 'পুরুষ সদস্য',    items: sorted.filter(isMale) },
+                female:   { title: 'নারী সদস্য',     items: sorted.filter(m => !isMale(m) && isFemale(m)) },
+                families: { title: 'পরিবার/দম্পতি', items: getCouples() }
+            }[kind];
+            if (!cfg) return;
+            currentList = { kind, ...cfg };
+            document.getElementById('list-title').textContent = cfg.title;
+            listFilterInput.value = '';
+            renderStatList();
+            listBody.scrollTop = 0;
+            listModal.classList.add('open');
+            listModal.setAttribute('aria-hidden', 'false');
+        }
+
+        function closeStatList() {
+            listModal.classList.remove('open');
+            listModal.setAttribute('aria-hidden', 'true');
         }
 
         /* Generic Bloodline/Member Search Component (Bloodline.html style) */
         let sortedMembers = [];
-        let validBloodlineRoots = []; // কুইজের জন্য যাচাইকৃত bloodline root তালিকা (async ভরাট হয়)
+        let validBloodlineRoots = []; // কুইজ চালানো সম্ভব এমন bloodline root তালিকা (async ভরাট হয়)
+        let bloodlinesReady = false;   // যাচাই শেষ হয়েছে কি না
+        let allBloodlinesOk = false;   // "সকল রক্তধারা" দিয়ে কুইজ সম্ভব কি না
+        let bloodlinePicker = null;
         function bengaliNameSort(a, b) {
             const an = (a.bnName || '').trim();
             const bn = (b.bnName || '').trim();
             return an.localeCompare(bn, 'bn', { sensitivity: 'base', numeric: true });
         }
 
-        function createCustomPicker({ inputId, clearId, optionsId, hiddenId, onSelect, onClear, getList, allLabel }) {
+        function createCustomPicker({ inputId, clearId, optionsId, hiddenId, onSelect, onClear, getList, allLabel, allEnabled, emptyText }) {
             const input = document.getElementById(inputId);
             const clear = document.getElementById(clearId);
             const options = document.getElementById(optionsId);
@@ -707,7 +883,7 @@
                 options.innerHTML = '';
 
                 // "সকল" অপশন (শুধু যে picker-এ allLabel দেওয়া আছে এবং সার্চ বক্স খালি)
-                const showAll = !!allLabel && !input.value.trim();
+                const showAll = !!allLabel && !input.value.trim() && (!allEnabled || allEnabled());
                 if (showAll) {
                     const allItem = document.createElement('div');
                     allItem.className = 'member-option';
@@ -725,7 +901,10 @@
                 }
 
                 if (!list.length) {
-                    if (!showAll) options.innerHTML = '<div class="picker-empty">কোনো সদস্য পাওয়া যায়নি</div>';
+                    const msg = document.createElement('div');
+                    msg.className = 'picker-empty';
+                    msg.textContent = (!input.value.trim() && emptyText) ? emptyText() : 'কোনো সদস্য পাওয়া যায়নি';
+                    options.appendChild(msg);
                     return;
                 }
 
@@ -822,6 +1001,10 @@
                     options.classList.remove('open');
                 }
             });
+
+            return {
+                refresh() { if (options.classList.contains('open')) renderOptions(filter(input.value)); }
+            };
         }
 
         /* Relationship Calculation Logic */
@@ -966,11 +1149,13 @@
                 };
             });
 
+            document.getElementById('popup-backdrop').style.display = 'block';
             document.getElementById('popup-modal').style.display = 'block';
         };
 
         function closePopup() {
             document.getElementById('popup-modal').style.display = 'none';
+            document.getElementById('popup-backdrop').style.display = 'none';
         }
 
         /* Initialization */
@@ -978,29 +1163,17 @@
             sortedMembers = [...membersData].sort(bengaliNameSort);
             calculateStats();
 
-            // Main Search Picker
+            // Quick Search (compact) — নির্বাচন করলে সরাসরি প্রোফাইল পপ-আপ খোলে
             createCustomPicker({
                 inputId: 'search-main-input',
                 clearId: 'search-main-clear',
                 optionsId: 'search-main-options',
                 onSelect: (m) => {
-                    const listContainer = document.getElementById('results-list');
-                    listContainer.innerHTML = '';
-                    const div = document.createElement('div');
-                    div.className = 'member-item';
-                    const img = document.createElement('img');
-                    img.className = 'avatar-thumb';
-                    loadProfilePhoto(img, m.uid);
-                    const textDiv = document.createElement('div');
-                    textDiv.className = 'member-info';
-                    textDiv.innerHTML = `<strong>${m.bnName} (${m.nick})</strong><small>${m.uid} • Gen ${m.patrilinealGen}</small>`;
-                    div.appendChild(img);
-                    div.appendChild(textDiv);
-                    div.onclick = () => window.showProfileByUid(m.uid);
-                    listContainer.appendChild(div);
-                },
-                onClear: () => {
-                    document.getElementById('results-list').innerHTML = '<p style="font-size: 13px; color: #94a3b8; text-align: center; padding-top: 20px;">সদস্যদের বিস্তারিত দেখতে উপরে অনুসন্ধান করুন বা ড্রপডাউন ব্যবহার করুন।</p>';
+                    const input = document.getElementById('search-main-input');
+                    input.value = '';
+                    document.getElementById('search-main-clear').style.display = 'none';
+                    input.blur();
+                    window.showProfileByUid(m.uid);
                 }
             });
 
@@ -1024,13 +1197,17 @@
             });
 
             // Quiz Bloodline Root Picker
-            createCustomPicker({
+            bloodlinePicker = createCustomPicker({
                 inputId: 'quiz-bloodline-input',
                 clearId: 'quiz-bloodline-clear',
                 optionsId: 'quiz-bloodline-options',
                 hiddenId: 'quiz-bloodline-uid',
                 getList: () => validBloodlineRoots,
                 allLabel: 'সকল রক্তধারা (All)',
+                allEnabled: () => bloodlinesReady && allBloodlinesOk,
+                emptyText: () => bloodlinesReady
+                    ? 'কুইজ চালানোর উপযুক্ত কোনো রক্তধারা পাওয়া যায়নি'
+                    : 'উপযুক্ত রক্তধারা যাচাই করা হচ্ছে…',
                 onSelect: () => {},
                 onClear: () => {}
             });
@@ -1045,14 +1222,28 @@
                 });
             }
 
+            document.querySelectorAll('.stat-card[data-stat]').forEach(card => {
+                const go = () => openStatList(card.dataset.stat);
+                card.addEventListener('click', go);
+                card.addEventListener('keydown', e => {
+                    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); }
+                });
+            });
+            listFilterInput.addEventListener('input', renderStatList);
+            document.getElementById('list-close').onclick = closeStatList;
+            listModal.addEventListener('click', e => { if (e.target === listModal) closeStatList(); });
+            document.getElementById('popup-backdrop').onclick = closePopup;
+
             document.getElementById('close-popup-btn').onclick = closePopup;
             document.getElementById('image-lightbox').onclick = closeLightbox;
             document.getElementById('m-photo').onclick = function() { openLightbox(this.src); };
 
             window.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') {
-                    closeLightbox();
-                    closePopup();
+                    // একবারে একটি স্তর বন্ধ হবে: লাইটবক্স → প্রোফাইল পপ-আপ → তালিকা
+                    if (document.getElementById('image-lightbox').style.display === 'flex') closeLightbox();
+                    else if (document.getElementById('popup-modal').style.display === 'block') closePopup();
+                    else closeStatList();
                 }
             });
 
@@ -1128,31 +1319,40 @@
                 return membersData.filter(m => descendants.has(m.uid));
             }
 
+            const MIN_QUESTIONS = 4;
+
+            // সদস্যের যেসব আত্মীয়ের তথ্য ডেটায় সত্যিই আছে (সম্পর্ক-কুইজের প্রশ্ন এখান থেকেই তৈরি হয়)
+            function relativesOf(m) {
+                const out = [];
+                ['father', 'mother', 'spouse'].forEach(rel => {
+                    const v = m[rel];
+                    if (!v) return;
+                    (Array.isArray(v) ? v : [v]).forEach(uid => { if (byUid(uid)) out.push({ rel, uid }); });
+                });
+                return out;
+            }
+
+            // কুইজ তৈরির নিয়মের সাথে হুবহু মিলিয়ে: দুই ধরনের কুইজই চালানো সম্ভব কি না
+            function isQuizPossible(pool, photoSet) {
+                const withPhoto = pool.filter(m => photoSet.has(m.uid));
+                const withRelation = withPhoto.filter(m => relativesOf(m).length > 0);
+                return withPhoto.length >= MIN_QUESTIONS && withRelation.length >= MIN_QUESTIONS;
+            }
+
             async function populateValidBloodlines() {
-                const candidateRoots = membersData.filter(m => m.children && m.children.length > 0);
-                const validRoots = [];
+                const flags = await Promise.all(membersData.map(async m => [m.uid, !!(await findRealPhoto(m.uid))]));
+                const photoSet = new Set(flags.filter(([, ok]) => ok).map(([uid]) => uid));
 
-                for (const root of candidateRoots) {
-                    const familyPool = getBloodlineDescendants(root.uid);
-                    
-                    // উভয় প্রকার কুইজের জন্যই ফিল্টার চেক:
-                    // ১. 'ছবি দেখে নাম শনাক্ত করুন' কুইজের জন্য পর্যাপ্ত ছবিওয়ালা সদস্য আছে কি না
-                    const photoMembers = await getPhotoMembers(familyPool);
-                    
-                    // ২. 'সম্পর্ক শনাক্ত করো' কুইজের জন্য পিতা, মাতা বা দাম্পত্য সঙ্গীযুক্ত পর্যাপ্ত সদস্য আছে কি না
-                    const relationMembers = photoMembers.filter(m => m.father || m.mother || m.spouse);
+                allBloodlinesOk = isQuizPossible(membersData, photoSet);
 
-                    // যদি দুটো কুইজের জন্যই পর্যাপ্ত (কমপক্ষে ৪ টি করে) প্রশ্ন বা সদস্য পাওয়া যায়
-                    if (photoMembers.length >= 4 && relationMembers.length >= 4) {
-                        validRoots.push(root);
-                    }
-                }
+                const roots = membersData
+                    .filter(m => m.children && m.children.length > 0)
+                    .filter(root => isQuizPossible(getBloodlineDescendants(root.uid), photoSet))
+                    .sort((a, b) => (a.bnName || '').localeCompare(b.bnName || '', 'bn'));
 
-                validRoots.sort((a, b) => (a.bnName || '').localeCompare(b.bnName || '', 'bn'));
-
-                // তালিকাটি picker (createCustomPicker) নিজেই রেন্ডার করে —
-                // আগে এখানে সরাসরি DOM বানানো হতো, কিন্তু ফোকাস করলেই picker তা মুছে সব সদস্য দেখাত।
-                validBloodlineRoots = validRoots;
+                validBloodlineRoots = roots;
+                bloodlinesReady = true;
+                if (bloodlinePicker) bloodlinePicker.refresh();
             }
 
             function esc(s) {
@@ -1178,11 +1378,11 @@
                 if (type === 'photo') {
                     questions = shuffle(photoPool).slice(0, Math.min(5, photoPool.length));
                 } else {
-                    const relationPool = photoPool.filter(m => m.father || m.mother || m.spouse);
+                    const relationPool = photoPool.filter(m => relativesOf(m).length > 0);
                     questions = shuffle(relationPool).slice(0, Math.min(5, relationPool.length));
                 }
 
-                if (questions.length < 4) {
+                if (questions.length < MIN_QUESTIONS) {
                     body.innerHTML = `<div class="quiz-result"><div class="quiz-question-label">NOT ENOUGH DATA</div><h3>পর্যাপ্ত ডেটা পাওয়া যায়নি</h3><p>এই Bloodline-এ কুইজের জন্য অন্তত ৪ জন উপযুক্ত সদস্যের তথ্য প্রয়োজন।</p><button id="quiz-retry">বন্ধ করুন</button></div>`;
                     document.getElementById('quiz-retry').onclick = close;
                     return;
@@ -1218,14 +1418,10 @@
                     `;
                     body.querySelectorAll('.quiz-option').forEach((b,i) => b.onclick = () => answerPhoto(i, opts, m));
                 } else {
-                    const relTypes = [];
-                    if (m.father) relTypes.push('father');
-                    if (m.mother) relTypes.push('mother');
-                    if (m.spouse) relTypes.push('spouse');
-
-                    const targetRel = relTypes[Math.floor(Math.random() * relTypes.length)];
-                    let targetUid = m[targetRel];
-                    if (Array.isArray(targetUid)) targetUid = targetUid[0];
+                    const rels = relativesOf(m);
+                    const pick = rels[Math.floor(Math.random() * rels.length)];
+                    const targetRel = pick.rel;
+                    const targetUid = pick.uid;
 
                     let questionText = "";
                     if (targetRel === 'father') questionText = `${m.bnName}-এর পিতাকে শনাক্ত করুন:`;
@@ -1313,7 +1509,7 @@
                 modal.setAttribute('aria-hidden','true');
             }
 
-            setTimeout(populateValidBloodlines, 200);
+            populateValidBloodlines();
 
             document.querySelectorAll('[data-start-quiz]').forEach(b => b.onclick = () => open(b.dataset.startQuiz));
             document.getElementById('quiz-close').onclick = close;
