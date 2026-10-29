@@ -63,124 +63,113 @@
             to { transform: rotate(360deg); }
         }
 
-        /* ===== TOP NAVBAR (HOME STYLE) ===== */
+        /* ===== TOP NAVBAR (home.html এর হুবহু স্টাইল) ===== */
         .top-navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            padding: 10px 18px;
-            background: rgba(6, 10, 18, 0.82);
-            border-bottom: 1px solid rgba(0, 255, 255, 0.14);
-            backdrop-filter: blur(20px) saturate(140%);
-            -webkit-backdrop-filter: blur(20px) saturate(140%);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.28);
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            background: rgba(5, 17, 27, 0.76);
+            backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+            border-bottom: 1px solid rgba(160, 220, 255, .13);
         }
-
         .nav-inner {
-            width: min(1180px, 100%);
-            min-height: 58px;
-            margin: auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 24px;
+            max-width: 1180px; margin: auto; height: 76px; padding: 0 22px;
+            display: flex; align-items: center; justify-content: space-between; gap: 20px;
         }
-
         .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            min-width: max-content;
-            color: inherit;
-            text-decoration: none;
+            display: flex; align-items: center; gap: 12px; min-width: 0;
+            color: inherit; text-decoration: none;
         }
-
         .brand-mark {
-            width: 42px;
-            height: 42px;
-            border-radius: 14px;
-            display: grid;
-            place-items: center;
-            font-size: 22px;
-            background: linear-gradient(145deg, rgba(0, 204, 255, 0.18), rgba(57, 217, 138, 0.12));
-            border: 1px solid rgba(0, 204, 255, 0.25);
+            width: 42px; height: 42px; border-radius: 14px; display: grid; place-items: center; font-size: 22px;
+            background: linear-gradient(145deg, rgba(0,204,255,.18), rgba(57,217,138,.12));
+            border: 1px solid rgba(0,204,255,.25);
         }
-
-        .brand-title {
-            font-weight: 800;
-            line-height: 1.05;
-            font-size: 15px;
-            color: #fff;
-        }
-
+        .brand-title { font-weight: 800; line-height: 1.05; font-size: 15px; color: #fff; }
         .brand-sub {
-            font: 500 10px Inter, sans-serif;
-            letter-spacing: .14em;
-            color: #91a9b8;
-            text-transform: uppercase;
-            margin-top: 4px;
+            font: 500 10px Inter, sans-serif; letter-spacing: .14em; color: #91a9b8;
+            text-transform: uppercase; margin-top: 4px;
         }
-
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
+        .nav-links { display: flex; align-items: center; gap: 5px; }
         .nav-links a {
-            padding: 10px 16px;
-            border-radius: 12px;
-            color: #a9bfcb;
-            font-size: 14px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: .2s ease;
+            padding: 10px 15px; border-radius: 12px; color: #a9bfcb; font-size: 14px;
+            font-weight: 600; text-decoration: none; transition: .2s ease;
         }
-
-        .nav-links a:hover {
-            background: rgba(0, 204, 255, 0.09);
-            color: #e9fbff;
-        }
-
+        .nav-links a:hover, .nav-links a.active { background: rgba(0,204,255,.09); color: #e9fbff; }
         .nav-links a.active {
             background: linear-gradient(135deg, rgba(0, 180, 219, 0.92), rgba(0, 131, 176, 0.92));
-            color: #fff;
-            box-shadow: 0 5px 18px rgba(0, 200, 255, 0.18);
+            color: #fff; box-shadow: 0 5px 18px rgba(0, 200, 255, 0.18);
         }
-
         .menu-toggle {
-            display: none;
-            width: 42px;
-            height: 42px;
-            border: 1px solid rgba(0, 255, 255, 0.2);
-            border-radius: 12px;
-            background: rgba(0, 255, 255, 0.06);
-            color: #00ffff;
-            font-size: 20px;
-            cursor: pointer;
+            display: none; width: 42px; height: 42px; border: 1px solid rgba(160, 220, 255, .13); border-radius: 12px;
+            background: rgba(255,255,255,.03); color: white; font-size: 20px; cursor: pointer;
         }
 
         @media (max-width: 820px) {
-            .nav-inner { min-height: 52px; }
-            .menu-toggle { display: block; }
+            .nav-inner { height: 68px; }
             .nav-links {
-                display: none;
-                position: absolute;
-                left: 14px;
-                right: 14px;
-                top: 68px;
-                padding: 10px;
-                flex-direction: column;
-                align-items: stretch;
-                background: rgba(7, 20, 31, 0.97);
-                border: 1px solid rgba(0, 255, 255, 0.18);
-                border-radius: 18px;
-                box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+                display: none; position: absolute; left: 14px; right: 14px; top: 74px; padding: 10px;
+                flex-direction: column; align-items: stretch; background: rgba(7, 20, 31, 0.97);
+                border: 1px solid rgba(160, 220, 255, .13); border-radius: 18px; box-shadow: 0 24px 70px rgba(0,0,0,.32);
             }
             .nav-links.open { display: flex; }
-            .nav-links a { padding: 12px 14px; }
+            .menu-toggle { display: block; }
+        }
+
+        /* ===== QUICK SEARCH (3D ক্যানভাসের ওপর ভাসমান) ===== */
+        .gsearch {
+            position: fixed; z-index: 900; top: 90px;
+            left: max(22px, calc((100vw - 1180px) / 2 + 22px)); width: min(340px, calc(100vw - 28px));
+        }
+        .gsearch-wrap { position: relative; }
+        .gsearch-input {
+            width: 100%; background: rgba(7, 20, 31, .72); color: #fff; border: 1px solid rgba(160, 220, 255, .13);
+            padding: 9px 38px 9px 38px; border-radius: 999px; font-size: 13px; outline: none; transition: .2s;
+            backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+        }
+        .gsearch-input::placeholder { color: #7f98a8; }
+        .gsearch-input:focus { border-color: rgba(0,204,255,.65); box-shadow: 0 0 0 3px rgba(0,204,255,.08); }
+        .gsearch-icon {
+            position: absolute; left: 15px; top: 50%; transform: translateY(-51%);
+            color: #00ffff; font-size: 16px; pointer-events: none;
+        }
+        .gsearch-clear {
+            position: absolute; right: 8px; top: 50%; transform: translateY(-50%); width: 26px; height: 26px;
+            border: 0; border-radius: 50%; background: transparent; color: #64748b; font-size: 19px;
+            cursor: pointer; display: none;
+        }
+        .gsearch-clear:hover { color: #fff; background: rgba(255,255,255,.08); }
+        .gsearch-options {
+            position: absolute; left: 0; right: 0; top: calc(100% + 7px); display: none;
+            max-height: min(320px, 55vh); overflow-y: auto; padding: 6px; -webkit-overflow-scrolling: touch;
+            background: rgba(8, 14, 24, .98); border: 1px solid rgba(0, 255, 255, .28);
+            border-radius: 14px; box-shadow: 0 18px 45px rgba(0,0,0,.65); backdrop-filter: blur(16px);
+        }
+        .gsearch-options.open { display: block; }
+        .gsearch-option {
+            display: flex; align-items: center; gap: 11px; padding: 8px 10px; border-radius: 10px;
+            cursor: pointer; border: 1px solid transparent; transition: .16s ease;
+        }
+        .gsearch-option:hover, .gsearch-option.highlighted { background: rgba(0,255,255,.09); border-color: rgba(0,255,255,.16); }
+        .gsearch-avatar {
+            width: 36px; height: 36px; border-radius: 50%; object-fit: cover; flex-shrink: 0;
+            border: 1px solid rgba(0,255,255,.55); background: #1a2230;
+        }
+        .gsearch-text { min-width: 0; line-height: 1.25; }
+        .gsearch-text strong { display: block; color: #f8fafc; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .gsearch-text small { display: block; color: #64748b; font-size: 10px; margin-top: 3px; }
+        .gsearch-badge {
+            margin-left: auto; color: #00ffff; font-size: 9px; border: 1px solid rgba(0,255,255,.18);
+            background: rgba(0,255,255,.06); padding: 3px 6px; border-radius: 6px; white-space: nowrap;
+        }
+        .gsearch-empty, .gsearch-more { padding: 14px 10px; text-align: center; color: #64748b; font-size: 12px; }
+        .gsearch-more { padding: 8px 10px 4px; font-size: 11px; }
+
+        @media (max-width: 820px) {
+            .gsearch { top: 80px; left: 50%; transform: translateX(-50%); width: min(440px, calc(100vw - 28px)); }
+            /* প্রোফাইল পপ-আপ খোলা থাকলে সার্চবার লুকানো থাকে (পপ-আপ পুরো প্রস্থ নেয়) */
+            body:has(#popup-modal[style*="block"]) .gsearch { visibility: hidden; }
+        }
+        @media (max-width: 600px) {
+            .gsearch-input { font-size: 16px; }
         }
 
         /* 2D BLOODLINE / GENOGRAM OVERLAY */
@@ -558,7 +547,7 @@
                 color: black !important;
             }
 
-            canvas, .top-navbar, .zoom-controls, #popup-modal {
+            canvas, .top-navbar, .gsearch, .zoom-controls, #popup-modal {
                 display: none !important;
             }
 
@@ -642,6 +631,16 @@
             </nav>
         </div>
     </header>
+
+    <!-- QUICK SEARCH -->
+    <div class="gsearch" id="gsearch" role="search">
+        <div class="gsearch-wrap">
+            <span class="gsearch-icon">⌕</span>
+            <input id="gsearch-input" class="gsearch-input" type="text" placeholder="সদস্য খুঁজুন — নাম, ডাকনাম বা UID" autocomplete="off" aria-label="সদস্য খুঁজুন" role="combobox" aria-expanded="false" aria-controls="gsearch-options">
+            <button type="button" id="gsearch-clear" class="gsearch-clear" aria-label="মুছে ফেলুন">×</button>
+            <div id="gsearch-options" class="gsearch-options" role="listbox"></div>
+        </div>
+    </div>
 
     <!-- 2D BLOODLINE OVERLAY -->
     <div id="tree-2d-overlay">
@@ -1158,7 +1157,7 @@
         });
 
         window.addEventListener('pointerup', (event) => {
-            if (event.target.closest('.top-navbar') || event.target.closest('#popup-modal') || event.target.closest('#image-lightbox') || event.target.closest('#tree-2d-overlay')) return;
+            if (event.target.closest('.top-navbar') || event.target.closest('#gsearch') || event.target.closest('#popup-modal') || event.target.closest('#image-lightbox') || event.target.closest('#tree-2d-overlay')) return;
 
             const deltaX = Math.abs(event.clientX - touchStartX);
             const deltaY = Math.abs(event.clientY - touchStartY);
@@ -1344,6 +1343,129 @@
             isMarbleSelected = false;
             setTimeout(() => { isAnimating = true; }, 500);
         };
+
+        // ===== Quick Search: নাম / ডাকনাম / UID দিয়ে খুঁজে সরাসরি ৩ডি-তে ফোকাস =====
+        (function initQuickSearch() {
+            const box = document.getElementById('gsearch');
+            const input = document.getElementById('gsearch-input');
+            const clearBtn = document.getElementById('gsearch-clear');
+            const options = document.getElementById('gsearch-options');
+            const MAX_SHOWN = 50;
+            const sorted = [...membersData].sort((a, b) => (a.bnName || '').localeCompare(b.bnName || '', 'bn'));
+            const hay = m => [m.bnName, m.enName, m.nick, m.uid].filter(Boolean).join(' ').toLocaleLowerCase('bn-BD');
+            let shown = [], hi = -1;
+
+            function setOpen(open) {
+                options.classList.toggle('open', open);
+                input.setAttribute('aria-expanded', String(open));
+            }
+
+            function highlight(i) {
+                const items = options.querySelectorAll('.gsearch-option');
+                items.forEach(el => el.classList.remove('highlighted'));
+                hi = i;
+                if (items[i]) { items[i].classList.add('highlighted'); items[i].scrollIntoView({ block: 'nearest' }); }
+            }
+
+            function choose(m) {
+                input.value = '';
+                clearBtn.style.display = 'none';
+                setOpen(false);
+                input.blur();
+                window.focusByUid(m.uid);
+            }
+
+            function render() {
+                const q = input.value.trim().toLocaleLowerCase('bn-BD');
+                const matches = q ? sorted.filter(m => hay(m).includes(q)) : sorted;
+                shown = matches.slice(0, MAX_SHOWN);
+                hi = -1;
+                options.innerHTML = '';
+
+                if (!shown.length) {
+                    const empty = document.createElement('div');
+                    empty.className = 'gsearch-empty';
+                    empty.textContent = 'কোনো সদস্য পাওয়া যায়নি';
+                    options.appendChild(empty);
+                    return;
+                }
+
+                const frag = document.createDocumentFragment();
+                shown.forEach(m => {
+                    const row = document.createElement('div');
+                    row.className = 'gsearch-option';
+                    row.setAttribute('role', 'option');
+
+                    const img = document.createElement('img');
+                    img.className = 'gsearch-avatar';
+                    img.loading = 'lazy';
+                    img.alt = '';
+                    loadProfilePhoto(img, m.uid);
+
+                    const text = document.createElement('div');
+                    text.className = 'gsearch-text';
+                    const strong = document.createElement('strong');
+                    strong.textContent = m.bnName + (m.nick ? ` (${m.nick})` : '');
+                    const small = document.createElement('small');
+                    small.textContent = `${m.uid} • ${m.enName || ''}`;
+                    text.append(strong, small);
+
+                    const badge = document.createElement('span');
+                    badge.className = 'gsearch-badge';
+                    badge.textContent = `Gen ${m.patrilinealGen ?? ''}`;
+
+                    row.append(img, text, badge);
+                    row.addEventListener('mousedown', e => e.preventDefault()); // ইনপুটের ফোকাস না হারাতে
+                    row.addEventListener('click', () => choose(m));
+                    frag.appendChild(row);
+                });
+                options.appendChild(frag);
+
+                if (matches.length > MAX_SHOWN) {
+                    const more = document.createElement('div');
+                    more.className = 'gsearch-more';
+                    more.textContent = `আরও ${matches.length - MAX_SHOWN} জন আছে — নাম লিখে সীমিত করুন`;
+                    options.appendChild(more);
+                }
+            }
+
+            input.addEventListener('focus', () => { render(); setOpen(true); });
+            input.addEventListener('input', () => {
+                clearBtn.style.display = input.value ? 'block' : 'none';
+                render();
+                setOpen(true);
+            });
+            clearBtn.addEventListener('click', () => {
+                input.value = '';
+                clearBtn.style.display = 'none';
+                render();
+                setOpen(true);
+                input.focus();
+            });
+
+            input.addEventListener('keydown', e => {
+                if (e.key === 'ArrowDown') { e.preventDefault(); setOpen(true); highlight(Math.min(hi + 1, shown.length - 1)); }
+                else if (e.key === 'ArrowUp') { e.preventDefault(); highlight(Math.max(hi - 1, 0)); }
+                else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const m = shown[hi >= 0 ? hi : 0];
+                    if (m && input.value.trim()) choose(m);
+                }
+                else if (e.key === 'Escape') { setOpen(false); input.blur(); }
+            });
+
+            // বাইরে ক্লিক করলে তালিকা বন্ধ
+            document.addEventListener('pointerdown', e => { if (!box.contains(e.target)) setOpen(false); });
+
+            // "/" চাপলে সার্চে ফোকাস (অন্য কোনো ইনপুটে লেখার সময় নয়)
+            window.addEventListener('keydown', e => {
+                if (e.key !== '/' || e.ctrlKey || e.metaKey || e.altKey) return;
+                const tag = (document.activeElement && document.activeElement.tagName) || '';
+                if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+                e.preventDefault();
+                input.focus();
+            });
+        })();
 
         // Mobile Navbar Toggle Logic
         document.addEventListener('DOMContentLoaded', () => {
